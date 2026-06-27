@@ -1,0 +1,164 @@
+
+<style>
+.stage-nav { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:1.5rem; }
+.stage-btn { font-size:12px; font-weight:500; padding:5px 14px; border-radius:var(--radius); border:0.5px solid var(--border); background:var(--surface-1); color:var(--text-secondary); cursor:pointer; transition:all .15s; }
+.stage-btn.active, .stage-btn:hover { background:var(--surface-0); color:var(--text-primary); border-color:var(--border-strong); }
+.stage-panel { display:none; }
+.stage-panel.active { display:block; }
+.issue { border-radius:10px; border:0.5px solid var(--border); margin-bottom:10px; overflow:hidden; }
+.issue-head { display:flex; gap:10px; align-items:flex-start; padding:12px 14px; background:var(--surface-1); cursor:pointer; }
+.issue-head:hover { background:var(--surface-0); }
+.severity { font-size:11px; font-weight:500; padding:2px 8px; border-radius:4px; white-space:nowrap; margin-top:1px; }
+.sev-break { background:var(--bg-danger); color:var(--text-danger); }
+.sev-bug { background:var(--bg-warning); color:var(--text-warning); }
+.sev-missing { background:var(--bg-pro); color:var(--text-pro); }
+.sev-ok { background:var(--bg-success); color:var(--text-success); }
+.issue-title { font-size:13px; font-weight:500; color:var(--text-primary); flex:1; }
+.issue-body { padding:12px 14px; border-top:0.5px solid var(--border); font-size:12.5px; color:var(--text-secondary); line-height:1.65; display:none; }
+.issue-body.open { display:block; }
+.issue-body code { font-family:var(--font-mono); font-size:11.5px; background:var(--surface-0); padding:1px 5px; border-radius:3px; color:var(--text-primary); }
+.issue-body pre { background:var(--surface-0); border:0.5px solid var(--border); border-radius:6px; padding:10px 12px; font-size:11px; font-family:var(--font-mono); overflow-x:auto; margin:8px 0; color:var(--text-primary); }
+.stage-summary { display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap; }
+.pill { font-size:11px; padding:3px 10px; border-radius:12px; font-weight:500; }
+</style>
+
+<h2 class="sr-only">Backend audit across 5 implementation stage documents</h2>
+
+<div class="stage-nav">
+  <button class="stage-btn active" onclick="show(0)">Stage 1 — Data Sourcing</button>
+  <button class="stage-btn" onclick="show(1)">Stage 2 — Filter Funnel</button>
+  <button class="stage-btn" onclick="show(2)">Stage 3 — Scoring Engine</button>
+  <button class="stage-btn" onclick="show(3)">Stage 4 — Scheduler</button>
+  <button class="stage-btn" onclick="show(4)">Stage 5 — Trust Layer</button>
+</div>
+
+<div id="panel-0" class="stage-panel active">
+  <div class="stage-summary">
+    <span class="pill sev-break">2 breaking</span>
+    <span class="pill sev-bug">2 bugs</span>
+    <span class="pill sev-missing">1 missing</span>
+  </div>
+
+  <div class="issue"><div class="issue-head" onclick="toggle(this)"><span class="severity sev-break">Breaking</span><span class="issue-title">database.py uses deprecated declarative_base() import</span></div><div class="issue-body">The code imports <code>from sqlalchemy.ext.declarative import declarative_base</code>. This path was deprecated in SQLAlchemy 1.4 and removed in 2.x. The file pins <code>SQLAlchemy==2.0.30</code> in requirements, so this will throw an <code>ImportError</code> immediately at startup.<br><br><b>Fix:</b><pre>from sqlalchemy.orm import DeclarativeBase
+
+class Base(DeclarativeBase):
+    pass</pre></div></div>
+
+  <div class="issue"><div class="issue-head" onclick="toggle(this)"><span class="severity sev-break">Breaking</span><span class="issue-title">dns_audit.py: resolver.resolve() returns RdataSet, not a string — wrong .to_text() call</span></div><div class="issue-body">The code calls <code>record.to_text().strip('"')</code> but <code>dns.resolver.resolve()</code> returns Rdata objects. For TXT records, each Rdata contains multiple byte strings. The correct access pattern is needed, otherwise the SPF/DKIM/DMARC checks all silently fail because <code>txt_str.startswith("v=spf1")</code> never matches.<br><br><b>Fix:</b><pre>for record in txt_records:
+    # TXT records may have multiple strings; join them
+    txt_str = "".join(s.decode() for s in record.strings)
+    if txt_str.startswith("v=spf1"):
+        ...</pre></div></div>
+
+  <div class="issue"><div class="issue-head" onclick="toggle(this)"><span class="severity sev-bug">Bug</span><span class="issue-title">main.py: Base.metadata.create_all() creates tables with no defined ORM models</span></div><div class="issue-body"><code>Base.metadata.create_all(bind=engine)</code> is called but <code>models.py</code> is never imported in Stage 1's <code>main.py</code>, so the <code>Base</code> imported from <code>database.py</code> has no models registered. The tables that Stage 4's scheduler queries (<code>lead_snapshots</code>, <code>pipeline_status</code>) will not exist at runtime.<br><br><b>Fix:</b> Add <code>from backend import models</code> before the <code>create_all()</code> call, and define those two tables as SQLAlchemy ORM classes in <code>models.py</code>.</div></div>
+
+  <div class="issue"><div class="issue-head" onclick="toggle(this)"><span class="severity sev-bug">Bug</span><span class="issue-title">config.py: ICPSettings inside Settings uses wrong env_nested_delimiter — ICP fields not loadable from .env</span></div><div class="issue-body">Pydantic-settings v2 requires <code>env_nested_delimiter='__'</code> in the <code>SettingsConfigDict</code> to resolve nested models from environment variables. Without it, <code>ICP.MIN_EMPLOYEES</code> etc. can never be overridden at runtime, and any <code>.env</code> file setting <code>ICP__MIN_EMPLOYEES=15</code> will be silently ignored.<br><br><b>Fix:</b><pre>model_config = SettingsConfigDict(
+    env_file=".env",
+    env_file_encoding="utf-8",
+    env_nested_delimiter="__"   # add this
+)</pre></div></div>
+
+  <div class="issue"><div class="issue-head" onclick="toggle(this)"><span class="severity sev-missing">Missing</span><span class="issue-title">models.py is specified in the file tree but never provided</span></div><div class="issue-body">The architecture lists <code>backend/models.py</code> as a required file, and Stage 4 queries <code>lead_snapshots</code> and Stage 4 also inserts to <code>pipeline_status</code>. Neither table is defined anywhere across all 5 stages. If you run Stage 4's scheduler, you will get a raw SQL error because these tables don't exist. You must define them as ORM models in <code>models.py</code> before Stage 4 is wired up.</div></div>
+</div>
+
+<div id="panel-1" class="stage-panel">
+  <div class="stage-summary">
+    <span class="pill sev-break">0 breaking</span>
+    <span class="pill sev-bug">2 bugs</span>
+    <span class="pill sev-missing">1 missing</span>
+    <span class="pill sev-ok">Core logic correct</span>
+  </div>
+
+  <div class="issue"><div class="issue-head" onclick="toggle(this)"><span class="severity sev-bug">Bug</span><span class="issue-title">Stage 2 main.py completely replaces Stage 1 main.py — loses DB init, DNS router, and CORS</span></div><div class="issue-body">Stage 2 provides a brand new <code>main.py</code> that does not import or mount anything from Stage 1: no <code>Base.metadata.create_all()</code>, no <code>get_db</code>, no DNS audit router. If you just copy-paste Stage 2's <code>main.py</code>, you will break the <code>/api/audit/dns</code> route and stop the database tables from being created at startup.<br><br><b>Fix:</b> Stage 2's <code>main.py</code> should be additive — import and mount the new filter routes on top of Stage 1's existing app, not replace it. Treat each stage as a diff, not a replacement.</div></div>
+
+  <div class="issue"><div class="issue-head" onclick="toggle(this)"><span class="severity sev-bug">Bug</span><span class="issue-title">quote_validator.py: validate_quote() is disconnected from validate_and_score_lead() in fix1</span></div><div class="issue-body">Stage 2 defines a simple <code>validate_quote(quote, source)</code> function. Our previously designed Fix 1 (<code>validate_and_score_lead()</code>) is a superset of this — it validates all signals, subtracts 10pts per discard, and returns a full <code>LeadScore</code>. Stage 2's version only validates one quote in isolation with no score adjustment. The two will conflict when Stage 3's scorer calls one but the API endpoint uses the other.<br><br><b>Fix:</b> Keep <code>validate_quote()</code> as the low-level primitive (it is fine). In Stage 3's scorer, call it per-signal inside a loop and handle the score deduction there — exactly as designed in Fix 1.</div></div>
+
+  <div class="issue"><div class="issue-head" onclick="toggle(this)"><span class="severity sev-missing">Missing</span><span class="issue-title">Smart caching layer (7-day SQLite cache) is described in architecture but absent</span></div><div class="issue-body">The architecture document specifies a caching step inside the filter funnel: if a company's domain was enriched within the last 7 days, skip the LLM entirely and return the cached score. Neither Stage 2 nor any subsequent stage implements this. The filter funnel goes straight from keyword gate to LLM call. Without the cache, every pipeline run re-calls Claude for every company — costs multiply linearly with run frequency.</div></div>
+</div>
+
+<div id="panel-2" class="stage-panel">
+  <div class="stage-summary">
+    <span class="pill sev-break">2 breaking</span>
+    <span class="pill sev-bug">3 bugs</span>
+    <span class="pill sev-missing">2 missing</span>
+  </div>
+
+  <div class="issue"><div class="issue-head" onclick="toggle(this)"><span class="severity sev-break">Breaking</span><span class="issue-title">scorer.py imports datetime but never imports it — NameError on ExtractedSignal instantiation</span></div><div class="issue-body">Line: <code>event_date: str = Field(default_factory=lambda: datetime.utcnow().isoformat())</code><br><br><code>datetime</code> is referenced inside the <code>Field(default_factory=...)</code> lambda but the module never has <code>from datetime import datetime</code>. Every time a signal is created without an explicit <code>event_date</code>, Python raises a <code>NameError: name 'datetime' is not defined</code> at runtime.<br><br><b>Fix:</b> Add <code>from datetime import datetime, timezone</code> at the top of <code>scorer.py</code>. Also prefer <code>datetime.now(timezone.utc)</code> over the deprecated <code>datetime.utcnow()</code>.</div></div>
+
+  <div class="issue"><div class="issue-head" onclick="toggle(this)"><span class="severity sev-break">Breaking</span><span class="issue-title">Stage 3 main.py again replaces the app — loses CORS, DB init, all previous routes</span></div><div class="issue-body">Stage 3's <code>main.py</code> creates a fresh <code>app = FastAPI(...)</code> with no middleware, no router includes from Stages 1-2, and no DB setup. By this stage, if you follow the docs literally, you have discarded the DNS audit endpoint, the filter simulation endpoint, and all database initialisation.<br><br><b>Fix:</b> Stage 3's main.py block should only add the new <code>/api/score/simulate</code> route to the existing app — one <code>@app.get</code> block, nothing else. The full app definition should not be repeated across stages.</div></div>
+
+  <div class="issue"><div class="issue-head" onclick="toggle(this)"><span class="severity sev-bug">Bug</span><span class="issue-title">scorer.py: sig["quote_validated"] = True hardcoded — bypasses the entire Fix 1 validation system</span></div><div class="issue-body">Line 175: <code>sig["quote_validated"] = True  # Verified by Stage 2 filter layers</code><br><br>This hardcodes every signal as validated regardless of whether <code>validate_quote()</code> was actually called. The architecture's entire hallucination-elimination premise depends on this being a real check. Any evaluator looking at the code will immediately see this shortcut. The Confidence Meter in Stage 5 will always show "High Trust" even for hallucinated quotes.<br><br><b>Fix:</b> In the signal loop, call <code>is_valid, score = validate_quote(sig["verbatim_quote"], raw_source_text)</code> and set <code>sig["quote_validated"] = is_valid</code>. Pass <code>raw_source_text</code> as a parameter to <code>process_hybrid_lead_scoring()</code>.</div></div>
+
+  <div class="issue"><div class="issue-head" onclick="toggle(this)"><span class="severity sev-bug">Bug</span><span class="issue-title">time_decay.py: parse error on empty string — returns 1.00 instead of 0.50 for unknown dates</span></div><div class="issue-body">When <code>event_date_str</code> is an empty string <code>""</code> (which happens for signals without a date), the <code>datetime.fromisoformat("")</code> call raises a <code>ValueError</code> which is caught and returns <code>1.00</code> (full score). This means unknown-date signals get the maximum possible weight rather than the conservative <code>0.50</code> default that the architecture specifies. Stale or undated signals get rewarded.<br><br><b>Fix:</b><pre>if not event_date_str:
+    return 0.50, "unknown"   # conservative fallback
+try:
+    event_date = datetime.fromisoformat(...)
+...</pre></div></div>
+
+  <div class="issue"><div class="issue-head" onclick="toggle(this)"><span class="severity sev-bug">Bug</span><span class="issue-title">icp_filter.py: "M&A" check uses `any(stage in funding_stage ...)` — inverted logic</span></div><div class="issue-body">The check is <code>any(stage in funding_stage for stage in stagnant_stages)</code> where <code>stagnant_stages = ["Series D", "Series E", "Public", "M&A"]</code>. This checks if the stagnant stage string is a substring of <code>funding_stage</code>, but the variable name <code>stage</code> iterates over your list items, not the input. It should be the other way: check if <code>funding_stage</code> (the input) matches any item in your list.<br><br>In practice both work for "Series D" since both directions of substring match return True. But it will fail silently for partial strings like "Pre-Series A" matching "Series" if the list ever grows. Use <code>any(funding_stage.lower() == s.lower() for s in stagnant_stages)</code> for exact matching.</div></div>
+
+  <div class="issue"><div class="issue-head" onclick="toggle(this)"><span class="severity sev-missing">Missing</span><span class="issue-title">GET /api/leads (the main paginated list endpoint) is never defined across all 5 stages</span></div><div class="issue-body">The architecture specifies <code>GET /api/leads</code> as the primary table data endpoint with filter params (tier, sort_by, min_score, page). Stage 5 only defines <code>GET /api/leads/{lead_id}</code> and <code>GET /api/leads/{lead_id}/verdict</code> against an in-memory dict. The dashboard's main table has no real data endpoint to connect to — it only works off hardcoded mock arrays in the frontend.</div></div>
+
+  <div class="issue"><div class="issue-head" onclick="toggle(this)"><span class="severity sev-missing">Missing</span><span class="issue-title">Claude API call is never implemented — scorer.py does no actual LLM call</span></div><div class="issue-body"><code>scorer.py</code> processes the <code>raw_extracted_payload</code> dict but has no code that actually calls the Claude API. The <code>anthropic</code> SDK is added to requirements in Stage 3, but no API call is made anywhere. The <code>process_hybrid_lead_scoring()</code> function receives the LLM JSON as a pre-parsed dict, but nothing in the codebase generates that dict. The pipeline is incomplete: discovery → filter funnel → ??? → scorer. The actual <code>anthropic.messages.create()</code> call is missing entirely.</div></div>
+</div>
+
+<div id="panel-3" class="stage-panel">
+  <div class="stage-summary">
+    <span class="pill sev-break">2 breaking</span>
+    <span class="pill sev-bug">2 bugs</span>
+    <span class="pill sev-missing">1 missing</span>
+  </div>
+
+  <div class="issue"><div class="issue-head" onclick="toggle(this)"><span class="severity sev-break">Breaking</span><span class="issue-title">pipeline_scheduler.py: raw SQL against SQLAlchemy session — wrong execution API</span></div><div class="issue-body">The code calls <code>db.execute("SELECT intent_score FROM lead_snapshots WHERE domain=? ...", (domain,))</code> on a SQLAlchemy <code>Session</code> object. In SQLAlchemy 2.x, sessions do not accept raw strings — you must wrap them in <code>text()</code>. Also, the parameter placeholder for SQLite via SQLAlchemy is <code>:domain</code> not <code>?</code>.<br><br><b>Fix:</b><pre>from sqlalchemy import text
+row = db.execute(
+    text("SELECT intent_score FROM lead_snapshots WHERE domain=:d ORDER BY last_updated DESC LIMIT 1"),
+    {"d": domain}
+).fetchone()</pre></div></div>
+
+  <div class="issue"><div class="issue-head" onclick="toggle(this)"><span class="severity sev-break">Breaking</span><span class="issue-title">scheduler started at module level — causes duplicate scheduler on uvicorn --reload</span></div><div class="issue_body" style="padding:12px 14px;border-top:0.5px solid var(--border);font-size:12.5px;color:var(--text-secondary);line-height:1.65;">In Stage 4's <code>main.py</code>, the scheduler is created and started directly at module import time, outside any lifecycle hook. When running with <code>uvicorn --reload</code>, the module is re-imported on every file change. Each re-import starts a new scheduler instance, so you accumulate duplicate background threads all firing simultaneously. After 5 file edits you have 5 schedulers running.<br><br><b>Fix:</b> Move the scheduler into FastAPI's lifespan context manager:<pre>from contextlib import asynccontextmanager
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    scheduler.start()
+    yield
+    scheduler.shutdown(wait=False)
+
+app = FastAPI(lifespan=lifespan)</pre></div></div>
+
+  <div class="issue"><div class="issue-head" onclick="toggle(this)"><span class="severity sev-bug">Bug</span><span class="issue-title">pipeline_scheduler.py inserts into pipeline_status with raw SQL — table never created</span></div><div class="issue-body"><code>run_pipeline_job()</code> executes <code>INSERT OR REPLACE INTO pipeline_status ...</code> but <code>pipeline_status</code> is never defined as an ORM model or created via any migration. Since <code>models.py</code> is missing entirely (noted in Stage 1), this table does not exist. The job will crash silently on every run, with only the logger catching the error.<br><br><b>Fix:</b> Define <code>pipeline_status</code> in <code>models.py</code>, or at minimum create it in the <code>Base.metadata.create_all()</code> call.</div></div>
+
+  <div class="issue"><div class="issue-head" onclick="toggle(this)"><span class="severity sev-bug">Bug</span><span class="issue-title">pipeline.py /status endpoint returns hardcoded mock data — not connected to real scheduler state</span></div><div class="issue-body"><code>get_pipeline_telemetry()</code> returns <code>lead_count_processed=142</code> and <code>last_run_time=datetime.now()</code> unconditionally. It never reads from the database. If the evaluator hits this endpoint, they see "142 leads processed" even on a fresh install that has never run. This will be noticed immediately in a demo.<br><br><b>Fix:</b> Query the <code>pipeline_status</code> table (once it exists) and return the stored values. Return a sensible "pipeline has not run yet" state when the table is empty.</div></div>
+
+  <div class="issue"><div class="issue-head" onclick="toggle(this)"><span class="severity sev-missing">Missing</span><span class="issue-title">calculate_freshness_badge() is defined but never called — badges never appear</span></div><div class="issue-body"><code>calculate_freshness_badge(domain, new_score, is_new_company)</code> is written in <code>pipeline_scheduler.py</code> but <code>run_pipeline_job()</code> never calls it. The function exists in isolation. For badges to appear in the frontend, <code>run_pipeline_job()</code> must: (1) call the scoring pipeline, (2) call <code>calculate_freshness_badge()</code> for each result, and (3) persist the badge value alongside the score in the database. None of these steps are wired up.</div></div>
+</div>
+
+<div id="panel-4" class="stage-panel">
+  <div class="stage-summary">
+    <span class="pill sev-break">1 breaking</span>
+    <span class="pill sev-bug">3 bugs</span>
+    <span class="pill sev-missing">2 missing</span>
+  </div>
+
+  <div class="issue"><div class="issue-head" onclick="toggle(this)"><span class="severity sev-break">Breaking</span><span class="issue-title">Stage 5 main.py drops the scheduler entirely — APScheduler stops running</span></div><div class="issue-body">Stage 5's <code>main.py</code> imports only <code>pipeline</code> and <code>leads</code> routers. It creates a fresh <code>FastAPI</code> instance with no scheduler setup, no lifespan hook, nothing from Stage 4. If you use Stage 5's main.py, the 24-hour background job stops. The freshness badges, the automated pipeline runs, and the <code>/api/health</code> scheduler_status field all break.<br><br><b>Fix:</b> Stage 5's main.py block should only add <code>app.include_router(leads.router)</code>. The scheduler and all other infrastructure should remain from Stage 4.</div></div>
+
+  <div class="issue"><div class="issue-head" onclick="toggle(this)"><span class="severity sev-bug">Bug</span><span class="issue-title">leads.py: /verdict endpoint accesses lead.signals[1] without length check — IndexError</span></div><div class="issue-body">In <code>get_lazy_loaded_pitch_verdict()</code>:<pre>f"focusing heavily on {lead.signals[1].verbatim_quote[:40]}"</pre>This hardcodes index <code>[1]</code>. If a lead has only one signal (which is valid — a company might only have a funding signal with no SDR posting), this throws an unhandled <code>IndexError</code> and returns a 500. In production this would crash the pitcher mode on any single-signal lead.<br><br><b>Fix:</b> Use <code>lead.signals[-1].verbatim_quote if len(lead.signals) > 1 else ""</code> or build the email body from a loop over available signals.</div></div>
+
+  <div class="issue"><div class="issue-head" onclick="toggle(this)"><span class="severity sev-bug">Bug</span><span class="issue-title">leads.py: MOCK_DETAILED_LEADS only has lead "1" — GET /api/leads/{id} returns 404 for all others</span></div><div class="issue-body">The in-memory dict has only one entry. The frontend's LeadTable shows 4 rows across all stages (Crework Labs, Acme Systems, Delta Cyber, Beta Logistics). Clicking any row other than id="1" will get a 404 from the backend. When you demo the score breakdown panel, 3 out of 4 leads will fail to open.<br><br><b>Fix:</b> Add all 4 mock leads from the frontend data into <code>MOCK_DETAILED_LEADS</code> before demoing. Or better, make the endpoint query SQLite if the table exists, falling back to mock data.</div></div>
+
+  <div class="issue"><div class="issue-head" onclick="toggle(this)"><span class="severity sev-bug">Bug</span><span class="issue-title">leads.py: /verdict endpoint is GET but should be POST or clearly lazy — sends Claude call on every GET</span></div><div class="issue-body">The architecture says pitcher mode is "lazy-loaded on click, one extra API call per view." In the real implementation, <code>GET /api/leads/{id}/verdict</code> should trigger a Claude API call. But it is a GET endpoint. GET requests are cacheable and may be pre-fetched by browsers, proxies, and Next.js's prefetch behaviour. If Next.js prefetches all visible lead rows, you pay for Claude calls on every page load. Use <code>POST /api/leads/{id}/verdict</code> to signal that this is a non-idempotent action.</div></div>
+
+  <div class="issue"><div class="issue-head" onclick="toggle(this)"><span class="severity sev-missing">Missing</span><span class="issue-title">No actual Claude API call in /verdict — returns hardcoded template string, not AI output</span></div><div class="issue-body">The <code>get_lazy_loaded_pitch_verdict()</code> function builds the email by concatenating <code>lead.signals[x].verbatim_quote[:N]</code> with fixed strings. There is no <code>anthropic.messages.create()</code> call anywhere. If you demo "Pitcher Mode" and describe it as "Claude generating a personalised cold email opener," but the evaluator checks the backend code, they will see it is just an f-string. This undermines the core AI demo.<br><br><b>Fix:</b> Add the actual Claude call here — this is the easiest place in the entire codebase to plug it in, and it's the most visible AI feature in the whole product.</div></div>
+
+  <div class="issue"><div class="issue-head" onclick="toggle(this)"><span class="severity sev-missing">Missing</span><span class="issue-title">No GET /api/leads list endpoint exists anywhere — dashboard table has no backend</span></div><div class="issue-body">Carried forward from Stage 3: the primary endpoint <code>GET /api/leads?tier=High&sort_by=score&min_score=50&page=1</code> is never implemented. All 5 stages only provide <code>/api/leads/{id}</code>. The entire dashboard table currently runs off hardcoded frontend arrays. For a live demo where the evaluator opens DevTools, they will see no network call being made when the table loads — the data is all static JavaScript.</div></div>
+</div>
+
+<script>
+function show(idx) {
+  document.querySelectorAll('.stage-panel').forEach((p,i) => p.classList.toggle('active', i===idx));
+  document.querySelectorAll('.stage-btn').forEach((b,i) => b.classList.toggle('active', i===idx));
+}
+function toggle(head) {
+  const body = head.nextElementSibling;
+  body.classList.toggle('open');
+}
+</script>

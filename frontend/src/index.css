@@ -1,0 +1,208 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   Nexa Dark Design System — CSS Custom Properties
+   ============================================================ */
+:root {
+  color-scheme: dark;
+
+  /* Canvas & Surface */
+  --nexa-bg: #0a0a0f;
+  --nexa-card: rgba(17, 17, 24, 0.25);
+  --nexa-card-hover: rgba(22, 22, 31, 0.45);
+  --nexa-surface: rgba(26, 26, 36, 0.25);
+  --nexa-border: rgba(255, 255, 255, 0.08);
+  --nexa-border-strong: rgba(255, 255, 255, 0.16);
+
+  /* Primary Accent — Amber / Gold */
+  --nexa-accent: #e8a43a;
+  --nexa-accent-bright: #f0b856;
+  --nexa-accent-dim: rgba(232, 164, 58, 0.15);
+  --nexa-accent-glow: rgba(232, 164, 58, 0.25);
+
+  /* Semantic */
+  --nexa-emerald: #34d399;
+  --nexa-emerald-dim: rgba(52, 211, 153, 0.12);
+  --nexa-amber: #fbbf24;
+  --nexa-amber-dim: rgba(251, 191, 36, 0.12);
+  --nexa-rose: #fb7185;
+  --nexa-rose-dim: rgba(251, 113, 133, 0.12);
+  --nexa-indigo: #818cf8;
+  --nexa-indigo-dim: rgba(129, 140, 248, 0.12);
+
+  /* Typography */
+  --nexa-text-primary: #f0f0f5;
+  --nexa-text-secondary: #9ca3af;
+  --nexa-text-muted: #6b7280;
+
+  /* Fonts */
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  background: var(--nexa-bg);
+  color: var(--nexa-text-primary);
+}
+
+html {
+  font-size: 115%; /* Scales up the base rem size for the entire webpage */
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+/* ============================================================
+   Golden Light Flare — Top Viewport Gradient
+   ============================================================ */
+.nexa-flare {
+  position: fixed;
+  top: -200px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1000px;
+  height: 1200px;
+  background: radial-gradient(
+    ellipse 50% 50% at 50% 15%,
+    rgba(232, 164, 58, 0.45) 0%,
+    rgba(232, 164, 58, 0.20) 40%,
+    transparent 80%
+  );
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(80px);
+}
+
+/* ============================================================
+   Semi-Circular Gauge Dial
+   ============================================================ */
+.gauge-arc {
+  fill: none;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.gauge-track {
+  stroke: var(--nexa-border-strong);
+}
+
+.gauge-fill {
+  stroke: var(--nexa-accent);
+  filter: drop-shadow(0 0 6px var(--nexa-accent-glow));
+}
+
+.gauge-text {
+  fill: var(--nexa-accent);
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  text-anchor: middle;
+}
+
+.gauge-sub {
+  fill: var(--nexa-text-muted);
+  font-family: 'Inter', sans-serif;
+  font-weight: 500;
+  font-size: 11px;
+  text-anchor: middle;
+}
+
+/* ============================================================
+   Glow & Pulse Animations
+   ============================================================ */
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+@keyframes gauge-fill-in {
+  from { stroke-dashoffset: 283; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-in {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.animate-gauge-fill {
+  animation: gauge-fill-in 1.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.4s ease-out both;
+}
+
+.animate-slide-in {
+  animation: slide-in 180ms ease-out;
+}
+
+/* ============================================================
+   Nexa Card Hover Effect
+   ============================================================ */
+.nexa-card {
+  background: var(--nexa-card);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--nexa-border);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.nexa-card:hover {
+  border-color: var(--nexa-border-strong);
+}
+
+/* Table row amber hover accent */
+.nexa-row-hover {
+  transition: background 0.15s ease, border-color 0.15s ease;
+  border-left: 2px solid transparent;
+}
+
+.nexa-row-hover:hover {
+  background: var(--nexa-card-hover);
+  border-left-color: var(--nexa-accent);
+}
+
+/* ============================================================
+   Scrollbar Styling
+   ============================================================ */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--nexa-border-strong);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--nexa-text-muted);
+}
