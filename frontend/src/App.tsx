@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { motion } from 'framer-motion';
 import { Bell, Shield, Sun, Moon, CheckCircle2 } from 'lucide-react';
 import Sidebar from './components/Sidebar';
 import LeadTable from './components/LeadTable';
@@ -75,6 +76,22 @@ export default function App() {
       maximumFractionDigits: 0
     }).format(estimatedVal); 
   }, [leads]);
+
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.1,
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0, scale: 0.95 },
+    show: { y: 0, opacity: 1, scale: 1, transition: { type: 'spring', stiffness: 200, damping: 20 } }
+  };
 
   return (
     <div className="relative flex flex-col h-screen bg-nexa-bg">
@@ -155,9 +172,14 @@ export default function App() {
           ) : (
             <>
               {/* ===== KPI Ribbon row ===== */}
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 w-full flex-shrink-0">
+              <motion.div 
+                className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 w-full flex-shrink-0"
+                variants={containerVariants}
+                initial="hidden"
+                animate="show"
+              >
                 {/* Card 1: Total automated sweeps/scans processed */}
-                <div className="nexa-card p-4 flex flex-col justify-between h-24 relative overflow-hidden">
+                <motion.div variants={itemVariants} className="nexa-card p-4 flex flex-col justify-between h-24 relative overflow-hidden">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">
                     Automated Sweeps
                   </span>
@@ -169,10 +191,10 @@ export default function App() {
                       ● Active checks
                     </span>
                   </div>
-                </div>
+                </motion.div>
 
                 {/* Card 2: Strong ICP matches found */}
-                <div className="nexa-card p-4 flex flex-col justify-between h-24 relative overflow-hidden">
+                <motion.div variants={itemVariants} className="nexa-card p-4 flex flex-col justify-between h-24 relative overflow-hidden">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">
                     Strong & Partial Targets
                   </span>
@@ -184,10 +206,10 @@ export default function App() {
                       Match verified
                     </span>
                   </div>
-                </div>
+                </motion.div>
 
                 {/* Card 3: AI Confidence Gauge Card (Interactive row selection) */}
-                <div className="nexa-card p-2.5 px-4 flex items-center justify-between h-24 relative overflow-hidden">
+                <motion.div variants={itemVariants} className="nexa-card p-2.5 px-4 flex items-center justify-between h-24 relative overflow-hidden">
                   <div className="flex flex-col justify-between h-full py-0.5 min-w-0 flex-1">
                     <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">
                       AI Confidence
@@ -202,10 +224,10 @@ export default function App() {
                   <div className="w-20 h-20 flex items-center justify-center flex-shrink-0">
                     <ConfidenceGauge verified={activeConfidence} total={100} noCard={true} />
                   </div>
-                </div>
+                </motion.div>
 
                 {/* Card 4: Untapped pipeline revenue estimation */}
-                <div className="nexa-card p-4 flex flex-col justify-between h-24 relative overflow-hidden">
+                <motion.div variants={itemVariants} className="nexa-card p-4 flex flex-col justify-between h-24 relative overflow-hidden">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">
                     Pipeline Value
                   </span>
@@ -215,11 +237,17 @@ export default function App() {
                   <span className="text-xs text-zinc-500 font-mono">
                     Est. Contract value
                   </span>
-                </div>
-              </div>
+                </motion.div>
+              </motion.div>
 
               {/* Lead Intelligence Grid */}
-              <LeadTable
+              <motion.div 
+                className="flex flex-col flex-1 min-h-0"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.4, duration: 0.5 }}
+              >
+                <LeadTable
                 leads={leads}
                 selectedLeadId={selectedLeadId}
                 onSelectLead={setSelectedLeadId}
@@ -229,6 +257,7 @@ export default function App() {
                   setLeads(leads.filter((l) => l.id !== id));
                 }}
               />
+              </motion.div>
             </>
           )}
         </main>

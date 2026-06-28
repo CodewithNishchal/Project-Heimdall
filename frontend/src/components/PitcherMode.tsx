@@ -1,5 +1,6 @@
 import { Clipboard, Loader2, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import { fetchPitcherMode, type PitcherModeResponse } from '../lib/api';
 
 interface PitcherModeProps {
@@ -43,7 +44,12 @@ export default function PitcherMode({ id, company_name, onClose }: PitcherModePr
   }, [id, company_name]);
 
   return (
-    <div className="fixed inset-y-0 right-0 z-50 flex w-full animate-slide-in flex-col border-l border-nexa-border bg-[#0a0a0f]/70 backdrop-blur-2xl p-6 shadow-2xl sm:w-[460px]">
+    <motion.div 
+      initial={{ opacity: 0, x: '100%' }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: '100%' }}
+      className="fixed inset-y-0 right-0 z-50 flex w-full flex-col border-l border-nexa-border bg-[#0a0a0f]/70 backdrop-blur-2xl p-6 shadow-2xl sm:w-[460px]"
+    >
       {/* Header */}
       <div className="flex items-center justify-between border-b border-nexa-border pb-4">
         <div>
@@ -122,6 +128,6 @@ export default function PitcherMode({ id, company_name, onClose }: PitcherModePr
           Copy Outreach Template
         </button>
       )}
-    </div>
+    </motion.div>
   );
 }
