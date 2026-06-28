@@ -185,12 +185,14 @@ async def run_pipeline_for_company(
         conf_label = "Low Trust"
         conf_color = "rose"
 
-    # Skip failed/empty records
+    # Handle failed/empty records gracefully
     if total_signals == 0 or "API Error" in scored_data.get("ai_verdict", ""):
         logger.info(
-            f"Skipping {company_name} because retrieval failed or yielded 0 signals."
+            f"Zero signals found for {company_name}. Persisting with 0 score."
         )
-        return {"status": "error", "reason": "failed_retrieval_or_no_signals"}
+        scored_data["ai_verdict"] = "No recent public signals detected for this target."
+        scored_data["intent_score"] = 0
+        scored_data["icp_fit"] = "Poor"
 
     # Phase 4: Contact Extraction (real, not mocked)
     contacts = extract_contacts(domain, scored_data.get("company_name", company_name))
