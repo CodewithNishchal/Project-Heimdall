@@ -12,6 +12,7 @@ dist
 dist-ssr
 *.local
 .env
+test_serper.py
 
 # Editor directories and files
 .vscode/*
