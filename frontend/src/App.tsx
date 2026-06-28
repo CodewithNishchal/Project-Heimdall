@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, Variants } from 'framer-motion';
 import { Bell, Shield, Sun, Moon, CheckCircle2 } from 'lucide-react';
 import Sidebar from './components/Sidebar';
 import LeadTable from './components/LeadTable';
@@ -77,7 +77,7 @@ export default function App() {
     }).format(estimatedVal);
   }, [leads]);
 
-  const containerVariants = {
+  const containerVariants: Variants = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
@@ -88,7 +88,7 @@ export default function App() {
     }
   };
 
-  const itemVariants = {
+  const itemVariants: Variants = {
     hidden: { y: 20, opacity: 0, scale: 0.95 },
     show: { y: 0, opacity: 1, scale: 1, transition: { type: 'spring', stiffness: 200, damping: 20 } }
   };

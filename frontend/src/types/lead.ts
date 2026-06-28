@@ -7,7 +7,7 @@ export type SignalType =
 
 export type LeadTier = 'High' | 'Medium' | 'Low';
 export type ICPFit = 'Strong' | 'Partial' | 'Poor';
-export type LeadBadge = 'new_today' | 'score_up' | 'score_down' | 'signal_added';
+export type LeadBadge = 'new_today' | 'score_up' | 'score_down' | 'signal_added' | 'filtered';
 
 export interface ExtractedSignal {
   signal_type: SignalType;
