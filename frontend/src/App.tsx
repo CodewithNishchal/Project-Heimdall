@@ -49,7 +49,7 @@ export default function App() {
 
   // Compute KPI values
   const totalScans = leads.length;
-  
+
   const strongICPCount = useMemo(() => {
     return leads.filter((l) => l.icp_fit === 'Strong' || l.icp_fit === 'Partial').length;
   }, [leads]);
@@ -74,7 +74,7 @@ export default function App() {
       style: 'currency',
       currency: 'USD',
       maximumFractionDigits: 0
-    }).format(estimatedVal); 
+    }).format(estimatedVal);
   }, [leads]);
 
   const containerVariants = {
@@ -99,7 +99,7 @@ export default function App() {
       <div className="nexa-flare" />
 
       {/* ===== Top Header Bar ===== */}
-      <div className="relative z-10 px-10 pt-6 pb-2">
+      <div className="relative z-10 p-4 pb-1">
         <header className="nexa-card flex items-center justify-between px-5 py-3">
           <div className="flex items-center gap-4">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-amber-600 to-amber-400 text-white shadow-[0_0_15px_rgba(232,164,58,0.4)]">
@@ -109,7 +109,7 @@ export default function App() {
               Heimdall
             </h1>
           </div>
-          
+
           <div className="flex items-center gap-4">
             {/* Connection Badge */}
             {status === 'loading' && (
@@ -127,7 +127,7 @@ export default function App() {
                 ✕ Disconnected
               </span>
             )}
-            
+
             {/* Bell Icon */}
             <button
               type="button"
@@ -136,7 +136,7 @@ export default function App() {
               <div className="absolute right-2.5 top-2.5 h-1.5 w-1.5 rounded-full bg-[var(--nexa-accent)] shadow-[0_0_6px_var(--nexa-accent)]" />
               <Bell size={18} aria-hidden="true" />
             </button>
-            
+
             {/* Theme Toggle */}
             <div className="flex items-center gap-1 rounded-xl border border-white/5 bg-white/5 p-1">
               <button
@@ -172,7 +172,7 @@ export default function App() {
           ) : (
             <>
               {/* ===== KPI Ribbon row ===== */}
-              <motion.div 
+              <motion.div
                 className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 w-full flex-shrink-0"
                 variants={containerVariants}
                 initial="hidden"
@@ -241,22 +241,22 @@ export default function App() {
               </motion.div>
 
               {/* Lead Intelligence Grid */}
-              <motion.div 
+              <motion.div
                 className="flex flex-col flex-1 min-h-0"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4, duration: 0.5 }}
               >
                 <LeadTable
-                leads={leads}
-                selectedLeadId={selectedLeadId}
-                onSelectLead={setSelectedLeadId}
-                onLeadIngested={(newLead) => setLeads([newLead, ...leads])}
-                onLeadDeleted={(id) => {
-                  if (selectedLeadId === id) setSelectedLeadId(null);
-                  setLeads(leads.filter((l) => l.id !== id));
-                }}
-              />
+                  leads={leads}
+                  selectedLeadId={selectedLeadId}
+                  onSelectLead={setSelectedLeadId}
+                  onLeadIngested={(newLead) => setLeads([newLead, ...leads])}
+                  onLeadDeleted={(id) => {
+                    if (selectedLeadId === id) setSelectedLeadId(null);
+                    setLeads(leads.filter((l) => l.id !== id));
+                  }}
+                />
               </motion.div>
             </>
           )}
