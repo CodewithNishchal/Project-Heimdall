@@ -57,3 +57,9 @@ export interface PipelineStatusResponse {
 export function fetchPipelineStatus(): Promise<PipelineStatusResponse> {
   return requestJson<PipelineStatusResponse>('/api/pipeline/status');
 }
+
+export function runPipeline(): Promise<{ message: string; timestamp: string }> {
+  return requestJson<{ message: string; timestamp: string }>('/api/pipeline/run', {
+    method: 'POST',
+  });
+}

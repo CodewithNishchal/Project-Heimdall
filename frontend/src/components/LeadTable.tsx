@@ -5,7 +5,7 @@ import ConfidenceMeter from './ConfidenceMeter';
 import PitcherMode from './PitcherMode';
 import ScoreBreakdown from './ScoreBreakdown';
 import HackerScanAnimation from './HackerScanAnimation';
-import { ingestLead, deleteLead } from '../lib/api';
+import { ingestLead, deleteLead, runPipeline } from '../lib/api';
 
 interface LeadTableProps {
   leads: LeadDetailResponse[];
@@ -57,7 +57,21 @@ export default function LeadTable({
   const [selectedTier, setSelectedTier] = useState<LeadTier | 'ALL'>('ALL');
   const [pitcherLead, setPitcherLead] = useState<LeadDetailResponse | null>(null);
   const [isScanning, setIsScanning] = useState(false);
+  const [isPipelineRunning, setIsPipelineRunning] = useState(false);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+
+  const handleRunPipeline = async () => {
+    setIsPipelineRunning(true);
+    try {
+      await runPipeline();
+      alert('Discovery Pipeline Triggered! It will find 2 companies and add them to the database. Refresh in ~30s.');
+    } catch (e) {
+      console.error('Pipeline failed', e);
+      alert('Failed to run pipeline.');
+    } finally {
+      setIsPipelineRunning(false);
+    }
+  };
 
   const handleScan = async () => {
     if (!searchTerm.trim()) return;
@@ -129,19 +143,20 @@ export default function LeadTable({
             />
           </div>
           <button
-            className="flex h-[32px] items-center gap-2 whitespace-nowrap rounded-xl border border-white/5 bg-white/5 px-4 text-xs text-zinc-300 transition hover:bg-white/10 hover:text-zinc-100"
-            type="button"
-          >
-            <Filter size={14} aria-hidden="true" />
-            Filter
-          </button>
-          <button
             className="flex h-[32px] items-center gap-2 whitespace-nowrap rounded-lg border border-[var(--nexa-accent)]/30 bg-[var(--nexa-accent-dim)] px-4 text-xs font-semibold text-[var(--nexa-accent)] transition hover:bg-[var(--nexa-accent-glow)] disabled:opacity-50"
             onClick={handleScan}
             disabled={isScanning || !searchTerm.trim()}
           >
             {isScanning ? <Loader2 size={14} className="animate-spin" /> : null}
-            Scan
+            Scan Company
+          </button>
+          <button
+            className="flex h-[32px] items-center gap-2 whitespace-nowrap rounded-lg border border-emerald-500/30 bg-[var(--nexa-emerald-dim)] px-4 text-xs font-semibold text-emerald-400 transition hover:bg-emerald-500/20 disabled:opacity-50"
+            onClick={handleRunPipeline}
+            disabled={isPipelineRunning}
+          >
+            {isPipelineRunning ? <Loader2 size={14} className="animate-spin" /> : null}
+            Run Pipeline
           </button>
         </div>
         <div className="flex flex-wrap gap-1.5">
@@ -393,7 +408,7 @@ export default function LeadTable({
                           </div>
                           <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
                             <span className="rounded-full bg-zinc-900/90 px-3 py-1.5 text-xs font-medium text-zinc-300 shadow-xl backdrop-blur-md border border-white/5">
-                              Will be Updated soon, test
+                              Pending enrichment
                             </span>
                           </div>
                         </div>
@@ -417,7 +432,7 @@ export default function LeadTable({
                       type="button"
                       onClick={async () => {
                         try {
-                          await fetch('https://project-heimdall-production-1b11.up.railway.app/api/pipeline/run', { method: 'POST' });
+                          await runPipeline();
                           alert('Discovery Pipeline Triggered! Data will populate shortly.');
                         } catch (e) {
                           alert('Failed to run pipeline.');
