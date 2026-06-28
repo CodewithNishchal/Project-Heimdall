@@ -99,7 +99,7 @@ export default function App() {
       <div className="nexa-flare" />
 
       {/* ===== Top Header Bar ===== */}
-      <div className="relative z-10 p-4 pb-1">
+      <div className="relative z-10 px-10 pt-6 pb-2">
         <header className="nexa-card flex items-center justify-between px-5 py-3">
           <div className="flex items-center gap-4">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-amber-600 to-amber-400 text-white shadow-[0_0_15px_rgba(232,164,58,0.4)]">
