@@ -209,8 +209,16 @@ export default function LeadTable({
                             {lead.tier}
                           </span>
                         </span>
-                        <span className="font-mono text-[11px] text-zinc-600">
-                          {lead.domain}
+                        <span className="flex items-center gap-2 font-mono text-[11px] text-zinc-600">
+                          <span>{lead.domain}</span>
+                          {lead.employee_count && (
+                            <span 
+                              className="rounded bg-white/5 px-1.5 py-0.5 text-[9px] text-zinc-500" 
+                              title="Employee Count"
+                            >
+                              {lead.employee_count.toLocaleString()} emp
+                            </span>
+                          )}
                         </span>
                       </span>
                     </button>
@@ -231,25 +239,30 @@ export default function LeadTable({
                   </td>
                   {/* Intent Score Bar */}
                   <td className="p-4">
-                    <div className="flex items-center gap-2.5">
-                      <div className="h-2 w-20 overflow-hidden rounded-full bg-nexa-surface">
-                        <div
-                          className="h-full rounded-full transition-all duration-500"
-                          style={{
-                            width: `${lead.intent_score}%`,
-                            background:
-                              lead.intent_score >= 70
-                                ? 'var(--nexa-emerald)'
-                                : lead.intent_score >= 40
-                                  ? 'var(--nexa-accent)'
-                                  : 'var(--nexa-rose)',
-                          }}
-                        />
-                      </div>
-                      <span className="font-mono text-xs font-bold text-zinc-300">
-                        {lead.intent_score}
-                      </span>
-                    </div>
+                    {(() => {
+                      const displayScore = (lead.badge === 'filtered' || lead.ai_verdict?.includes('API Error')) ? 0 : lead.intent_score;
+                      return (
+                        <div className="flex items-center gap-2.5">
+                          <div className="h-2 w-20 overflow-hidden rounded-full bg-nexa-surface">
+                            <div
+                              className="h-full rounded-full transition-all duration-500"
+                              style={{
+                                width: `${displayScore}%`,
+                                background:
+                                  displayScore >= 70
+                                    ? 'var(--nexa-emerald)'
+                                    : displayScore >= 40
+                                      ? 'var(--nexa-accent)'
+                                      : 'var(--nexa-rose)',
+                              }}
+                            />
+                          </div>
+                          <span className="font-mono text-xs font-bold text-zinc-300">
+                            {displayScore}
+                          </span>
+                        </div>
+                      );
+                    })()}
                   </td>
                   {/* ICP Fit */}
                   <td className="p-4">
@@ -319,6 +332,69 @@ export default function LeadTable({
                     <td className="p-0" colSpan={6}>
                       <div className="animate-fade-in space-y-4 border-b border-nexa-border bg-nexa-bg p-5">
                         <ConfidenceMeter confidence={lead.confidence} />
+                        <div className="nexa-card p-4 space-y-3">
+                          <h4 className="text-xs font-semibold uppercase tracking-wider text-zinc-500">Extracted Contacts & Domain</h4>
+                          
+                          {/* Added Domain Link inside expanded view for easy access */}
+                          <div className="mb-3">
+                            <a href={`https://${lead.domain}`} target="_blank" rel="noreferrer" className="text-xs text-[var(--nexa-accent)] hover:underline flex items-center gap-1 w-fit">
+                                {lead.domain} <span className="text-[10px]">↗</span>
+                            </a>
+                          </div>
+
+                          {lead.contacts && lead.contacts.length > 0 ? (
+                            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                              {lead.contacts.map((contact, i) => (
+                                <div key={i} className="flex flex-col gap-1 rounded-lg border border-white/5 bg-white/5 p-3 hover:border-white/10 transition-colors">
+                                  <span className="text-sm font-medium text-zinc-200">{contact.name}</span>
+                                  <span className="text-xs text-zinc-400">{contact.title}</span>
+                                  <a href={`mailto:${contact.email}`} className="text-xs text-[var(--nexa-accent)] hover:underline mt-1">{contact.email}</a>
+                                  <div className="flex items-center gap-2 mt-2">
+                                    <span className={`px-1.5 py-0.5 rounded text-[9px] font-mono uppercase ${
+                                      contact.confidence === 'verified' 
+                                        ? 'bg-[var(--nexa-emerald-dim)] text-emerald-400 border border-emerald-500/20' 
+                                        : 'bg-[var(--nexa-amber-dim)] text-amber-400 border border-amber-500/20'
+                                    }`}>
+                                      {contact.confidence}
+                                    </span>
+                                    {contact.source && (
+                                      <span className="text-[10px] text-zinc-500">{contact.source}</span>
+                                    )}
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="rounded-lg border border-white/5 bg-white/5 p-4 text-center">
+                                <span className="text-xs text-zinc-500">No public contacts found on {lead.domain} during this sweep.</span>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Firmographics Block */}
+                        <div className="nexa-card relative overflow-hidden p-4">
+                          <h4 className="mb-3 text-xs font-semibold uppercase tracking-wider text-zinc-500">Firmographics</h4>
+                          <div className="grid grid-cols-3 gap-4 text-sm opacity-30 blur-[2px]">
+                            <div className="flex flex-col">
+                              <span className="text-[10px] uppercase text-zinc-500">Industry</span>
+                              <span className="font-medium text-zinc-300">{lead.industry || '—'}</span>
+                            </div>
+                            <div className="flex flex-col">
+                              <span className="text-[10px] uppercase text-zinc-500">Employees</span>
+                              <span className="font-medium text-zinc-300">{lead.employee_count ?? '—'}</span>
+                            </div>
+                            <div className="flex flex-col">
+                              <span className="text-[10px] uppercase text-zinc-500">Funding</span>
+                              <span className="font-medium text-zinc-300">{lead.funding_stage || '—'}</span>
+                            </div>
+                          </div>
+                          <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                            <span className="rounded-full bg-zinc-900/90 px-3 py-1.5 text-xs font-medium text-zinc-300 shadow-xl backdrop-blur-md border border-white/5">
+                              Will be Updated soon, test
+                            </span>
+                          </div>
+                        </div>
+
                         <p className="nexa-card p-4 text-sm leading-6 text-zinc-400">
                           {lead.ai_verdict}
                         </p>

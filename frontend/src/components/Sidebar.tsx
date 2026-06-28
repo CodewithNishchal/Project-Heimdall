@@ -8,7 +8,12 @@ const NAV_ITEMS = [
   { label: 'Information', icon: Info, active: false },
 ] as const;
 
-export default function Sidebar() {
+interface SidebarProps {
+  currentView: string;
+  setCurrentView: (view: string) => void;
+}
+
+export default function Sidebar({ currentView, setCurrentView }: SidebarProps) {
   return (
     <aside className="nexa-card hidden w-52 flex-col gap-4 p-4 lg:flex">
       {NAV_ITEMS.map((item) => {
@@ -17,10 +22,11 @@ export default function Sidebar() {
           <button
             key={item.label}
             type="button"
+            onClick={() => setCurrentView(item.label.toLowerCase())}
             className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm font-medium transition ${
-              item.active
-                ? 'bg-white/10 text-white'
-                : 'text-zinc-400 hover:bg-white/5 hover:text-zinc-200'
+              currentView === item.label.toLowerCase()
+                ? 'bg-zinc-800/20 text-[var(--nexa-accent)] border border-black/5 dark:bg-white/10 dark:text-white dark:border-transparent'
+                : 'text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-white/5 dark:hover:text-zinc-200'
             }`}
           >
             <Icon size={17} aria-hidden="true" />

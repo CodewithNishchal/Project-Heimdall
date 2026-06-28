@@ -3,6 +3,9 @@ from pydantic import BaseModel
 from typing import Literal, Optional, List, cast
 from datetime import datetime, timezone
 import uuid
+import logging
+
+logger = logging.getLogger("LeadsRouter")
 
 from backend.pipeline.discovery import fetch_public_intent_signals
 from backend.pipeline.scorer import analyze_lead_with_gemini
@@ -45,6 +48,15 @@ class ConfidenceModel(BaseModel):
     total: int
 
 
+class ContactModel(BaseModel):
+    """Extracted Contact Object"""
+    name: str
+    title: str
+    email: str
+    confidence: str | int
+    source: Optional[str] = None
+
+
 class LeadDetailResponse(BaseModel):
     """
     Master Lead Object — Strict Data Contract Protocol.
@@ -66,10 +78,11 @@ class LeadDetailResponse(BaseModel):
     icp_fit: Literal["Strong", "Partial", "Poor"]
     confidence: ConfidenceModel
     why_now: str
-    badge: Optional[Literal["new_today", "score_up", "score_down", "signal_added"]] = None
+    badge: Optional[Literal["new_today", "score_up", "score_down", "signal_added", "filtered"]] = None
     signals: List[SignalModel]
     ai_verdict: str
     dns_audit: DNSAuditModel
+    contacts: List[ContactModel] = []
     last_updated: str
 
 
@@ -125,8 +138,8 @@ def delete_lead_record(lead_id: str):
 @router.post("/{lead_id}/verdict")
 def get_lazy_loaded_pitch_verdict(lead_id: str):
     """
-    Lazy-loads tailored target email copy on click via Gemini API. (POST to
-    prevent browser/Next.js prefetching from triggering expensive AI calls.)
+    Phase 5.5 — Pitcher Mode. Uses Claude Haiku for high-quality cold email
+    generation. Falls back to Gemini if Claude API key is not configured.
     """
     db = SessionLocal()
     try:
@@ -140,11 +153,78 @@ def get_lazy_loaded_pitch_verdict(lead_id: str):
     finally:
         db.close()
 
+    from backend.config import settings
+
+    # Try Claude Haiku first (better prose quality for cold emails)
+    if settings.CLAUDE_API_KEY:
+        result = _generate_pitch_with_claude(lead, settings.CLAUDE_API_KEY)
+        if result:
+            return {"lead_id": lead_id, **result}
+
+    # Fallback to Gemini
+    result = _generate_pitch_with_gemini(lead)
+    return {"lead_id": lead_id, **result}
+
+
+def _generate_pitch_with_claude(lead: LeadDetailResponse, api_key: str) -> dict | None:
+    """
+    Claude Haiku pitcher — produces noticeably better short-form persuasive copy.
+    Uses regex JSON extraction since Claude doesn't have native JSON mode.
+    """
+    import re
+    import json
+
+    try:
+        import anthropic
+        claude = anthropic.Anthropic(api_key=api_key)
+
+        contact_title = "Founder"
+        if hasattr(lead, "contacts") and lead.contacts:
+            # contacts may be dicts in the payload
+            first_contact = lead.contacts[0]
+            if isinstance(first_contact, dict):
+                contact_title = first_contact.get("title", "Founder")
+
+        prompt = f"""Write a 3-line cold email opener for {lead.company_name}.
+Signal: {lead.why_now}
+Contact title: {contact_title}
+
+CRITICAL INSTRUCTIONS:
+1. The opening line MUST reference the specific signal type as the hook (e.g., if hiring two different roles, call out scaling two sales motions at once). Do NOT use generic openers like 'Saw you're building out the sales team'.
+2. Quantify the specific pain that the signal creates (e.g., 'outside reps take 60-90 days to ramp while the pipeline gap compounds').
+3. Make the value proposition concrete (e.g., 'We help bridge that by standing up outbound coverage from day one').
+
+Tone: direct, no fluff, no 'Hope this finds you well'. Do not add a P.S. that introduces new concepts.
+Return JSON: {{"subject_line": string, "email_body": string}}"""
+
+        response = claude.messages.create(
+            model="claude-haiku-4-5",
+            max_tokens=300,
+            messages=[{"role": "user", "content": prompt}],
+        )
+
+        raw = response.content[0].text
+        # Safe Extraction: Strip any markdown code fences or conversational preambles
+        match = re.search(r'\{.*\}', raw, re.DOTALL)
+        if match:
+            parsed = json.loads(match.group(0))
+            return {
+                "subject_line": parsed.get("subject_line", f"Quick note about {lead.company_name}"),
+                "email_body": parsed.get("email_body", raw),
+            }
+        return {"subject_line": f"Quick note about {lead.company_name}", "email_body": raw}
+    except Exception as e:
+        logger.warning(f"Claude pitcher failed for {lead.company_name}: {e}, falling back to Gemini")
+        return None
+
+
+def _generate_pitch_with_gemini(lead: LeadDetailResponse) -> dict:
+    """Gemini fallback pitcher — used when Claude API key is not set or fails."""
     from google import genai
     from google.genai import types
     from backend.config import settings
-    client = genai.Client(api_key=settings.GEMINI_API_KEY)
 
+    client = genai.Client(api_key=settings.GEMINI_API_KEY)
     signals_text = "\n".join(
         [f"- {s.signal_type}: {s.verbatim_quote}" for s in lead.signals]
     )
@@ -159,15 +239,15 @@ def get_lazy_loaded_pitch_verdict(lead_id: str):
             contents=prompt,
             config=types.GenerateContentConfig(
                 temperature=0.7,
-                system_instruction="You are an expert SDR. Write cold emails."
-            )
+                system_instruction="You are an expert SDR. Write cold emails.",
+            ),
         )
         email_body = response.text
     except Exception:
-        # Fallback if API fails or isn't configured
         sig_quote = (
             lead.signals[-1].verbatim_quote
-            if lead.signals else "recent developments"
+            if lead.signals
+            else "recent developments"
         )
         email_body = (
             f"Hi team,\n\n"
@@ -179,12 +259,8 @@ def get_lazy_loaded_pitch_verdict(lead_id: str):
         )
 
     return {
-        "lead_id": lead_id,
-        "subject_line": (
-            f"Outbound scaling infrastructure blueprint for "
-            f"{lead.company_name}"
-        ),
-        "email_body": email_body
+        "subject_line": f"Outbound scaling infrastructure blueprint for {lead.company_name}",
+        "email_body": email_body,
     }
 
 

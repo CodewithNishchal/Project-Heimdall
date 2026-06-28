@@ -26,6 +26,14 @@ export interface DNSAuditObjective {
   issues: string[];
 }
 
+export interface Contact {
+  name: string;
+  title: string;
+  email: string;
+  confidence: string;
+  source?: string;
+}
+
 export interface ConfidenceEvaluation {
   label: string;
   color: string;
@@ -50,5 +58,6 @@ export interface LeadDetailResponse {
   signals: ExtractedSignal[];
   ai_verdict: string;
   dns_audit: DNSAuditObjective;
+  contacts?: Contact[];
   last_updated: string;
 }

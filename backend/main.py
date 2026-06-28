@@ -33,10 +33,11 @@ from datetime import timedelta
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    start_date = datetime.now(timezone.utc) + timedelta(hours=24)
+    # Delayed start: wait 12 hours before first run
+    start_date = datetime.now(timezone.utc) + timedelta(hours=12)
     scheduler.add_job(
         func=run_pipeline_job,
-        trigger=IntervalTrigger(hours=24, start_date=start_date)
+        trigger=IntervalTrigger(hours=12, start_date=start_date)
     )
     scheduler.start()
     yield

@@ -5,6 +5,7 @@ import LeadTable from './components/LeadTable';
 import ConfidenceGauge from './components/ConfidenceGauge';
 import SignalAnalytics from './components/SignalAnalytics';
 import TrendPanel from './components/TrendPanel';
+import Settings from './components/Settings';
 import SignalDistribution from './components/SignalDistribution';
 import { fetchLeads } from './lib/api';
 import type { LeadDetailResponse } from './types/lead';
@@ -13,6 +14,7 @@ export default function App() {
   const [leads, setLeads] = useState<LeadDetailResponse[]>([]);
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
   const [isDark, setIsDark] = useState(true);
+  const [currentView, setCurrentView] = useState('dashboard');
 
   useEffect(() => {
     if (isDark) {
@@ -52,7 +54,7 @@ export default function App() {
   }, [leads]);
 
   const globalAvgConfidence = useMemo(() => {
-    if (leads.length === 0) return 91;
+    if (leads.length === 0) return 0;
     const sum = leads.reduce((acc, l) => acc + l.confidence.verified, 0);
     return Math.round(sum / leads.length);
   }, [leads]);
@@ -71,7 +73,7 @@ export default function App() {
       style: 'currency',
       currency: 'USD',
       maximumFractionDigits: 0
-    }).format(estimatedVal || 125000); // fallback if 0
+    }).format(estimatedVal); 
   }, [leads]);
 
   return (
@@ -80,8 +82,8 @@ export default function App() {
       <div className="nexa-flare" />
 
       {/* ===== Top Header Bar ===== */}
-      <div className="relative z-10 p-10 pb-1">
-        <header className="nexa-card flex items-center justify-between px-6 py-4">
+      <div className="relative z-10 p-4 pb-1">
+        <header className="nexa-card flex items-center justify-between px-5 py-3">
           <div className="flex items-center gap-4">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-amber-600 to-amber-400 text-white shadow-[0_0_15px_rgba(232,164,58,0.4)]">
               <Shield size={20} strokeWidth={2.5} aria-hidden="true" />
@@ -143,86 +145,92 @@ export default function App() {
       <div className="relative z-10 flex flex-1 gap-6 p-10 pt-1 overflow-hidden">
         {/* Left Column: Sidebar Navigation only */}
         <div className="hidden w-52 flex-col gap-4 lg:flex self-start">
-          <Sidebar />
+          <Sidebar currentView={currentView} setCurrentView={setCurrentView} />
         </div>
 
         {/* Main Workspace (Takes full width now) */}
         <main className="flex min-w-0 flex-1 flex-col gap-6 overflow-hidden">
-          {/* ===== KPI Ribbon row ===== */}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 w-full flex-shrink-0">
-            {/* Card 1: Total automated sweeps/scans processed */}
-            <div className="nexa-card p-4 flex flex-col justify-between h-24 relative overflow-hidden">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">
-                Automated Sweeps
-              </span>
-              <div className="flex items-baseline gap-2 mt-1">
-                <span className="text-3xl font-extrabold text-white">
-                  {totalScans}
-                </span>
-                <span className="text-xs text-emerald-400 font-mono">
-                  ● Active checks
-                </span>
-              </div>
-            </div>
+          {currentView === 'settings' ? (
+            <Settings />
+          ) : (
+            <>
+              {/* ===== KPI Ribbon row ===== */}
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 w-full flex-shrink-0">
+                {/* Card 1: Total automated sweeps/scans processed */}
+                <div className="nexa-card p-4 flex flex-col justify-between h-24 relative overflow-hidden">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">
+                    Automated Sweeps
+                  </span>
+                  <div className="flex items-baseline gap-2 mt-1">
+                    <span className="text-3xl font-extrabold text-white">
+                      {totalScans}
+                    </span>
+                    <span className="text-xs text-emerald-400 font-mono">
+                      ● Active checks
+                    </span>
+                  </div>
+                </div>
 
-            {/* Card 2: Strong ICP matches found */}
-            <div className="nexa-card p-4 flex flex-col justify-between h-24 relative overflow-hidden">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">
-                Strong ICP Targets
-              </span>
-              <div className="flex items-baseline gap-2 mt-1">
-                <span className="text-3xl font-extrabold text-zinc-100">
-                  {strongICPCount}
-                </span>
-                <span className="text-xs text-zinc-500 font-mono">
-                  Match verified
-                </span>
-              </div>
-            </div>
+                {/* Card 2: Strong ICP matches found */}
+                <div className="nexa-card p-4 flex flex-col justify-between h-24 relative overflow-hidden">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">
+                    Strong ICP Targets
+                  </span>
+                  <div className="flex items-baseline gap-2 mt-1">
+                    <span className="text-3xl font-extrabold text-zinc-100">
+                      {strongICPCount}
+                    </span>
+                    <span className="text-xs text-zinc-500 font-mono">
+                      Match verified
+                    </span>
+                  </div>
+                </div>
 
-            {/* Card 3: AI Confidence Gauge Card (Interactive row selection) */}
-            <div className="nexa-card p-2.5 px-4 flex items-center justify-between h-24 relative overflow-hidden">
-              <div className="flex flex-col justify-between h-full py-0.5 min-w-0 flex-1">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">
-                  AI Confidence
-                </span>
-                <span className="text-xs text-zinc-400 font-mono">
-                  {selectedLead ? 'Individual score' : 'Global average'}
-                </span>
-                <span className="text-xs font-semibold text-[var(--nexa-accent)] leading-tight truncate pr-2 mt-0.5" title={selectedLead ? selectedLead.company_name : 'Global Avg'}>
-                  {selectedLead ? selectedLead.company_name : 'Global Avg'}
-                </span>
-              </div>
-              <div className="w-20 h-20 flex items-center justify-center flex-shrink-0">
-                <ConfidenceGauge verified={activeConfidence} total={100} noCard={true} />
-              </div>
-            </div>
+                {/* Card 3: AI Confidence Gauge Card (Interactive row selection) */}
+                <div className="nexa-card p-2.5 px-4 flex items-center justify-between h-24 relative overflow-hidden">
+                  <div className="flex flex-col justify-between h-full py-0.5 min-w-0 flex-1">
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">
+                      AI Confidence
+                    </span>
+                    <span className="text-xs text-zinc-400 font-mono">
+                      {selectedLead ? 'Individual score' : 'Global average'}
+                    </span>
+                    <span className="text-xs font-semibold text-[var(--nexa-accent)] leading-tight truncate pr-2 mt-0.5" title={selectedLead ? selectedLead.company_name : 'Global Avg'}>
+                      {selectedLead ? selectedLead.company_name : 'Global Avg'}
+                    </span>
+                  </div>
+                  <div className="w-20 h-20 flex items-center justify-center flex-shrink-0">
+                    <ConfidenceGauge verified={activeConfidence} total={100} noCard={true} />
+                  </div>
+                </div>
 
-            {/* Card 4: Untapped pipeline revenue estimation */}
-            <div className="nexa-card p-4 flex flex-col justify-between h-24 relative overflow-hidden">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">
-                Pipeline Value
-              </span>
-              <span className="text-3xl font-extrabold text-[var(--nexa-accent)] mt-1">
-                {pipelineRevenue}
-              </span>
-              <span className="text-xs text-zinc-500 font-mono">
-                Est. Contract value
-              </span>
-            </div>
-          </div>
+                {/* Card 4: Untapped pipeline revenue estimation */}
+                <div className="nexa-card p-4 flex flex-col justify-between h-24 relative overflow-hidden">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">
+                    Pipeline Value
+                  </span>
+                  <span className="text-3xl font-extrabold text-[var(--nexa-accent)] mt-1">
+                    {pipelineRevenue}
+                  </span>
+                  <span className="text-xs text-zinc-500 font-mono">
+                    Est. Contract value
+                  </span>
+                </div>
+              </div>
 
-          {/* Lead Intelligence Grid */}
-          <LeadTable
-            leads={leads}
-            selectedLeadId={selectedLeadId}
-            onSelectLead={setSelectedLeadId}
-            onLeadIngested={(newLead) => setLeads([newLead, ...leads])}
-            onLeadDeleted={(id) => {
-              if (selectedLeadId === id) setSelectedLeadId(null);
-              setLeads(leads.filter((l) => l.id !== id));
-            }}
-          />
+              {/* Lead Intelligence Grid */}
+              <LeadTable
+                leads={leads}
+                selectedLeadId={selectedLeadId}
+                onSelectLead={setSelectedLeadId}
+                onLeadIngested={(newLead) => setLeads([newLead, ...leads])}
+                onLeadDeleted={(id) => {
+                  if (selectedLeadId === id) setSelectedLeadId(null);
+                  setLeads(leads.filter((l) => l.id !== id));
+                }}
+              />
+            </>
+          )}
         </main>
       </div>
     </div>

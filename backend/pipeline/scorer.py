@@ -116,7 +116,8 @@ def process_hybrid_lead_scoring(
         "tier": assigned_tier,
         "icp_fit": icp_fit_label,
         "signals": signals_processed,
-        "ai_verdict": raw_extracted_payload.get("ai_verdict", "")
+        "why_now": raw_extracted_payload.get("why_now", "Intent signals detected"),
+        "ai_verdict": raw_extracted_payload.get("ai_verdict", "Review signals for outreach context.")
     }
 
 
@@ -136,9 +137,8 @@ def analyze_lead_with_gemini(
         f"{cleaned_html}\n"
         "Extract intent signals as JSON with keys: "
         "company_name, intent_score (0-100), "
-        "signals (list of {{signal_type, verbatim_quote, event_date, source_url}}), "
-        "and ai_verdict. "
-        "CRITICAL: For each signal, you MUST extract the exact 'URL:' value from the text block and place it into the 'source_url' key. If no URL is provided, leave it blank."
+        "signals (list of {{signal_type, verbatim_quote, source_url, event_date}}), "
+        "and ai_verdict."
     )
 
     try:
@@ -152,15 +152,16 @@ def analyze_lead_with_gemini(
             )
         )
         raw_payload = json.loads(response.text)
-        # Ensure company name is always exactly what was requested (prevents validation errors if LLM omits it)
         raw_payload["company_name"] = company_name
+
     except Exception as e:
         print(f"GEMINI EXCEPTION: {e}")
         raw_payload = {
             "company_name": company_name,
-            "intent_score": 10,
+            "intent_score": 0,
             "signals": [],
-            "ai_verdict": f"API Error: {str(e)}"
+            "why_now": "Signal extraction failed.",
+            "ai_verdict": f"API Error: {str(e)[:50]}"
         }
 
     return process_hybrid_lead_scoring(raw_payload, firmographics, cleaned_html)

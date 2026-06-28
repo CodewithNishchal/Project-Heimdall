@@ -1,3 +1,10 @@
+"""
+Phase 6 — Autonomous Pipeline Scheduler.
+
+Replaces the hardcoded TARGET_COMPANIES list with a call to
+run_batch_pipeline() from the orchestrator, which discovers
+companies autonomously via keyword sweeps.
+"""
 from datetime import datetime, timezone
 import logging
 from typing import Optional
@@ -57,39 +64,27 @@ def calculate_freshness_badge(
     return None, ""
 
 
-TARGET_COMPANIES = ["Vercel", "Stripe", "Supabase"]
-
 def run_pipeline_job():
     """
     Unified background execution runner triggered by the system intervals.
-    Generates telemetry updates and state logs inside local database tables.
+    Now calls run_batch_pipeline() for autonomous company discovery
+    instead of iterating a hardcoded company list.
     """
     logger.info(
-        f"Initiating background lead ingestion sweep at "
+        f"Initiating autonomous background sweep at "
         f"{datetime.now(timezone.utc).isoformat()}"
     )
     db = SessionLocal()
-    success_count = 0
-    errors = False
-    
+
     try:
         import asyncio
-        import time
-        from backend.pipeline.orchestrator import run_pipeline_for_company
-        
-        for idx, company in enumerate(TARGET_COMPANIES):
-            logger.info(f"Processing target: {company}")
-            try:
-                res = asyncio.run(run_pipeline_for_company(company))
-                if res.get("status") == "success":
-                    success_count += 1
-            except Exception as e:
-                logger.error(f"Error orchestrating {company}: {e}")
-                errors = True
-                
-            if idx < len(TARGET_COMPANIES) - 1:
-                logger.info(f"Sleeping 10s to respect rate limits...")
-                time.sleep(10)  # Rate limit delay
+        from backend.pipeline.orchestrator import run_batch_pipeline
+
+        # Run the autonomous batch pipeline
+        result = asyncio.run(run_batch_pipeline())
+
+        success_count = result.get("successes", 0)
+        errors = result.get("had_errors", False)
 
         # Retrieve new total lead count for telemetry
         total_leads = db.execute(text("SELECT COUNT(*) FROM lead_snapshots")).scalar()
@@ -104,11 +99,14 @@ def run_pipeline_job():
                 "t": datetime.now(timezone.utc).isoformat(),
                 "c": total_leads,
                 "s": "Completed Successfully" if not errors else "Completed with Errors",
-                "e": errors
-            }
+                "e": errors,
+            },
         )
         db.commit()
-        logger.info("Automated workflow tracking cycles processed successfully.")
+        logger.info(
+            f"Autonomous sweep complete: {success_count} leads processed, "
+            f"{result.get('companies_processed', 0)} companies discovered."
+        )
     except Exception as e:
         logger.error(
             f"Execution exception inside background engine tracker: {str(e)}"

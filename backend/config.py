@@ -6,7 +6,8 @@ class ICPSettings(BaseModel):
     MIN_EMPLOYEES: int = 10
     MAX_EMPLOYEES: int = 200
     TARGET_INDUSTRIES: list[str] = [
-        "SaaS", "B2B", "Fintech", "Agtech", "Agency", "Software Development"
+        "SaaS", "B2B", "Fintech", "Agtech", "Agency", "Software Development",
+        "Technology", "Software"
     ]
 
 
@@ -17,6 +18,7 @@ class Settings(BaseSettings):
     SERPER_API_KEY: str = "mock_key_if_empty"
     NEWS_API_KEY: str = "mock_key_if_empty"
     GEMINI_API_KEY: str = "mock_key_if_empty"
+    CLAUDE_API_KEY: str = ""
     # ICP Blueprint Constants
     ICP: ICPSettings = ICPSettings()
 
