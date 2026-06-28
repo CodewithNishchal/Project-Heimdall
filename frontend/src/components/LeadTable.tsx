@@ -332,6 +332,9 @@ export default function LeadTable({
                     <td className="p-0" colSpan={6}>
                       <div className="animate-fade-in space-y-4 border-b border-nexa-border bg-nexa-bg p-5">
                         <ConfidenceMeter confidence={lead.confidence} />
+                        <p className="nexa-card p-4 text-sm leading-6 text-zinc-400">
+                          {lead.ai_verdict}
+                        </p>
                         <div className="nexa-card p-4 space-y-3">
                           <h4 className="text-xs font-semibold uppercase tracking-wider text-zinc-500">Extracted Contacts & Domain</h4>
                           
@@ -395,11 +398,8 @@ export default function LeadTable({
                           </div>
                         </div>
 
-                        <p className="nexa-card p-4 text-sm leading-6 text-zinc-400">
-                          {lead.ai_verdict}
-                        </p>
+                        <ScoreBreakdown signals={lead.signals} dns_audit={lead.dns_audit} />
                       </div>
-                      <ScoreBreakdown signals={lead.signals} dns_audit={lead.dns_audit} />
                     </td>
                   </tr>
                 )}
@@ -417,7 +417,7 @@ export default function LeadTable({
                       type="button"
                       onClick={async () => {
                         try {
-                          await fetch('http://localhost:8000/api/pipeline/run', { method: 'POST' });
+                          await fetch('https://project-heimdall-production-1b11.up.railway.app/api/pipeline/run', { method: 'POST' });
                           alert('Discovery Pipeline Triggered! Data will populate shortly.');
                         } catch (e) {
                           alert('Failed to run pipeline.');

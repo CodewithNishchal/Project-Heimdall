@@ -50,7 +50,7 @@ export default function App() {
   const totalScans = leads.length;
   
   const strongICPCount = useMemo(() => {
-    return leads.filter((l) => l.icp_fit === 'Strong').length;
+    return leads.filter((l) => l.icp_fit === 'Strong' || l.icp_fit === 'Partial').length;
   }, [leads]);
 
   const globalAvgConfidence = useMemo(() => {
@@ -174,7 +174,7 @@ export default function App() {
                 {/* Card 2: Strong ICP matches found */}
                 <div className="nexa-card p-4 flex flex-col justify-between h-24 relative overflow-hidden">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">
-                    Strong ICP Targets
+                    Strong & Partial Targets
                   </span>
                   <div className="flex items-baseline gap-2 mt-1">
                     <span className="text-3xl font-extrabold text-zinc-100">

@@ -1,6 +1,6 @@
 import type { LeadDetailResponse } from '../types/lead';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? '';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://project-heimdall-production-1b11.up.railway.app';
 
 export interface PitcherModeResponse {
   lead_id: string;
