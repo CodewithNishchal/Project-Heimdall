@@ -8,6 +8,7 @@ import uuid
 import json
 import logging
 import time
+import asyncio
 from datetime import datetime, timezone
 
 from backend.pipeline.discovery import (
@@ -354,20 +355,20 @@ async def run_batch_pipeline() -> dict:
             logger.error(f"Error fetching signals for {company_name}: {e}")
             company_signals_map[company_name] = []
         # Brief delay to respect rate limits
-        time.sleep(2)
+        await asyncio.sleep(2)
         
     # Sort the pool based on the number of fetched signals descending
     pool.sort(key=lambda x: len(company_signals_map[x[0]]), reverse=True)
     
-    # Select the top 2 companies with the most signals
-    top_2 = pool[:2]
+    # Select the top 5 companies with the most signals
+    top_5 = pool[:5]
 
     success_count = 0
     errors = False
 
-    for idx, (company_name, domain, firmographics) in enumerate(top_2):
+    for idx, (company_name, domain, firmographics) in enumerate(top_5):
         signals = company_signals_map[company_name]
-        logger.info(f"Processing Top [{idx + 1}/{len(top_2)}]: {company_name} with {len(signals)} signals")
+        logger.info(f"Processing Top [{idx + 1}/{len(top_5)}]: {company_name} with {len(signals)} signals")
         try:
             res = await run_pipeline_for_company(
                 company_name, 
@@ -386,7 +387,7 @@ async def run_batch_pipeline() -> dict:
 
         # Rate limit: 10s delay between companies
         logger.info("Sleeping 10s to respect rate limits...")
-        time.sleep(10)
+        await asyncio.sleep(10)
 
     return {
         "companies_processed": len(discovered),
