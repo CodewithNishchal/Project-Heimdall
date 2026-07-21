@@ -302,7 +302,7 @@ export default function LeadTable({
                     <div className="flex justify-end gap-1.5">
                       <button
                         aria-label={`Summarise intent for ${lead.company_name}`}
-                        className="inline-flex items-center justify-center gap-2 rounded-md border border-nexa-border bg-nexa-surface px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-zinc-400 transition hover:border-[var(--nexa-accent)]/50 hover:text-[var(--nexa-accent)]"
+                        className="inline-flex whitespace-nowrap items-center justify-center gap-2 rounded-md border border-nexa-border bg-nexa-surface px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-zinc-400 transition hover:border-[var(--nexa-accent)]/50 hover:text-[var(--nexa-accent)]"
                         onClick={() => setPitcherLead(lead)}
                         type="button"
                       >

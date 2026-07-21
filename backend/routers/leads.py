@@ -160,10 +160,74 @@ def get_lazy_loaded_pitch_verdict(lead_id: str):
         result = _generate_summary_with_grok(lead, settings.GROK_API_KEY)
         if result:
             return {"lead_id": lead_id, **result}
+            
+    # Fallback to Claude API
+    if settings.CLAUDE_API_KEY:
+        result = _generate_summary_with_claude(lead, settings.CLAUDE_API_KEY)
+        if result:
+            return {"lead_id": lead_id, **result}
 
-    # Fallback to Gemini
+    # Final Fallback to Gemini
     result = _generate_pitch_with_gemini(lead)
     return {"lead_id": lead_id, **result}
+
+def _generate_summary_with_claude(lead: LeadDetailResponse, api_key: str) -> dict | None:
+    """
+    Uses Anthropic's Claude API to generate the intent summary.
+    """
+    import json
+    import httpx
+    import re
+
+    try:
+        signals_text = "\n".join([f"- {s.signal_type}: {s.verbatim_quote}" for s in lead.signals]) if lead.signals else "No specific signals extracted."
+        
+        prompt = f"""Generate a point-wise summary of intent signals for {lead.company_name}.
+
+Main AI Verdict: {lead.ai_verdict}
+
+Extracted Intent Signals:
+{signals_text}
+
+CRITICAL INSTRUCTIONS:
+1. Do NOT write an email. Do NOT include greetings (e.g., 'Hi [Name]') or sign-offs (e.g., 'Best').
+2. Create a perfect point-wise brief of all the intent layers fetched from the AI verdict and the extracted signals.
+3. The output MUST be a bulleted summary report designed to be shown to a non-tech user.
+4. Keep it clear, concise, and highly informative.
+5. Your entire response must be a valid JSON object matching exactly this schema: {{"subject_line": "Intent Summary for [Company]", "email_body": "markdown bulleted summary text"}}"""
+
+        response = httpx.post(
+            "https://api.anthropic.com/v1/messages",
+            headers={
+                "x-api-key": api_key,
+                "anthropic-version": "2023-06-01",
+                "content-type": "application/json"
+            },
+            json={
+                "model": "claude-3-haiku-20240307",
+                "max_tokens": 1024,
+                "system": "You are an expert analyst. You always output raw JSON without markdown blocks.",
+                "messages": [
+                    {"role": "user", "content": prompt}
+                ]
+            },
+            timeout=30.0
+        )
+        response.raise_for_status()
+        raw = response.json()["content"][0]["text"]
+        
+        # Safe Extraction
+        match = re.search(r'\{.*\}', raw, re.DOTALL)
+        if match:
+            parsed = json.loads(match.group(0))
+            return {
+                "subject_line": parsed.get("subject_line", f"Intent Summary for {lead.company_name}"),
+                "email_body": parsed.get("email_body", raw),
+                "model_used": "Claude 3 Haiku"
+            }
+    except Exception as e:
+        print(f"[Claude API Error] {e}")
+    return None
 
 
 def _generate_summary_with_grok(lead: LeadDetailResponse, api_key: str) -> dict | None:

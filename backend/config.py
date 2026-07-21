@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     NEWS_API_KEY: str = "mock_key_if_empty"
     GEMINI_API_KEY: str = "mock_key_if_empty"
     GROK_API_KEY: str = ""
+    CLAUDE_API_KEY: str = ""
     SCRAPE_CREATORS_API_KEY: str = ""
     # ICP Blueprint Constants
     ICP: ICPSettings = ICPSettings()
