@@ -208,20 +208,20 @@ export default function App() {
                   </div>
                 </motion.div>
 
-                {/* Card 3: AI Confidence Gauge Card (Interactive row selection) */}
+                {/* Card 3: Contact Reliability Gauge Card (Interactive row selection) */}
                 <motion.div variants={itemVariants} className="nexa-card p-2.5 px-4 flex items-center justify-between h-24 relative overflow-hidden">
                   <div className="flex flex-col justify-between h-full py-0.5 min-w-0 flex-1">
                     <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">
-                      AI Confidence
+                      Contact Reliability
                     </span>
-                    <span className="text-xs text-zinc-400 font-mono">
+                    <span className="text-xs text-zinc-400 font-mono flex flex-col mt-2">
                       {selectedLead ? 'Individual score' : 'Global average'}
-                    </span>
-                    <span className="text-xs font-semibold text-[var(--nexa-accent)] leading-tight truncate pr-2 mt-0.5" title={selectedLead ? selectedLead.company_name : 'Global Avg'}>
-                      {selectedLead ? selectedLead.company_name : 'Global Avg'}
+                      <span className="text-[13px] font-semibold text-[var(--nexa-accent)] leading-tight truncate pr-2 mt-1" title={selectedLead ? selectedLead.company_name : 'Global Avg'}>
+                        {selectedLead ? selectedLead.company_name : 'Global Avg'}
+                      </span>
                     </span>
                   </div>
-                  <div className="w-20 h-20 flex items-center justify-center flex-shrink-0">
+                  <div className="w-20 h-20 flex items-center justify-center flex-shrink-0 -mr-2">
                     <ConfidenceGauge verified={activeConfidence} total={100} noCard={true} />
                   </div>
                 </motion.div>

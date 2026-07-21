@@ -7,6 +7,9 @@ from backend.pipeline.time_decay import calculate_time_decay
 from backend.pipeline.icp_filter import apply_icp_filters
 from backend.validation.quote_validator import validate_quote
 from backend.config import settings
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 # ======================================================================
@@ -51,14 +54,8 @@ def process_hybrid_lead_scoring(
     for sig in raw_extracted_payload.get("signals", []):
         sig_type = sig.get("signal_type")
 
-        # Mapping base architectural lookup evaluations
-        base_weight = 20.0
-        if sig_type == "funding_round":
-            base_weight = 30.0
-        elif sig_type == "sdr_hiring":
-            base_weight = 25.0
-        elif sig_type == "growth_news":
-            base_weight = 15.0
+        # Dynamic base weight (since keywords are custom now, we give a solid baseline)
+        base_weight = 25.0
 
         decay_mult, recency_label = calculate_time_decay(
             sig.get("event_date", "")
@@ -132,13 +129,26 @@ def analyze_lead_with_gemini(
     """
     client = genai.Client(api_key=settings.GEMINI_API_KEY)
 
+    # Load dynamic extraction keywords from intent_config.json
+    try:
+        import os
+        config_path = os.path.join(os.path.dirname(__file__), "..", "intent_config.json")
+        with open(config_path, "r") as f:
+            intent_cfg = json.load(f)
+            keywords = intent_cfg.get("extraction_keywords", ["growth", "hiring", "funding"])
+    except Exception:
+        keywords = ["growth", "hiring", "funding", "expansion"]
+        
+    keywords_str = ", ".join(keywords)
+
     prompt = (
         f"Analyze {company_name} from the following text:\n"
         f"{cleaned_html}\n"
+        f"IMPORTANT: You must calculate the intent_score (0-100) strictly based on how well the text matches these specific target keywords: [{keywords_str}].\n"
         "Extract intent signals as JSON with keys: "
         "company_name, intent_score (0-100), "
         "signals (list of {{signal_type, verbatim_quote, source_url, event_date}}), "
-        "and ai_verdict."
+        "and ai_verdict (must be exactly a 2-line summary using the fetched intent signals and summarizing the articles)."
     )
 
     try:
@@ -151,6 +161,11 @@ def analyze_lead_with_gemini(
                 system_instruction="You are an expert SDR extraction engine. Output raw JSON."
             )
         )
+        
+        # Log token usage
+        token_usage = getattr(response.usage_metadata, 'total_token_count', 'Unknown')
+        logger.info(f"Gemini Token Usage for {company_name}: {token_usage}")
+        
         raw_payload = json.loads(response.text)
         raw_payload["company_name"] = company_name
 

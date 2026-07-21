@@ -29,6 +29,7 @@ async def run_pipeline_for_company(
     company_name: str,
     domain: str | None = None,
     firmographics: dict | None = None,
+    pre_fetched_signals: list[dict] | None = None,
 ) -> dict:
     """
     Main orchestration sequence for Heimdall.
@@ -75,7 +76,10 @@ async def run_pipeline_for_company(
         icp_reason = _get_icp_rejection_reason(firmographics)
         
         # Fetch raw signals to populate evidence log without using Gemini
-        raw_signals = await fetch_public_intent_signals(company_name)
+        if pre_fetched_signals is not None:
+            raw_signals = pre_fetched_signals
+        else:
+            raw_signals = await fetch_public_intent_signals(company_name)
         fallback_signals = []
         import re
         for sig in raw_signals:
@@ -134,7 +138,67 @@ async def run_pipeline_for_company(
         return {"status": "success", "lead": lead_payload}
 
     # Phase 1 (per-company): Discover signals for this specific company
-    raw_signals = await fetch_public_intent_signals(company_name)
+    if pre_fetched_signals is not None:
+        raw_signals = pre_fetched_signals
+    else:
+        raw_signals = await fetch_public_intent_signals(company_name)
+        
+    # Scrape Creators Phase 3: Narrow Validation
+    try:
+        from backend.pipeline.social_discovery import check_scrape_creators_budget, fetch_founder_post
+        from backend.models import ScrapeLedger
+        from datetime import datetime, timezone, timedelta
+        
+        db = SessionLocal()
+        ledger_entry = db.query(ScrapeLedger).filter(
+            ScrapeLedger.company_name == company_name
+        ).first()
+        
+        in_cooldown = False
+        if ledger_entry and ledger_entry.last_scraped_date:
+            # Handle naive datetime from SQLite
+            last_dt = ledger_entry.last_scraped_date
+            if last_dt.tzinfo is None:
+                last_dt = last_dt.replace(tzinfo=timezone.utc)
+            age = datetime.now(timezone.utc) - last_dt
+            if age < timedelta(days=14):
+                in_cooldown = True
+                logger.info(f"Skipping Scrape Creators for {company_name} (14-day cooldown active).")
+                
+        if not in_cooldown:
+            budget = await check_scrape_creators_budget()
+            if budget >= 50:
+                # Serper locate exact post URLs (simulated here)
+                simulated_linkedin_url = f"https://linkedin.com/post/{company_name.lower().replace(' ', '-')}-update"
+                simulated_reddit_url = f"https://reddit.com/r/SaaS/comments/{company_name.lower().replace(' ', '-')}-news"
+                
+                # Scrape Creators post endpoint for both
+                social_post_li = await fetch_founder_post(simulated_linkedin_url)
+                if social_post_li:
+                    raw_signals.append(social_post_li)
+                    
+                social_post_reddit = await fetch_founder_post(simulated_reddit_url)
+                if social_post_reddit:
+                    raw_signals.append(social_post_reddit)
+                
+                # Update ledger (record multiple platforms)
+                if ledger_entry:
+                    ledger_entry.last_scraped_date = datetime.now(timezone.utc)
+                else:
+                    new_ledger = ScrapeLedger(
+                        id=str(uuid.uuid4()),
+                        company_name=company_name,
+                        platform="linkedin,reddit",
+                        last_scraped_date=datetime.now(timezone.utc)
+                    )
+                    db.add(new_ledger)
+                db.commit()
+            else:
+                logger.warning(f"Skipping Scrape Creators for {company_name} due to low budget ({budget}).")
+        db.close()
+    except Exception as e:
+        logger.error(f"Error executing Scrape Creators validation: {e}")
+
     cleaned_html = "\n\n".join([s.get("raw_text", "") for s in raw_signals])
 
     # Phase 5: Scoring (Gemini) — calls analyze_lead_with_gemini which internally
@@ -237,15 +301,80 @@ async def run_batch_pipeline() -> dict:
 
     # Phase 1: Autonomous discovery
     discovered = await run_autonomous_discovery()
-    logger.info(f"Batch pipeline: {len(discovered)} companies to process")
+    
+    # 1.5 Scrape Creators Search Posts discovery
+    try:
+        from backend.pipeline.social_discovery import fetch_social_micro_intent
+        import os, json
+        # Dynamically read allowlist from settings
+        config_path = os.path.join(os.path.dirname(__file__), "..", "intent_config.json")
+        try:
+            with open(config_path, "r") as f:
+                intent_cfg = json.load(f)
+                keywords = intent_cfg.get("extraction_keywords", ["hiring", "series a"])
+        except Exception:
+            keywords = ["hiring", "series a"]
+            
+        social_discovered = await fetch_social_micro_intent(keywords)
+        # Map these to the `discovered` format: (company_name, domain, firmographics)
+        for sig in social_discovered:
+            c_name = sig.get("company_name")
+            if c_name and not any(d[0] == c_name for d in discovered):
+                # Placeholder domain, will be resolved in Phase 2
+                discovered.append((c_name, None, {}))
+    except Exception as e:
+        logger.error(f"Error in social discovery sweep: {e}")
+        
+    logger.info(f"Batch pipeline: {len(discovered)} total companies to process after Search Posts sweep.")
+
+    # Fetch currently active companies from DB to avoid duplicates (hash map)
+    db = SessionLocal()
+    try:
+        active_companies = {lead.company_name for lead in db.query(LeadSnapshot).all()}
+    finally:
+        db.close()
+
+    # Filter out companies already active on the frontend
+    filtered_discovered = [d for d in discovered if d[0] not in active_companies]
+    logger.info(f"Filtered to {len(filtered_discovered)} new companies (skipped {len(discovered) - len(filtered_discovered)} already live).")
+
+    # Limit to top 10 to avoid excessive API usage
+    pool = filtered_discovered[:10]
+    
+    company_signals_map = {}
+    
+    # Fetch signals for all companies in the pool
+    for idx, (company_name, domain, firmographics) in enumerate(pool):
+        logger.info(f"Fetching signals for [{idx + 1}/{len(pool)}]: {company_name}")
+        try:
+            raw_signals = await fetch_public_intent_signals(company_name)
+            filtered_signals = _heuristic_signal_filter(raw_signals)
+            company_signals_map[company_name] = filtered_signals
+        except Exception as e:
+            logger.error(f"Error fetching signals for {company_name}: {e}")
+            company_signals_map[company_name] = []
+        # Brief delay to respect rate limits
+        time.sleep(2)
+        
+    # Sort the pool based on the number of fetched signals descending
+    pool.sort(key=lambda x: len(company_signals_map[x[0]]), reverse=True)
+    
+    # Select the top 2 companies with the most signals
+    top_2 = pool[:2]
 
     success_count = 0
     errors = False
 
-    for idx, (company_name, domain, firmographics) in enumerate(discovered[:2]):
-        logger.info(f"Processing [{idx + 1}/{min(len(discovered), 2)}]: {company_name}")
+    for idx, (company_name, domain, firmographics) in enumerate(top_2):
+        signals = company_signals_map[company_name]
+        logger.info(f"Processing Top [{idx + 1}/{len(top_2)}]: {company_name} with {len(signals)} signals")
         try:
-            res = await run_pipeline_for_company(company_name, domain, firmographics)
+            res = await run_pipeline_for_company(
+                company_name, 
+                domain, 
+                firmographics,
+                pre_fetched_signals=signals
+            )
             if res.get("status") == "success":
                 success_count += 1
                 if res.get("lead", {}).get("ai_verdict", "").startswith("API Error"):
@@ -269,6 +398,49 @@ async def run_batch_pipeline() -> dict:
 # ======================================================================
 # Helpers
 # ======================================================================
+
+def _heuristic_signal_filter(signals: list[dict]) -> list[dict]:
+    """
+    Applies a zero-cost Regex/keyword pass to raw signals to demote generic PR fluff.
+    Only allows signals that contain intent keywords or are purely neutral.
+    """
+    import os
+
+    # 1. Dynamically read allowlist from settings
+    try:
+        config_path = os.path.join(os.path.dirname(__file__), "..", "intent_config.json")
+        with open(config_path, "r") as f:
+            intent_cfg = json.load(f)
+            allowlist = intent_cfg.get("extraction_keywords", [])
+    except Exception:
+        allowlist = []
+        
+    if not allowlist:
+        allowlist = ["hiring", "series a", "series b", "series c", "seed", "raises", "appoints", "expands"]
+        
+    allowlist = [w.lower() for w in allowlist]
+    
+    # 2. Hardcoded denylist for PR fluff
+    denylist = ["stock price", "shares", "earnings", "product launch", "acquires", "partners with"]
+    
+    filtered = []
+    for sig in signals:
+        text = sig.get("raw_text", "").lower()
+        if not text:
+            continue
+            
+        has_allowlist = any(term in text for term in allowlist)
+        has_denylist = any(term in text for term in denylist)
+        
+        if has_allowlist:
+            filtered.append(sig)  # Strong intent, pass immediately
+        elif has_denylist and not has_allowlist:
+            continue  # Fluff article, throw in the trash
+        else:
+            filtered.append(sig)  # Neutral, let Gemini decide
+            
+    return filtered
+
 
 def _get_icp_rejection_reason(firmographics: dict) -> str:
     """Generates a human-readable ICP rejection reason."""

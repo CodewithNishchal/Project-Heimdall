@@ -18,14 +18,16 @@ class Settings(BaseSettings):
     SERPER_API_KEY: str = "mock_key_if_empty"
     NEWS_API_KEY: str = "mock_key_if_empty"
     GEMINI_API_KEY: str = "mock_key_if_empty"
-    CLAUDE_API_KEY: str = ""
+    GROK_API_KEY: str = ""
+    SCRAPE_CREATORS_API_KEY: str = ""
     # ICP Blueprint Constants
     ICP: ICPSettings = ICPSettings()
 
     model_config = SettingsConfigDict(
         env_file=(".env", "backend/.env"),
         env_file_encoding="utf-8",
-        env_nested_delimiter="__"
+        env_nested_delimiter="__",
+        extra="ignore"
     )
 
 

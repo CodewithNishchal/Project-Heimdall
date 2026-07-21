@@ -3,6 +3,21 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { fetchPitcherMode, type PitcherModeResponse } from '../lib/api';
 
+function parseMarkdown(text: string) {
+  return text.split('\n').map((line, idx) => {
+    let formatted = line;
+    // Replace **bold** with <strong>bold</strong>
+    formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong class="text-zinc-200">$1</strong>');
+    
+    if (line.trim().startsWith('* ') || line.trim().startsWith('- ')) {
+      return (
+        <li key={idx} className="mb-2 ml-4 list-disc marker:text-[var(--nexa-accent)]" dangerouslySetInnerHTML={{ __html: formatted.replace(/^[-*]\s/, '') }} />
+      );
+    }
+    return <p key={idx} className="mb-2" dangerouslySetInnerHTML={{ __html: formatted }} />;
+  });
+}
+
 interface PitcherModeProps {
   id: string;
   company_name: string;
@@ -57,14 +72,14 @@ export default function PitcherMode({ id, company_name, onClose }: PitcherModePr
             className="text-sm font-bold uppercase tracking-wide"
             style={{ color: 'var(--nexa-accent)' }}
           >
-            Pitcher Mode
+            Intent Summary
           </h2>
           <p className="mt-1 text-xs text-zinc-500">
-            Custom sequence context for {company_name}
+            Summarised signal context for {company_name}
           </p>
         </div>
         <button
-          aria-label="Close Pitcher Mode"
+          aria-label="Close Intent Summary"
           className="rounded-md border border-nexa-border bg-nexa-card p-2 text-zinc-500 transition hover:border-[var(--nexa-accent)]/40 hover:text-zinc-200"
           onClick={onClose}
           type="button"
@@ -89,7 +104,7 @@ export default function PitcherMode({ id, company_name, onClose }: PitcherModePr
           <div className="space-y-4">
             <label className="block space-y-2">
               <span className="block text-[11px] font-bold uppercase tracking-wider text-zinc-600">
-                Generated Subject Line
+                Summary Title
               </span>
               <input
                 className="w-full rounded-lg border border-nexa-border bg-nexa-card p-3 text-xs text-zinc-300 outline-none"
@@ -98,15 +113,13 @@ export default function PitcherMode({ id, company_name, onClose }: PitcherModePr
                 value={pitchData?.subject_line ?? ''}
               />
             </label>
-            <label className="block space-y-2">
+            <label className="block space-y-2 flex-1 flex flex-col">
               <span className="block text-[11px] font-bold uppercase tracking-wider text-zinc-600">
-                Contextual Body Blueprint
+                Intent Signals Summary
               </span>
-              <textarea
-                className="h-72 w-full resize-none rounded-lg border border-nexa-border bg-nexa-card p-3 font-mono text-xs leading-6 text-zinc-400 outline-none"
-                readOnly
-                value={pitchData?.email_body ?? ''}
-              />
+              <div className="flex-1 min-h-[280px] w-full overflow-y-auto rounded-lg border border-nexa-border bg-nexa-card p-4 text-sm leading-relaxed text-zinc-400 outline-none">
+                {pitchData?.email_body ? parseMarkdown(pitchData.email_body) : ''}
+              </div>
             </label>
           </div>
         )}
@@ -125,7 +138,7 @@ export default function PitcherMode({ id, company_name, onClose }: PitcherModePr
           type="button"
         >
           <Clipboard size={14} aria-hidden="true" />
-          Copy Outreach Template
+          Copy Summary
         </button>
       )}
     </motion.div>

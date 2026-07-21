@@ -1,4 +1,4 @@
-import { ChevronDown, MailPlus, Trash2, Loader2, Search, Filter, Check, X } from 'lucide-react';
+import { ChevronDown, Sparkles, Trash2, Loader2, Search, Filter, Check, X } from 'lucide-react';
 import { Fragment, useMemo, useState } from 'react';
 import type { LeadDetailResponse, LeadTier } from '../types/lead';
 import ConfidenceMeter from './ConfidenceMeter';
@@ -187,7 +187,7 @@ export default function LeadTable({
             <tr className="border-b border-nexa-border text-[10px] font-semibold uppercase tracking-wider text-zinc-600">
               <th className="p-4">Company</th>
               <th className="p-4">Activity Alert</th>
-              <th className="p-4">Intent Score</th>
+              <th className="p-4">Buying Readiness</th>
               <th className="p-4">ICP Fit</th>
               <th className="p-4">Why Now</th>
               <th className="p-4 text-right">Action</th>
@@ -301,12 +301,13 @@ export default function LeadTable({
                   <td className="p-4 text-right">
                     <div className="flex justify-end gap-1.5">
                       <button
-                        aria-label={`Open Pitcher Mode for ${lead.company_name}`}
-                        className="inline-flex items-center justify-center rounded-md border border-nexa-border bg-nexa-surface p-2 text-zinc-400 transition hover:border-[var(--nexa-accent)]/50 hover:text-[var(--nexa-accent)]"
+                        aria-label={`Summarise intent for ${lead.company_name}`}
+                        className="inline-flex items-center justify-center gap-2 rounded-md border border-nexa-border bg-nexa-surface px-3 py-1.5 text-[11px] font-semibold uppercase tracking-wider text-zinc-400 transition hover:border-[var(--nexa-accent)]/50 hover:text-[var(--nexa-accent)]"
                         onClick={() => setPitcherLead(lead)}
                         type="button"
                       >
-                        <MailPlus size={14} aria-hidden="true" />
+                        <Sparkles size={13} aria-hidden="true" />
+                        Summarise intent...
                       </button>
                       
                       {confirmDeleteId === lead.id ? (

@@ -1,6 +1,6 @@
 import type { LeadDetailResponse } from '../types/lead';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://project-heimdall-production-1b11.up.railway.app';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
 
 export interface PitcherModeResponse {
   lead_id: string;
@@ -63,3 +63,23 @@ export function runPipeline(): Promise<{ message: string; timestamp: string }> {
     method: 'POST',
   });
 }
+
+export interface IntentConfig {
+  news_queries: string[];
+  serper_queries: string[];
+  jobspy_search_term: string;
+  news_signals_query_template: string;
+  extraction_keywords: string[];
+}
+
+export function fetchIntents(): Promise<IntentConfig> {
+  return requestJson<IntentConfig>('/api/settings/intents');
+}
+
+export function updateIntents(config: IntentConfig): Promise<IntentConfig> {
+  return requestJson<IntentConfig>('/api/settings/intents', {
+    method: 'POST',
+    body: JSON.stringify(config),
+  });
+}
+

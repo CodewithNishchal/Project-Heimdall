@@ -38,9 +38,11 @@ def discover_companies_from_jobspy() -> set[str]:
     Filters out staffing agencies.
     """
     try:
+        from backend.config_manager import load_intent_config
+        config = load_intent_config()
         jobs_df = scrape_jobs(
             site_name=["linkedin", "indeed"],
-            search_term="Sales Development Representative",
+            search_term=config.get("jobspy_search_term", "Sales Development Representative"),
             location="USA",
             results_wanted=15,
             hours_old=720,
@@ -100,12 +102,14 @@ async def discover_companies_from_news() -> set[str]:
     if not api_key or api_key == "mock_key_if_empty":
         return set()
 
-    queries = [
+    from backend.config_manager import load_intent_config
+    config = load_intent_config()
+    queries = config.get("news_queries", [
         "SaaS startup raises funding",
-        "B2B seed round 2026",
+        "B2B seed round",
         "series A funding startup",
         "startup hiring SDR sales",
-    ]
+    ])
     all_articles: list[dict] = []
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
@@ -140,6 +144,11 @@ async def discover_companies_from_serper() -> set[str]:
     if not api_key or api_key == "mock_key_if_empty":
         return set()
 
+    from backend.config_manager import load_intent_config
+    config = load_intent_config()
+    serper_queries = config.get("serper_queries", ['site:linkedin.com/company "hiring SDR" OR "hiring BDR"'])
+    query = serper_queries[0] if serper_queries else 'site:linkedin.com/company "hiring SDR"'
+
     companies = set()
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
@@ -147,7 +156,7 @@ async def discover_companies_from_serper() -> set[str]:
                 "https://google.serper.dev/search",
                 headers={"X-API-KEY": api_key, "Content-Type": "application/json"},
                 json={
-                    "q": 'site:linkedin.com/company "hiring SDR" OR "hiring BDR"',
+                    "q": query,
                     "num": 10,
                 },
             )
@@ -320,11 +329,15 @@ async def fetch_news_signals(company_name: str) -> list[dict]:
     if not api_key or api_key == "mock_key_if_empty":
         return []
     try:
+        from backend.config_manager import load_intent_config
+        config = load_intent_config()
+        query_template = config.get("news_signals_query_template", '"{company_name}" AND (startup OR funding OR expansion OR hiring)')
+        query_str = query_template.replace("{company_name}", company_name)
         async with httpx.AsyncClient() as client:
             res = await client.get(
                 "https://newsapi.org/v2/everything",
                 params={
-                    "q": f'"{company_name}" AND (startup OR funding OR expansion OR hiring)',
+                    "q": query_str,
                     "apiKey": settings.NEWS_API_KEY,
                     "language": "en",
                     "sortBy": "publishedAt",
@@ -373,9 +386,13 @@ def extract_key_sentences(text: str, max_sentences: int = 2) -> str:
     Takes the first N sentences containing an intent keyword.
     Costs zero tokens. Good enough for funding/hiring signals.
     """
+    from backend.config_manager import load_intent_config
+    config = load_intent_config()
     sentences = text.split(". ")
-    keywords = ["raised", "funding", "hired", "expanded", "launched", "SDR",
-                 "hiring", "growth", "series", "seed", "round"]
+    keywords = config.get("extraction_keywords", [
+        "raised", "funding", "hired", "expanded", "launched", "SDR",
+        "hiring", "growth", "series", "seed", "round"
+    ])
     relevant = [s for s in sentences if any(k.lower() in s.lower() for k in keywords)]
     return ". ".join(relevant[:max_sentences])
 
@@ -386,10 +403,14 @@ async def fetch_job_signals(company_name: str) -> list[dict]:
     across LinkedIn and Indeed.
     """
     try:
+        from backend.config_manager import load_intent_config
+        config = load_intent_config()
+        search_term_base = config.get("jobspy_search_term", "Sales Development Representative")
+        
         jobs_df = await asyncio.to_thread(
             scrape_jobs,
             site_name=["linkedin", "indeed"],
-            search_term=f"Sales Development Representative {company_name}",
+            search_term=f"{search_term_base} {company_name}",
             location="USA",
             results_wanted=3,
             hours_old=720,

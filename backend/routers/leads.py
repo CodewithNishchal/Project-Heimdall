@@ -155,9 +155,9 @@ def get_lazy_loaded_pitch_verdict(lead_id: str):
 
     from backend.config import settings
 
-    # Try Claude Haiku first (better prose quality for cold emails)
-    if settings.CLAUDE_API_KEY:
-        result = _generate_pitch_with_claude(lead, settings.CLAUDE_API_KEY)
+    # Try Grok API first
+    if settings.GROK_API_KEY:
+        result = _generate_summary_with_grok(lead, settings.GROK_API_KEY)
         if result:
             return {"lead_id": lead_id, **result}
 
@@ -166,55 +166,62 @@ def get_lazy_loaded_pitch_verdict(lead_id: str):
     return {"lead_id": lead_id, **result}
 
 
-def _generate_pitch_with_claude(lead: LeadDetailResponse, api_key: str) -> dict | None:
+def _generate_summary_with_grok(lead: LeadDetailResponse, api_key: str) -> dict | None:
     """
-    Claude Haiku pitcher — produces noticeably better short-form persuasive copy.
-    Uses regex JSON extraction since Claude doesn't have native JSON mode.
+    Uses xAI's Grok API to generate the intent summary.
     """
-    import re
     import json
+    import httpx
+    import re
 
     try:
-        import anthropic
-        claude = anthropic.Anthropic(api_key=api_key)
+        signals_text = "\n".join([f"- {s.signal_type}: {s.verbatim_quote}" for s in lead.signals]) if lead.signals else "No specific signals extracted."
+        
+        prompt = f"""Generate a point-wise summary of intent signals for {lead.company_name}.
 
-        contact_title = "Founder"
-        if hasattr(lead, "contacts") and lead.contacts:
-            # contacts may be dicts in the payload
-            first_contact = lead.contacts[0]
-            if isinstance(first_contact, dict):
-                contact_title = first_contact.get("title", "Founder")
+Main AI Verdict: {lead.ai_verdict}
 
-        prompt = f"""Write a 3-line cold email opener for {lead.company_name}.
-Signal: {lead.why_now}
-Contact title: {contact_title}
+Extracted Intent Signals:
+{signals_text}
 
 CRITICAL INSTRUCTIONS:
-1. The opening line MUST reference the specific signal type as the hook (e.g., if hiring two different roles, call out scaling two sales motions at once). Do NOT use generic openers like 'Saw you're building out the sales team'.
-2. Quantify the specific pain that the signal creates (e.g., 'outside reps take 60-90 days to ramp while the pipeline gap compounds').
-3. Make the value proposition concrete (e.g., 'We help bridge that by standing up outbound coverage from day one').
+1. Do NOT write an email. Do NOT include greetings (e.g., 'Hi [Name]') or sign-offs (e.g., 'Best').
+2. Create a perfect point-wise brief of all the intent layers fetched from the AI verdict and the extracted signals.
+3. The output MUST be a bulleted summary report designed to be shown to a non-tech user.
+4. Keep it clear, concise, and highly informative.
 
-Tone: direct, no fluff, no 'Hope this finds you well'. Do not add a P.S. that introduces new concepts.
-Return JSON: {{"subject_line": string, "email_body": string}}"""
+Return JSON: {{"subject_line": "Intent Summary for {lead.company_name}", "email_body": string (the summary formatted in markdown bullet points)}}"""
 
-        response = claude.messages.create(
-            model="claude-haiku-4-5",
-            max_tokens=300,
-            messages=[{"role": "user", "content": prompt}],
+        response = httpx.post(
+            "https://api.x.ai/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json"
+            },
+            json={
+                "model": "grok-beta",
+                "messages": [
+                    {"role": "system", "content": "You are an expert analyst. Always output valid JSON."},
+                    {"role": "user", "content": prompt}
+                ],
+                "response_format": {"type": "json_object"}
+            },
+            timeout=30.0
         )
-
-        raw = response.content[0].text
-        # Safe Extraction: Strip any markdown code fences or conversational preambles
+        response.raise_for_status()
+        raw = response.json()["choices"][0]["message"]["content"]
+        
+        # Safe Extraction
         match = re.search(r'\{.*\}', raw, re.DOTALL)
         if match:
             parsed = json.loads(match.group(0))
             return {
-                "subject_line": parsed.get("subject_line", f"Quick note about {lead.company_name}"),
+                "subject_line": parsed.get("subject_line", f"Intent Summary for {lead.company_name}"),
                 "email_body": parsed.get("email_body", raw),
             }
-        return {"subject_line": f"Quick note about {lead.company_name}", "email_body": raw}
+        return {"subject_line": f"Intent Summary for {lead.company_name}", "email_body": raw}
     except Exception as e:
-        logger.warning(f"Claude pitcher failed for {lead.company_name}: {e}, falling back to Gemini")
+        logger.warning(f"Grok summarizer failed for {lead.company_name}: {e}, falling back to Gemini")
         return None
 
 
@@ -229,8 +236,13 @@ def _generate_pitch_with_gemini(lead: LeadDetailResponse) -> dict:
         [f"- {s.signal_type}: {s.verbatim_quote}" for s in lead.signals]
     )
     prompt = (
-        f"Write a short, punchy cold email to {lead.company_name} "
-        f"referencing these signals:\n{signals_text}"
+        f"Generate a point-wise summary of intent signals for {lead.company_name}.\n\n"
+        f"AI Verdict: {lead.ai_verdict}\n\n"
+        f"Extracted Signals:\n{signals_text}\n\n"
+        f"CRITICAL INSTRUCTIONS:\n"
+        f"1. Do NOT write an email. Do NOT include greetings or sign-offs.\n"
+        f"2. Create a perfect point-wise brief of all intent layers.\n"
+        f"3. Output MUST be markdown bullet points without any conversational filler."
     )
 
     try:
@@ -238,28 +250,20 @@ def _generate_pitch_with_gemini(lead: LeadDetailResponse) -> dict:
             model="gemini-2.5-flash",
             contents=prompt,
             config=types.GenerateContentConfig(
-                temperature=0.7,
-                system_instruction="You are an expert SDR. Write cold emails.",
+                temperature=0.3,
+                system_instruction="You are an expert SDR analyst. Generate objective summary reports.",
             ),
         )
         email_body = response.text
     except Exception:
-        sig_quote = (
-            lead.signals[-1].verbatim_quote
-            if lead.signals
-            else "recent developments"
-        )
         email_body = (
-            f"Hi team,\n\n"
-            f"I noticed that {lead.company_name} is currently focusing "
-            f"heavily on {sig_quote[:40]}...\n\n"
-            f"Building an internal team takes months. We can stand up an "
-            f"outbound machine to support this pivot in 2 weeks.\n\n"
-            f"Let's chat,\nSales Ops"
+            f"### Intent Summary for {lead.company_name}\n\n"
+            f"- **Verdict:** {lead.ai_verdict}\n"
+            f"- **Signals:** {len(lead.signals)} intent signals processed."
         )
 
     return {
-        "subject_line": f"Outbound scaling infrastructure blueprint for {lead.company_name}",
+        "subject_line": f"Intent Summary for {lead.company_name}",
         "email_body": email_body,
     }
 

@@ -67,6 +67,8 @@ app.add_middleware(
 # ======================================================================
 app.include_router(pipeline.router)
 app.include_router(leads.router)
+from backend.routers import settings
+app.include_router(settings.router)
 
 
 # ======================================================================

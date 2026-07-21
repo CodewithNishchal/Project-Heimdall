@@ -37,3 +37,18 @@ class PipelineStatus(Base):
     lead_count_processed = Column(Integer, default=0)
     status = Column(String, nullable=True, default="Idle")
     errors_encountered = Column(Boolean, default=False)
+
+
+class ScrapeLedger(Base):
+    """Tracks previously scraped founders/companies to enforce cooldowns and protect credit budgets."""
+    __tablename__ = "scrape_ledger"
+
+    id = Column(String, primary_key=True, index=True)
+    company_name = Column(String, index=True, nullable=False)
+    founder_handle = Column(String, nullable=True)
+    platform = Column(String, nullable=False)
+    last_scraped_date = Column(
+        DateTime,
+        default=lambda: datetime.now(timezone.utc),
+        onupdate=lambda: datetime.now(timezone.utc)
+    )

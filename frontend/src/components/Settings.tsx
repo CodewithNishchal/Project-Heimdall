@@ -1,6 +1,33 @@
-import { Shield, Key, Bell, Database } from 'lucide-react';
+import { Shield, Key, Bell, Database, Target, Save, Loader2 } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { fetchIntents, updateIntents, type IntentConfig } from '../lib/api';
 
 export default function Settings() {
+  const [intents, setIntents] = useState<IntentConfig | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchIntents().then(data => {
+      setIntents(data);
+      setLoading(false);
+    }).catch(err => {
+      console.error(err);
+      setLoading(false);
+    });
+  }, []);
+
+  const handleSaveIntents = async () => {
+    if (!intents) return;
+    setSaving(true);
+    try {
+      await updateIntents(intents);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setSaving(false);
+    }
+  };
   return (
     <div className="flex-1 overflow-y-auto pr-2">
       <div className="nexa-card p-6">
@@ -61,6 +88,61 @@ export default function Settings() {
               <div className="h-5 w-9 rounded-full bg-[var(--nexa-emerald)] relative cursor-pointer">
                 <div className="absolute right-1 top-0.5 h-4 w-4 rounded-full bg-white shadow" />
               </div>
+            </div>
+          </section>
+          {/* Intent Keywords Section */}
+          <section className="space-y-3">
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-zinc-500 flex items-center gap-2">
+              <Target size={14} /> Intent Signals Configuration
+            </h3>
+            <div className="p-4 rounded-lg border border-white/5 bg-white/5 space-y-4">
+              {loading ? (
+                <div className="flex items-center gap-2 text-zinc-400 text-sm">
+                  <Loader2 className="animate-spin" size={16} /> Loading intents...
+                </div>
+              ) : intents ? (
+                <>
+                  <div>
+                    <label className="block text-xs font-medium text-zinc-400 mb-1">Extraction Keywords (comma separated)</label>
+                    <textarea 
+                      className="w-full bg-black/20 border border-white/10 rounded-md p-2 text-sm text-zinc-200 focus:outline-none focus:border-[var(--nexa-accent)]"
+                      rows={2}
+                      value={intents.extraction_keywords.join(', ')}
+                      onChange={e => setIntents({...intents, extraction_keywords: e.target.value.split(',').map(s => s.trim()).filter(Boolean)})}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-zinc-400 mb-1">News Queries (one per line)</label>
+                    <textarea 
+                      className="w-full bg-black/20 border border-white/10 rounded-md p-2 text-sm text-zinc-200 focus:outline-none focus:border-[var(--nexa-accent)]"
+                      rows={3}
+                      value={intents.news_queries.join('\n')}
+                      onChange={e => setIntents({...intents, news_queries: e.target.value.split('\n').map(s => s.trim()).filter(Boolean)})}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-zinc-400 mb-1">Job Role Search Term (JobSpy)</label>
+                    <input 
+                      type="text"
+                      className="w-full bg-black/20 border border-white/10 rounded-md p-2 text-sm text-zinc-200 focus:outline-none focus:border-[var(--nexa-accent)]"
+                      value={intents.jobspy_search_term || ''}
+                      onChange={e => setIntents({...intents, jobspy_search_term: e.target.value})}
+                    />
+                  </div>
+                  <div className="flex justify-end">
+                    <button 
+                      onClick={handleSaveIntents}
+                      disabled={saving}
+                      className="flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-md bg-[var(--nexa-accent)] text-nexa-bg hover:brightness-110 transition disabled:opacity-50"
+                    >
+                      {saving ? <Loader2 className="animate-spin" size={14} /> : <Save size={14} />}
+                      Save Intents
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <div className="text-zinc-500 text-sm">Failed to load intents.</div>
+              )}
             </div>
           </section>
         </div>

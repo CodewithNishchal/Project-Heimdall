@@ -134,7 +134,7 @@ export default function ConfidenceGauge({ verified, total, noCard }: ConfidenceG
           fontSize="11"
           textAnchor="middle"
         >
-          AI Confidence
+          Contact Reliability
         </text>
       </svg>
     </>
