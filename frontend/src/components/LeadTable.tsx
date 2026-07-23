@@ -64,7 +64,7 @@ export default function LeadTable({
     setIsPipelineRunning(true);
     try {
       await runPipeline();
-      alert('Discovery Pipeline Triggered! It will find 5 companies and add them to the database. Refresh in ~1-2 mins.');
+      fetchLeads();
     } catch (e) {
       console.error('Pipeline failed', e);
       alert('Failed to run pipeline.');
@@ -472,7 +472,7 @@ export default function LeadTable({
                       onClick={async () => {
                         try {
                           await runPipeline();
-                          alert('Discovery Pipeline Triggered! Data will populate shortly.');
+                          fetchLeads();
                         } catch (e) {
                           alert('Failed to run pipeline.');
                         }

@@ -82,8 +82,8 @@ def process_hybrid_lead_scoring(
             "score_contribution": round(contribution, 1),
         })
 
-    # Compute systemic baseline score
-    aggregated_base = (base_ai_score * 0.4) + (running_score * 0.6)
+    # Compute systemic baseline score (Direct Gemini AI score pass-through)
+    aggregated_base = float(base_ai_score)
 
     # Social Intelligence Boost (Segment B protection: 0 ads is a buying trigger for Paid Ads)
     if "Scrape Creators Ad & Social Audit" in raw_source_text:
