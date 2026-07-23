@@ -227,7 +227,6 @@ export default function SocialPostsView() {
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     {getPlatformBadge(post.platform)}
-                    <span className="text-xs text-zinc-400 font-medium">{timeAgo(post.published_at)}</span>
                   </div>
 
                   {/* Company & Handle Header */}
