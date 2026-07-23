@@ -16,6 +16,7 @@ class PipelineStatusResponse(BaseModel):
 
 
 @router.get("/status", response_model=PipelineStatusResponse)
+@router.head("/status")
 def get_pipeline_telemetry(db=Depends(get_db)):
     """Returns background execution metrics to frontend status layouts."""
     try:

@@ -76,7 +76,10 @@ app.include_router(social_posts.router)
 # Direct routes (cumulative from Stages 1-3)
 # ======================================================================
 
+@app.get("/")
+@app.head("/")
 @app.get("/api/health")
+@app.head("/api/health")
 def health_check():
     return {
         "status": "healthy",
