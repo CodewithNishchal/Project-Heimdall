@@ -83,3 +83,25 @@ export function updateIntents(config: IntentConfig): Promise<IntentConfig> {
   });
 }
 
+
+export async function triggerSocialSweep(): Promise<{ status: string; fetched_count: number; saved_new: number }> {
+  return requestJson<{ status: string; fetched_count: number; saved_new: number }>('/api/social-posts/fetch', {
+    method: 'POST',
+  });
+}
+
+import type { SocialPost } from '../types/lead';
+
+export function fetchSocialPosts(platform?: string, keyword?: string): Promise<SocialPost[]> {
+  const params = new URLSearchParams();
+  if (platform && platform !== 'All') params.append('platform', platform);
+  if (keyword) params.append('keyword', keyword);
+  const q = params.toString() ? `?${params.toString()}` : '';
+  return requestJson<SocialPost[]>(`/api/social-posts/${q}`);
+}
+
+export function deleteSocialPost(id: string): Promise<{ status: string }> {
+  return requestJson<{ status: string }>(`/api/social-posts/${id}`, {
+    method: 'DELETE',
+  });
+}

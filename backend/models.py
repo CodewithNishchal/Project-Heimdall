@@ -18,6 +18,10 @@ class LeadSnapshot(Base):
     tier = Column(String, nullable=True)
     icp_fit = Column(String, nullable=True)
     badge = Column(String, nullable=True)
+    social_segment = Column(String, nullable=True)  # Segment A, Segment B, Segment C
+    meta_ads_active = Column(Boolean, default=False)
+    meta_ads_count = Column(Integer, default=0)
+    bio_url = Column(String, nullable=True)
     why_now = Column(Text, nullable=True)
     ai_verdict = Column(Text, nullable=True)
     full_payload = Column(JSON, nullable=True)
@@ -52,3 +56,22 @@ class ScrapeLedger(Base):
         default=lambda: datetime.now(timezone.utc),
         onupdate=lambda: datetime.now(timezone.utc)
     )
+
+class SocialPostSnapshot(Base):
+    """Stores curated social media posts fetched via Scrape Creators API."""
+    __tablename__ = "social_posts"
+
+    id = Column(String, primary_key=True, index=True)
+    platform = Column(String, nullable=False, index=True)
+    author_name = Column(String, nullable=True)
+    author_handle = Column(String, nullable=True)
+    content = Column(Text, nullable=False)
+    post_url = Column(String, nullable=False)
+    keyword_matched = Column(String, nullable=True)
+    company_name = Column(String, nullable=True)
+    published_at = Column(String, nullable=True)
+    created_at = Column(
+        DateTime,
+        default=lambda: datetime.now(timezone.utc)
+    )
+

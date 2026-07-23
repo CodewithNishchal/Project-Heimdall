@@ -186,6 +186,7 @@ export default function LeadTable({
           <thead>
             <tr className="border-b border-nexa-border text-[10px] font-semibold uppercase tracking-wider text-zinc-600">
               <th className="p-4">Company</th>
+              <th className="p-4">Segment</th>
               <th className="p-4">Activity Alert</th>
               <th className="p-4">Buying Readiness</th>
               <th className="p-4">ICP Fit</th>
@@ -238,11 +239,23 @@ export default function LeadTable({
                       </span>
                     </button>
                   </td>
+                  {/* Segment Badge */}
+                  <td className="p-4">
+                    <span className={`inline-flex whitespace-nowrap items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-semibold border ${
+                      lead.social_segment?.includes('Segment A')
+                        ? 'border-purple-500/30 bg-purple-500/10 text-purple-400'
+                        : lead.social_segment?.includes('Segment C')
+                        ? 'border-cyan-500/30 bg-cyan-500/10 text-cyan-400'
+                        : 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400'
+                    }`}>
+                      {lead.social_segment ? lead.social_segment.split(':')[0] : 'Segment B'}
+                    </span>
+                  </td>
                   {/* Activity Alert Badge */}
                   <td className="p-4">
                     {badgeLabel(lead.badge) ? (
                       <span
-                        className={`inline-block rounded border px-2 py-0.5 font-mono text-[11px] ${badgeClass(
+                        className={`inline-block whitespace-nowrap rounded border px-2 py-0.5 font-mono text-[11px] ${badgeClass(
                           lead.badge
                         )}`}
                       >
@@ -282,7 +295,7 @@ export default function LeadTable({
                   {/* ICP Fit */}
                   <td className="p-4">
                     <span
-                      className={`rounded border px-2 py-0.5 text-[11px] font-medium ${icpClass(
+                      className={`inline-block whitespace-nowrap rounded border px-2 py-0.5 text-[11px] font-medium ${icpClass(
                         lead.icp_fit
                       )}`}
                     >
@@ -345,12 +358,37 @@ export default function LeadTable({
                 {/* Expanded Detail Row */}
                 {selectedLeadId === lead.id && (
                   <tr key={`${lead.id}-detail`}>
-                    <td className="p-0" colSpan={6}>
+                    <td className="p-0" colSpan={7}>
                       <div className="animate-fade-in space-y-4 border-b border-nexa-border bg-nexa-bg p-5">
                         <ConfidenceMeter confidence={lead.confidence} />
                         <p className="nexa-card p-4 text-sm leading-6 text-zinc-400">
                           {lead.ai_verdict}
                         </p>
+
+                        {/* Social & Ad Intelligence Card */}
+                        <div className="nexa-card p-4 space-y-3 border-l-2 border-l-[var(--nexa-accent)]">
+                          <h4 className="text-xs font-semibold uppercase tracking-wider text-zinc-400 flex items-center gap-2">
+                            <span>📡</span> Social & Ad Intelligence Signals
+                          </h4>
+                          <div className="grid gap-3 sm:grid-cols-3 text-xs">
+                            <div className="rounded-lg border border-white/5 bg-white/5 p-3">
+                              <div className="text-zinc-500 font-medium mb-1">Outreach Segment</div>
+                              <div className="font-bold text-[var(--nexa-accent)]">{lead.social_segment || 'Segment B: Organic Growth'}</div>
+                            </div>
+                            <div className="rounded-lg border border-white/5 bg-white/5 p-3">
+                              <div className="text-zinc-500 font-medium mb-1">Meta Ads Status</div>
+                              <div className="font-semibold text-zinc-200">
+                                {lead.meta_ads_active ? `🟢 ${lead.meta_ads_count || 0} Active Meta Ads` : '⚪ 0 Active Meta Ads (Paid Ads Pitch)'}
+                              </div>
+                            </div>
+                            <div className="rounded-lg border border-white/5 bg-white/5 p-3">
+                              <div className="text-zinc-500 font-medium mb-1">Social Bio Link</div>
+                              <a href={lead.bio_url || '#'} target="_blank" rel="noreferrer" className="font-mono text-[var(--nexa-accent)] hover:underline truncate block">
+                                {lead.bio_url || `https://${lead.domain}`} ↗
+                              </a>
+                            </div>
+                          </div>
+                        </div>
                         <div className="nexa-card p-4 space-y-3">
                           <h4 className="text-xs font-semibold uppercase tracking-wider text-zinc-500">Extracted Contacts & Domain</h4>
                           

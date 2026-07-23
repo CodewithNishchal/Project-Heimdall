@@ -32,7 +32,7 @@ export default function Settings() {
     <div className="flex-1 overflow-y-auto pr-2">
       <div className="nexa-card p-6">
         <h2 className="text-xl font-bold text-zinc-100 mb-6">Pipeline Settings</h2>
-        
+
         <div className="space-y-6">
           {/* API Keys Section */}
           <section className="space-y-3">
@@ -104,33 +104,51 @@ export default function Settings() {
                 <>
                   <div>
                     <label className="block text-xs font-medium text-zinc-400 mb-1">Extraction Keywords (comma separated)</label>
-                    <textarea 
+                    <textarea
                       className="w-full bg-black/20 border border-white/10 rounded-md p-2 text-sm text-zinc-200 focus:outline-none focus:border-[var(--nexa-accent)]"
                       rows={2}
-                      value={intents.extraction_keywords.join(', ')}
-                      onChange={e => setIntents({...intents, extraction_keywords: e.target.value.split(',').map(s => s.trim()).filter(Boolean)})}
+                      value={(intents.extraction_keywords || []).join(', ')}
+                      onChange={e => setIntents({ ...intents, extraction_keywords: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-zinc-400 mb-1">Social Media Search Keywords (comma separated)</label>
+                    <textarea
+                      className="w-full bg-black/20 border border-white/10 rounded-md p-2 text-sm text-zinc-200 focus:outline-none focus:border-[var(--nexa-accent)]"
+                      rows={2}
+                      value={(intents.social_keywords || []).join(', ')}
+                      onChange={e => setIntents({ ...intents, social_keywords: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })}
                     />
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-zinc-400 mb-1">News Queries (one per line)</label>
-                    <textarea 
+                    <textarea
                       className="w-full bg-black/20 border border-white/10 rounded-md p-2 text-sm text-zinc-200 focus:outline-none focus:border-[var(--nexa-accent)]"
                       rows={3}
                       value={intents.news_queries.join('\n')}
-                      onChange={e => setIntents({...intents, news_queries: e.target.value.split('\n').map(s => s.trim()).filter(Boolean)})}
+                      onChange={e => setIntents({ ...intents, news_queries: e.target.value.split('\n').map(s => s.trim()).filter(Boolean) })}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-medium text-zinc-400 mb-1">Serper Google Search Queries (one per line)</label>
+                    <textarea
+                      className="w-full bg-black/20 border border-white/10 rounded-md p-2 text-sm text-zinc-200 focus:outline-none focus:border-[var(--nexa-accent)]"
+                      rows={2}
+                      value={(intents.serper_queries || []).join('\n')}
+                      onChange={e => setIntents({ ...intents, serper_queries: e.target.value.split('\n').map(s => s.trim()).filter(Boolean) })}
                     />
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-zinc-400 mb-1">Job Role Search Term (JobSpy)</label>
-                    <input 
+                    <input
                       type="text"
                       className="w-full bg-black/20 border border-white/10 rounded-md p-2 text-sm text-zinc-200 focus:outline-none focus:border-[var(--nexa-accent)]"
                       value={intents.jobspy_search_term || ''}
-                      onChange={e => setIntents({...intents, jobspy_search_term: e.target.value})}
+                      onChange={e => setIntents({ ...intents, jobspy_search_term: e.target.value })}
                     />
                   </div>
                   <div className="flex justify-end">
-                    <button 
+                    <button
                       onClick={handleSaveIntents}
                       disabled={saving}
                       className="flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-md bg-[var(--nexa-accent)] text-nexa-bg hover:brightness-110 transition disabled:opacity-50"

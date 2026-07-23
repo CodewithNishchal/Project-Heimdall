@@ -1,8 +1,8 @@
-import { LayoutDashboard, ShieldAlert, BarChart3, Settings, Info } from 'lucide-react';
+import { LayoutDashboard, MessageSquare, BarChart3, Settings, Info } from 'lucide-react';
 
 const NAV_ITEMS = [
   { label: 'Dashboard', icon: LayoutDashboard, active: true },
-  { label: 'Threat Intelligence', icon: ShieldAlert, active: false },
+  { label: 'Social Media Posts', icon: MessageSquare, active: false },
   { label: 'Analytics', icon: BarChart3, active: false },
   { label: 'Settings', icon: Settings, active: false },
   { label: 'Information', icon: Info, active: false },

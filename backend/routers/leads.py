@@ -79,6 +79,10 @@ class LeadDetailResponse(BaseModel):
     confidence: ConfidenceModel
     why_now: str
     badge: Optional[Literal["new_today", "score_up", "score_down", "signal_added", "filtered"]] = None
+    social_segment: Optional[str] = None
+    meta_ads_active: Optional[bool] = False
+    meta_ads_count: Optional[int] = 0
+    bio_url: Optional[str] = None
     signals: List[SignalModel]
     ai_verdict: str
     dns_audit: DNSAuditModel
@@ -92,11 +96,21 @@ class LeadDetailResponse(BaseModel):
 
 @router.get("/", response_model=List[LeadDetailResponse])
 def list_all_leads():
-    """Returns a list of all processed leads from the database."""
+    """Returns a list of all processed leads from the database with bounded confidence scores."""
     db = SessionLocal()
     try:
         leads = db.query(LeadSnapshot).all()
-        return [lead.full_payload for lead in leads if lead.full_payload]
+        results = []
+        for lead in leads:
+            if not lead.full_payload:
+                continue
+            payload = dict(lead.full_payload)
+            if isinstance(payload.get("confidence"), dict):
+                ver = payload["confidence"].get("verified", 0)
+                if ver > 100:
+                    payload["confidence"]["verified"] = min(100, max(0, ver // 40))
+            results.append(payload)
+        return results
     finally:
         db.close()
 
@@ -112,7 +126,12 @@ def get_lead_profile_details(lead_id: str):
                 status_code=404,
                 detail="Requested lead tracking index not found."
             )
-        return lead.full_payload
+        payload = dict(lead.full_payload)
+        if isinstance(payload.get("confidence"), dict):
+            ver = payload["confidence"].get("verified", 0)
+            if ver > 100:
+                payload["confidence"]["verified"] = min(100, max(0, ver // 40))
+        return payload
     finally:
         db.close()
 

@@ -61,7 +61,7 @@ export default function SignalDistribution({ leads }: SignalDistributionProps) {
       .map(([type, count]) => ({
         type,
         count,
-        percentage: Math.round((count / total) * 100) / 10, // show as X.X %
+        percentage: Math.round((count / total) * 100),
       }))
       .sort((a, b) => b.count - a.count);
   }, [leads]);

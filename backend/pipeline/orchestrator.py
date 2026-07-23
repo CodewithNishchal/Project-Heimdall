@@ -148,7 +148,7 @@ async def run_pipeline_for_company(
     try:
         from backend.pipeline.social_discovery import check_scrape_creators_budget, fetch_founder_post
         from backend.models import ScrapeLedger
-        from datetime import datetime, timezone, timedelta
+        from datetime import timedelta
         
         db = SessionLocal()
         ledger_entry = db.query(ScrapeLedger).filter(
@@ -339,8 +339,8 @@ async def run_batch_pipeline() -> dict:
     filtered_discovered = [d for d in discovered if d[0] not in active_companies]
     logger.info(f"Filtered to {len(filtered_discovered)} new companies (skipped {len(discovered) - len(filtered_discovered)} already live).")
 
-    # Limit to top 10 to avoid excessive API usage
-    pool = filtered_discovered[:10]
+    # Limit to top 5 candidates to avoid excessive API usage
+    pool = filtered_discovered[:5]
     
     company_signals_map = {}
     
@@ -355,20 +355,20 @@ async def run_batch_pipeline() -> dict:
             logger.error(f"Error fetching signals for {company_name}: {e}")
             company_signals_map[company_name] = []
         # Brief delay to respect rate limits
-        await asyncio.sleep(2)
+        await asyncio.sleep(1)
         
     # Sort the pool based on the number of fetched signals descending
     pool.sort(key=lambda x: len(company_signals_map[x[0]]), reverse=True)
     
-    # Select the top 5 companies with the most signals
-    top_5 = pool[:5]
+    # Select the top 2 companies with the most signals
+    top_2 = pool[:2]
 
     success_count = 0
     errors = False
 
-    for idx, (company_name, domain, firmographics) in enumerate(top_5):
+    for idx, (company_name, domain, firmographics) in enumerate(top_2):
         signals = company_signals_map[company_name]
-        logger.info(f"Processing Top [{idx + 1}/{len(top_5)}]: {company_name} with {len(signals)} signals")
+        logger.info(f"Processing Top [{idx + 1}/{len(top_2)}]: {company_name} with {len(signals)} signals")
         try:
             res = await run_pipeline_for_company(
                 company_name, 

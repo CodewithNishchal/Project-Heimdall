@@ -26,6 +26,27 @@ export interface DNSAuditObjective {
   issues: string[];
 }
 
+export interface IntentConfig {
+  news_queries: string[];
+  serper_queries: string[];
+  jobspy_search_term: string;
+  news_signals_query_template: string;
+  extraction_keywords: string[];
+  social_keywords: string[];
+}
+
+export interface SocialPost {
+  id: string;
+  platform: 'reddit' | 'yelp' | 'x' | 'facebook' | 'instagram' | 'linkedin' | string;
+  author_name: string;
+  author_handle: string;
+  content: string;
+  post_url: string;
+  keyword_matched: string;
+  company_name?: string;
+  published_at: string;
+}
+
 export interface Contact {
   name: string;
   title: string;
@@ -55,6 +76,10 @@ export interface LeadDetailResponse {
   confidence: ConfidenceEvaluation;
   why_now: string;
   badge: LeadBadge | null;
+  social_segment?: string | null;
+  meta_ads_active?: boolean;
+  meta_ads_count?: number;
+  bio_url?: string | null;
   signals: ExtractedSignal[];
   ai_verdict: string;
   dns_audit: DNSAuditObjective;

@@ -7,6 +7,7 @@ import ConfidenceGauge from './components/ConfidenceGauge';
 import SignalAnalytics from './components/SignalAnalytics';
 import TrendPanel from './components/TrendPanel';
 import Settings from './components/Settings';
+import SocialPostsView from './components/SocialPostsView';
 import SignalDistribution from './components/SignalDistribution';
 import { fetchLeads } from './lib/api';
 import type { LeadDetailResponse } from './types/lead';
@@ -99,7 +100,7 @@ export default function App() {
       <div className="nexa-flare" />
 
       {/* ===== Top Header Bar ===== */}
-      <div className="relative z-10 p-2 sm:p-4 pb-1">
+      <div className="relative z-10 p-2 sm:p-4 lg:px-6 lg:pt-4 lg:pb-1 pb-1">
         <header className="nexa-card flex flex-col sm:flex-row items-center justify-between px-4 sm:px-5 py-3 gap-3 sm:gap-0">
           <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-start">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-amber-600 to-amber-400 text-white shadow-[0_0_15px_rgba(232,164,58,0.4)]">
@@ -159,7 +160,7 @@ export default function App() {
       </div>
 
       {/* ===== Main Dashboard Layout ===== */}
-      <div className="relative z-10 flex flex-1 gap-4 sm:gap-6 p-2 sm:p-4 lg:p-10 pt-1 overflow-hidden">
+      <div className="relative z-10 flex flex-1 gap-4 sm:gap-6 p-2 sm:p-4 lg:px-6 lg:pb-6 lg:pt-1 pt-1 overflow-hidden">
         {/* Left Column: Sidebar Navigation only */}
         <div className="hidden w-52 flex-col gap-4 lg:flex self-start">
           <Sidebar currentView={currentView} setCurrentView={setCurrentView} />
@@ -169,6 +170,8 @@ export default function App() {
         <main className="flex min-w-0 flex-1 flex-col gap-6 overflow-hidden">
           {currentView === 'settings' ? (
             <Settings />
+          ) : currentView === 'social media posts' ? (
+            <SocialPostsView />
           ) : (
             <>
               {/* ===== KPI Ribbon row ===== */}

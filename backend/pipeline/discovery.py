@@ -40,32 +40,41 @@ def discover_companies_from_jobspy() -> set[str]:
     try:
         from backend.config_manager import load_intent_config
         config = load_intent_config()
-        jobs_df = scrape_jobs(
-            site_name=["linkedin", "indeed"],
-            search_term=config.get("jobspy_search_term", "Sales Development Representative"),
-            location="USA",
-            results_wanted=15,
-            hours_old=720,
-            country_indeed="USA"
-        )
-        if jobs_df.empty:
-            return set()
+        # Default niche roles if config is missing
+        job_roles = config.get("jobspy_search_term", "Head of Marketing, Growth Lead, E-commerce Manager")
+        if isinstance(job_roles, str):
+            job_roles = [r.strip() for r in job_roles.split(",") if r.strip()]
+        if not job_roles:
+            job_roles = ["Head of Marketing"]
 
         companies = set()
-        for _, row in jobs_df.iterrows():
-            name = str(row.get("company", "")).strip()
-            if not name or name.lower() == "nan":
+        for role in job_roles:
+            logger.info(f"[JobSpy] Sweeping for niche role: {role}")
+            jobs_df = scrape_jobs(
+                site_name=["linkedin", "indeed"],
+                search_term=role,
+                location="USA",
+                results_wanted=10,
+                hours_old=720,
+                country_indeed="USA"
+            )
+            if jobs_df.empty:
                 continue
-            
-            # Sanitize company name
-            clean_name = name.lower().replace(".com", "").replace(".co", "").replace(".io", "").strip().title()
 
-            # Filter staffing agencies
-            if any(bl in clean_name.lower() for bl in STAFFING_BLACKLIST):
-                continue
-            companies.add(clean_name)
+            for _, row in jobs_df.iterrows():
+                name = str(row.get("company", "")).strip()
+                if not name or name.lower() == "nan":
+                    continue
+                
+                # Sanitize company name
+                clean_name = name.lower().replace(".com", "").replace(".co", "").replace(".io", "").strip().title()
 
-        logger.info(f"[JobSpy] Discovered {len(companies)} companies from role-keyword sweep")
+                # Filter staffing agencies
+                if any(bl in clean_name.lower() for bl in STAFFING_BLACKLIST):
+                    continue
+                companies.add(clean_name)
+
+        logger.info(f"[JobSpy] Discovered {len(companies)} companies from niche role sweeps")
         return companies
     except Exception as e:
         logger.error(f"[JobSpy] Discovery sweep failed: {e}")
@@ -147,33 +156,74 @@ async def discover_companies_from_serper() -> set[str]:
     from backend.config_manager import load_intent_config
     config = load_intent_config()
     serper_queries = config.get("serper_queries", ['site:linkedin.com/company "hiring SDR" OR "hiring BDR"'])
-    query = serper_queries[0] if serper_queries else 'site:linkedin.com/company "hiring SDR"'
+    if isinstance(serper_queries, str):
+        serper_queries = [serper_queries]
 
     companies = set()
-    try:
-        async with httpx.AsyncClient(timeout=10.0) as client:
-            res = await client.post(
-                "https://google.serper.dev/search",
-                headers={"X-API-KEY": api_key, "Content-Type": "application/json"},
-                json={
-                    "q": query,
-                    "num": 10,
-                },
-            )
-            data = res.json()
-            for result in data.get("organic", []):
-                title = result.get("title", "")
-                name = (
-                    title.replace("| LinkedIn", "")
-                    .replace("- LinkedIn", "")
-                    .strip()
+    async with httpx.AsyncClient(timeout=10.0) as client:
+        for query in serper_queries:
+            if not query or not query.strip():
+                continue
+            try:
+                res = await client.post(
+                    "https://google.serper.dev/search",
+                    headers={"X-API-KEY": api_key, "Content-Type": "application/json"},
+                    json={
+                        "q": query.strip(),
+                        "num": 10,
+                    },
                 )
-                if name and len(name) > 2:
-                    companies.add(name)
-    except Exception as e:
-        logger.error(f"[Serper] Discovery sweep failed: {e}")
+                data = res.json()
+                for result in data.get("organic", []):
+                    title = result.get("title", "")
+                    name = (
+                        title.replace("| LinkedIn", "")
+                        .replace("- LinkedIn", "")
+                        .strip()
+                    )
+                    if name and len(name) > 2:
+                        companies.add(name)
+            except Exception as e:
+                logger.error(f"[Serper] Discovery sweep failed for query '{query}': {e}")
 
     logger.info(f"[Serper] Discovered {len(companies)} companies from LinkedIn search")
+    return companies
+
+
+async def discover_companies_from_yelp() -> set[str]:
+    """
+    Phase 1 — Yelp discovery sweep via Google Serper.
+    Finds local business and agency prospects listed on Yelp matching high intent signals.
+    """
+    api_key = settings.SERPER_API_KEY
+    if not api_key or api_key == "mock_key_if_empty":
+        return set()
+
+    yelp_queries = [
+        'site:yelp.com/biz "website" OR "redesign" OR "new location" OR "expanding"',
+        'site:yelp.com/biz "under new management" OR "rebrand"'
+    ]
+
+    companies = set()
+    async with httpx.AsyncClient(timeout=10.0) as client:
+        for query in yelp_queries:
+            try:
+                res = await client.post(
+                    "https://google.serper.dev/search",
+                    headers={"X-API-KEY": api_key, "Content-Type": "application/json"},
+                    json={"q": query, "num": 10},
+                )
+                data = res.json()
+                for result in data.get("organic", []):
+                    title = result.get("title", "")
+                    # Strip Yelp suffix: "BUSINESS NAME - City, ST - Yelp"
+                    name = title.split(" - ")[0].replace("- Yelp", "").strip()
+                    if name and len(name) > 2 and not name.lower().startswith("the best"):
+                        companies.add(name)
+            except Exception as e:
+                logger.error(f"[Yelp] Discovery sweep failed for query '{query}': {e}")
+
+    logger.info(f"[Yelp] Discovered {len(companies)} companies from Yelp listings")
     return companies
 
 
@@ -293,15 +343,16 @@ async def run_autonomous_discovery() -> list[tuple[str, str, dict]]:
     """
     from backend.pipeline.filter_funnel import check_recent_cache
 
-    # Run JobSpy in a thread (it's sync), NewsAPI + Serper are async
+    # Run JobSpy in a thread (it's sync), NewsAPI + Serper + Yelp are async
     jobspy_companies = await asyncio.to_thread(discover_companies_from_jobspy)
-    news_companies, serper_companies = await asyncio.gather(
+    news_companies, serper_companies, yelp_companies = await asyncio.gather(
         discover_companies_from_news(),
         discover_companies_from_serper(),
+        discover_companies_from_yelp(),
     )
 
     # Union + dedup
-    all_companies = jobspy_companies | news_companies | serper_companies
+    all_companies = jobspy_companies | news_companies | serper_companies | yelp_companies
     logger.info(f"[Discovery] Total unique companies discovered: {len(all_companies)}")
 
     # Resolve domains and filter cached

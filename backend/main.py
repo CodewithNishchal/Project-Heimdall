@@ -67,8 +67,9 @@ app.add_middleware(
 # ======================================================================
 app.include_router(pipeline.router)
 app.include_router(leads.router)
-from backend.routers import settings
+from backend.routers import settings, social_posts
 app.include_router(settings.router)
+app.include_router(social_posts.router)
 
 
 # ======================================================================

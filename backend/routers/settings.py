@@ -11,6 +11,7 @@ class IntentConfigModel(BaseModel):
     jobspy_search_term: str
     news_signals_query_template: str
     extraction_keywords: List[str]
+    social_keywords: List[str]
 
 @router.get("/intents", response_model=IntentConfigModel)
 def get_intents():

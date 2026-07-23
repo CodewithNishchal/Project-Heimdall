@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     GROK_API_KEY: str = ""
     CLAUDE_API_KEY: str = ""
     SCRAPE_CREATORS_API_KEY: str = ""
+    APIFY_API_KEY: str = ""
     # ICP Blueprint Constants
     ICP: ICPSettings = ICPSettings()
 
