@@ -70,6 +70,7 @@ export interface IntentConfig {
   jobspy_search_term: string;
   news_signals_query_template: string;
   extraction_keywords: string[];
+  social_keywords: string[];
 }
 
 export function fetchIntents(): Promise<IntentConfig> {
