@@ -5,7 +5,7 @@ import ConfidenceMeter from './ConfidenceMeter';
 import PitcherMode from './PitcherMode';
 import ScoreBreakdown from './ScoreBreakdown';
 import HackerScanAnimation from './HackerScanAnimation';
-import { ingestLead, deleteLead, runPipeline } from '../lib/api';
+import { ingestLead, deleteLead, runPipeline, fetchLeads } from '../lib/api';
 
 interface LeadTableProps {
   leads: LeadDetailResponse[];
