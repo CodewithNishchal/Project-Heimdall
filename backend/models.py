@@ -75,3 +75,14 @@ class SocialPostSnapshot(Base):
         default=lambda: datetime.now(timezone.utc)
     )
 
+class ScrapeCache(Base):
+    """Tracks seen post URLs to prevent duplicate LLM classification in future runs."""
+    __tablename__ = "scrape_cache"
+    
+    id = Column(String, primary_key=True, index=True)
+    post_url = Column(String, unique=True, index=True, nullable=False)
+    processed_at = Column(
+        DateTime,
+        default=lambda: datetime.now(timezone.utc)
+    )
+

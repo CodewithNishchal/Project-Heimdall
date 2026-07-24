@@ -1,4 +1,4 @@
-import { Clipboard, Loader2, X } from 'lucide-react';
+import { Check, Clipboard, Loader2, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { fetchPitcherMode, type PitcherModeResponse } from '../lib/api';
@@ -27,6 +27,7 @@ interface PitcherModeProps {
 export default function PitcherMode({ id, company_name, onClose }: PitcherModeProps) {
   const [loading, setLoading] = useState(true);
   const [pitchData, setPitchData] = useState<PitcherModeResponse | null>(null);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -58,13 +59,26 @@ export default function PitcherMode({ id, company_name, onClose }: PitcherModePr
     };
   }, [id, company_name]);
 
+  const handleCopy = async () => {
+    if (!pitchData) return;
+    const textToCopy = `${pitchData.subject_line}\n\n${pitchData.email_body}`;
+    try {
+      await navigator.clipboard.writeText(textToCopy);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    } catch (err) {
+      console.error('Failed to copy summary:', err);
+    }
+  };
+
   return (
     <motion.div 
       initial={{ opacity: 0, x: '100%' }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: '100%' }}
-      className="fixed inset-y-0 right-0 z-50 flex w-full flex-col border-l border-nexa-border bg-[#0a0a0f]/70 backdrop-blur-2xl p-6 shadow-2xl sm:w-[460px]"
+      className="pitcher-mode-drawer fixed inset-y-0 right-0 z-50 flex w-full flex-col border-l border-nexa-border bg-[#0a0a0f]/70 backdrop-blur-2xl p-6 shadow-2xl sm:w-[460px]"
     >
+
       {/* Header */}
       <div className="flex items-center justify-between border-b border-nexa-border pb-4">
         <div>
@@ -128,19 +142,27 @@ export default function PitcherMode({ id, company_name, onClose }: PitcherModePr
       {/* Action Button */}
       {!loading && (
         <button
-          className="flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-xs font-bold text-nexa-bg transition hover:brightness-110"
-          style={{ background: 'var(--nexa-accent)' }}
-          onClick={() =>
-            navigator.clipboard?.writeText(
-              `${pitchData?.subject_line}\n\n${pitchData?.email_body}`
-            )
-          }
+          className={`flex items-center justify-center gap-2 rounded-lg px-4 py-3 text-xs font-bold transition-all shadow-md ${
+            copied ? 'text-white' : 'text-nexa-bg hover:brightness-110'
+          }`}
+          style={{ background: copied ? 'var(--nexa-emerald)' : 'var(--nexa-accent)' }}
+          onClick={handleCopy}
           type="button"
         >
-          <Clipboard size={14} aria-hidden="true" />
-          Copy Summary
+          {copied ? (
+            <>
+              <Check size={16} aria-hidden="true" className="text-white" />
+              <span>Copied to Clipboard!</span>
+            </>
+          ) : (
+            <>
+              <Clipboard size={16} aria-hidden="true" />
+              <span>Copy Summary</span>
+            </>
+          )}
         </button>
       )}
     </motion.div>
   );
 }
+

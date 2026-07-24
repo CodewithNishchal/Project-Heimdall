@@ -117,7 +117,7 @@ export default function ConfidenceGauge({ verified, total, noCard }: ConfidenceG
         <text
           x={cx}
           y={cy - 10}
-          fill="#f0f0f5"
+          fill="var(--nexa-text-primary)"
           fontFamily="Inter, sans-serif"
           fontWeight="800"
           fontSize="36"
@@ -136,6 +136,7 @@ export default function ConfidenceGauge({ verified, total, noCard }: ConfidenceG
         >
           Contact Reliability
         </text>
+
       </svg>
     </>
   );

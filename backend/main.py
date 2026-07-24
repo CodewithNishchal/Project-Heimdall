@@ -1,5 +1,9 @@
+from dotenv import load_dotenv
+load_dotenv("backend/.env")
+
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
+
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from datetime import datetime, timezone
@@ -7,6 +11,7 @@ from contextlib import asynccontextmanager
 from apscheduler.schedulers.background import BackgroundScheduler
 from apscheduler.triggers.interval import IntervalTrigger
 
+from backend.config import settings
 from backend.database import engine, Base, get_db
 from backend import models
 from backend.pipeline.dns_audit import audit_domain_email_infrastructure
@@ -20,7 +25,16 @@ from backend.routers import pipeline, leads
 # ======================================================================
 # Database initialization — creates all ORM tables on startup
 # ======================================================================
-Base.metadata.create_all(bind=engine)
+try:
+    if not settings.DATABASE_URL.startswith("sqlite"):
+        from sqlalchemy import text
+        with engine.connect() as conn:
+            conn.execute(text("CREATE SCHEMA IF NOT EXISTS heimdall;"))
+            conn.commit()
+    Base.metadata.create_all(bind=engine)
+except Exception as e:
+    import logging
+    logging.getLogger("uvicorn").error(f"Database initialization warning: {e}")
 
 
 # ======================================================================

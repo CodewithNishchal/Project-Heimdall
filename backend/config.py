@@ -22,6 +22,8 @@ class Settings(BaseSettings):
     CLAUDE_API_KEY: str = ""
     SCRAPE_CREATORS_API_KEY: str = ""
     APIFY_API_KEY: str = ""
+    EXA_API_KEY: str = ""
+    SCRAPEBADGER_API_KEY: str = ""
     # ICP Blueprint Constants
     ICP: ICPSettings = ICPSettings()
 

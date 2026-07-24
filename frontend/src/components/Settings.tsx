@@ -111,14 +111,25 @@ export default function Settings() {
                       onChange={e => setIntents({ ...intents, extraction_keywords: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })}
                     />
                   </div>
-                  <div>
-                    <label className="block text-xs font-medium text-zinc-400 mb-1">Social Media Search Keywords (comma separated)</label>
-                    <textarea
-                      className="w-full bg-black/20 border border-white/10 rounded-md p-2 text-sm text-zinc-200 focus:outline-none focus:border-[var(--nexa-accent)]"
-                      rows={2}
-                      value={(intents.social_keywords || []).join(', ')}
-                      onChange={e => setIntents({ ...intents, social_keywords: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })}
-                    />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-xs font-medium text-zinc-400 mb-1">Social Triggers (comma separated)</label>
+                      <textarea
+                        className="w-full bg-black/20 border border-white/10 rounded-md p-2 text-sm text-zinc-200 focus:outline-none focus:border-[var(--nexa-accent)]"
+                        rows={2}
+                        value={(intents.social_triggers || []).join(', ')}
+                        onChange={e => setIntents({ ...intents, social_triggers: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })}
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-zinc-400 mb-1">Social Topics (comma separated)</label>
+                      <textarea
+                        className="w-full bg-black/20 border border-white/10 rounded-md p-2 text-sm text-zinc-200 focus:outline-none focus:border-[var(--nexa-accent)]"
+                        rows={2}
+                        value={(intents.social_topics || []).join(', ')}
+                        onChange={e => setIntents({ ...intents, social_topics: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })}
+                      />
+                    </div>
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-zinc-400 mb-1">News Queries (one per line)</label>

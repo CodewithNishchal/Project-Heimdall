@@ -15,7 +15,10 @@ AGENCY_PROMO_DENYLIST = [
     "come to us", "contact us", "our agency", "we are an agency", 
     "we offer", "our services", "dm us", "hire us", "we help brands", 
     "introducing a studio", "take care of your brand", "boost your sales",
-    "our team of experts", "we provide", "book a call"
+    "our team of experts", "we provide", "book a call", "marketing agency based",
+    "full-service agency", "creative agency", "our clients", "we scale",
+    "schedule a call", "link in bio", "specialized agency", "services include",
+    "free audit", "growth agency", "we manage"
 ]
 
 
@@ -94,16 +97,17 @@ async def fetch_social_micro_intent(keywords: list[str]) -> list[dict]:
     # 1. Apify - Twitter (X)
     if settings.APIFY_API_KEY:
         try:
-            async with httpx.AsyncClient(timeout=65.0) as client:
+            async with httpx.AsyncClient(timeout=95.0) as client:
                 for kw in keywords[:2]:
                     strict_kw = f'"{kw}"'
                     payload = {
                         "searchTerms": [strict_kw],
-                        "maxItems": 5
+                        "maxItems": 100,
+                        "sort": "Latest"
                     }
                     url = f"https://api.apify.com/v2/actors/apidojo~tweet-scraper/run-sync-get-dataset-items?token={settings.APIFY_API_KEY}"
                     try:
-                        resp = await client.post(url, json=payload, timeout=60.0)
+                        resp = await client.post(url, json=payload, timeout=90.0)
                         if resp.status_code in (200, 201):
                             data = resp.json()
                             items = data if isinstance(data, list) else data.get("data", [])
@@ -140,71 +144,215 @@ async def fetch_social_micro_intent(keywords: list[str]) -> list[dict]:
         except Exception as e:
             logger.error(f"[Apify Twitter] Live search sweep error: {e}")
 
-    # 2. Google Serper - Reddit, Instagram, Facebook, Yelp, LinkedIn
-    if settings.SERPER_API_KEY and settings.SERPER_API_KEY != "mock_key_if_empty":
+import os
+
+async def fetch_apify_twitter(client: httpx.AsyncClient, search_terms: list[str]) -> list[dict]:
+    if not settings.APIFY_API_KEY:
+        return []
+    url = f"https://api.apify.com/v2/actors/apidojo~tweet-scraper/run-sync-get-dataset-items?token={settings.APIFY_API_KEY}"
+    payload = {
+        "searchTerms": search_terms,
+        "tweetLanguage": "en",
+        "sort": "Latest",
+        "maxItems": 20
+    }
+    try:
+        resp = await client.post(url, json=payload, timeout=90.0)
+        if resp.status_code in (200, 201):
+            data = resp.json()
+            items = data if isinstance(data, list) else data.get("data", [])
+            logger.info(f"[Apify Twitter] Received {len(items)} items")
+            return items
+        else:
+            logger.warning(f"[Apify Twitter] Returned status {resp.status_code}: {resp.text[:100]}")
+    except Exception as e:
+        logger.error(f"[Apify Twitter] Error: {e}")
+    return []
+
+async def fetch_serper_reddit(client: httpx.AsyncClient, query: str) -> list[dict]:
+    if not settings.SERPER_API_KEY:
+        return []
+    url = "https://google.serper.dev/search"
+    payload = {
+        "q": query,
+        "tbs": "qdr:w", # Past week (w2 is often rejected by Google)
+        "num": 20
+    }
+    headers = {
+        "X-API-KEY": settings.SERPER_API_KEY,
+        "Content-Type": "application/json"
+    }
+    try:
+        resp = await client.post(url, json=payload, headers=headers, timeout=30.0)
+        if resp.status_code == 200:
+            data = resp.json()
+            items = data.get("organic", [])
+            logger.info(f"[Serper Reddit] Received {len(items)} items for query '{query[:30]}...'")
+            return items
+        else:
+            logger.error(f"[Serper Reddit] 400 Error. Payload: {payload}, Response: {resp.text}")
+    except Exception as e:
+        logger.error(f"[Serper Reddit] Error: {e}")
+    return []
+async def fetch_scrapebadger_reddit(client: httpx.AsyncClient, query: str) -> list:
+    url = "https://scrapebadger.com/v1/reddit/search/posts"
+    api_key = settings.SCRAPEBADGER_API_KEY
+    
+    headers = {
+        "x-api-key": api_key
+    }
+    for attempt in range(2):
         try:
-            serper_targets = [
-                ("reddit.com", "reddit"),
-                ("instagram.com", "instagram"),
-                ("facebook.com", "facebook"),
-                ("yelp.com", "yelp"),
-                ("linkedin.com", "linkedin")
-            ]
-            async with httpx.AsyncClient(timeout=12.0) as client:
-                headers = {
-                    "X-API-KEY": settings.SERPER_API_KEY,
-                    "Content-Type": "application/json"
-                }
-                for kw in keywords[:2]:
-                    for domain, platform_name in serper_targets:
-                        try:
-                            # Negative keywords to eliminate self-promoting marketing agencies
-                            negatives = '-"come to us" -"our agency" -"we offer" -"our services" -"contact us"'
-                            query_str = f'site:{domain} "{kw}" {negatives}'
-                            serper_url = "https://google.serper.dev/search"
-                            
-                            s_resp = await client.post(
-                                serper_url,
-                                headers=headers,
-                                json={"q": query_str, "num": 5, "tbs": "qdr:w2"},
-                                timeout=10.0
-                            )
-                            if s_resp.status_code == 200:
-                                s_data = s_resp.json()
-                                organic = s_data.get("organic", [])
-                                logger.info(f"[Serper {platform_name}] Received {len(organic)} fresh results for '{kw}'")
-                                for item in organic:
-                                    title = item.get("title", "")
-                                    snippet = item.get("snippet", "")
-                                    combined_text = f"{title} {snippet}".lower()
-
-                                    # Filter out self-promoting agency ads/posts
-                                    if any(promo in combined_text for promo in AGENCY_PROMO_DENYLIST):
-                                        logger.info(f"[Filter] Dropped self-promoting agency post: {title[:30]}")
-                                        continue
-
-                                    link = item.get("link", "")
-                                    handle = f"growth_lead_{random.randint(100,999)}"
-                                    
-                                    # Extract real post date from Google snippet / title / date field
-                                    published_iso = parse_serper_date(item)
-                                    
-                                    results.append({
-                                        "company_name": title[:40] or f"Company {random.randint(100,999)} Team",
-                                        "author_handle": handle,
-                                        "author_name": title[:30] or f"Company {random.randint(100,999)} Team",
-                                        "platform": platform_name,
-                                        "content": snippet[:280] or f"Post matching {kw}",
-                                        "post_url": link,
-                                        "keyword_matched": kw,
-                                        "published_at": published_iso
-                                    })
-                        except Exception as s_err:
-                            logger.warning(f"[Serper {platform_name}] Query '{kw}' failed: {s_err}")
+            resp = await client.get(url, params={"q": query, "limit": 25}, headers=headers)
+            if resp.status_code == 200:
+                data = resp.json()
+                items = data.get("posts", [])
+                logger.info(f"[ScrapeBadger Reddit] Received {len(items)} items for query '{query}'")
+                return items
+            elif resp.status_code in (502, 503, 504) and attempt == 0:
+                logger.warning(f"[ScrapeBadger Reddit] Got {resp.status_code} Bad Gateway. Retrying in 1.5s...")
+                await asyncio.sleep(1.5)
+                continue
+            else:
+                log_msg = resp.text[:150].replace('\n', ' ') if resp.text else ""
+                logger.error(f"[ScrapeBadger Reddit] {resp.status_code} Error: {log_msg}")
         except Exception as e:
-            logger.error(f"[Serper Social] Live search error: {e}")
+            logger.error(f"[ScrapeBadger Reddit] Error: {e}")
+            break
+    return []
 
-    # Deduplicate results by post_url
+async def fetch_scrapebadger_twitter(client: httpx.AsyncClient, query: str) -> list:
+    url = "https://scrapebadger.com/v1/twitter/tweets/advanced_search"
+    api_key = settings.SCRAPEBADGER_API_KEY
+    
+    headers = {
+        "x-api-key": api_key
+    }
+    for attempt in range(2):
+        try:
+            resp = await client.get(
+                url, 
+                params={"query": query, "count": 25}, 
+                headers=headers
+            )
+            if resp.status_code == 200:
+                data = resp.json()
+                items = data.get("tweets") or data.get("data") or data.get("results") or []
+                if isinstance(data, list):
+                    items = data
+                logger.info(f"[ScrapeBadger Twitter] Received {len(items)} items for query '{query}'")
+                return items
+            elif resp.status_code in (502, 503, 504) and attempt == 0:
+                logger.warning(f"[ScrapeBadger Twitter] Got {resp.status_code} Bad Gateway. Retrying in 1.5s...")
+                await asyncio.sleep(1.5)
+                continue
+            else:
+                log_msg = resp.text[:150].replace('\n', ' ') if resp.text else ""
+                logger.error(f"[ScrapeBadger Twitter] {resp.status_code} Error: {log_msg}")
+        except Exception as e:
+            logger.error(f"[ScrapeBadger Twitter] Error: {e}")
+            break
+    return []
+
+async def fetch_social_micro_intent(triggers: list[str], topics: list[str]) -> list[dict]:
+    if not triggers or not topics:
+        return []
+        
+    sentences = []
+    # Build natural sentences like "looking for a marketing agency"
+    for trigger in triggers[:1]: # Limit to 1 trigger * 2 topics = 2 sentences * 2 platforms = 4 requests (Under 5 limit)
+        for topic in topics[:2]: 
+            clean_trig = trigger.strip('\'"')
+            clean_top = topic.strip('\'"')
+            sentences.append(f"{clean_trig} a {clean_top}")
+            sentences.append(f"{clean_trig} {clean_top}")
+            
+    sentences = sentences[:2]
+            
+    results = []
+    
+    async with httpx.AsyncClient(timeout=95.0) as client:
+        sem = asyncio.Semaphore(3)
+        
+        async def fetch_with_sem(fetch_func, query):
+            async with sem:
+                await asyncio.sleep(0.5)
+                return await fetch_func(client, query)
+                
+        # Launch tasks for both Reddit and Twitter
+        tasks = []
+        for sentence in sentences:
+            tasks.append(fetch_with_sem(fetch_scrapebadger_reddit, sentence))
+            tasks.append(fetch_with_sem(fetch_scrapebadger_twitter, sentence))
+            
+        responses = await asyncio.gather(*tasks, return_exceptions=True)
+        
+        thirty_days_ago = datetime.now(timezone.utc) - timedelta(days=30)
+        
+        for idx, response_items in enumerate(responses):
+            if isinstance(response_items, Exception) or not isinstance(response_items, list):
+                continue
+                
+            is_reddit = idx % 2 == 0
+            platform_name = "reddit" if is_reddit else "x"
+                
+            for item in response_items:
+                # Local Timestamp Filter (< 30 days old)
+                created_val = item.get("created_utc") if is_reddit else (item.get("createdAt") or item.get("created_at"))
+                
+                if not created_val:
+                    continue
+                
+                try:
+                    if isinstance(created_val, (int, float)):
+                        post_date = datetime.fromtimestamp(created_val, timezone.utc)
+                    else:
+                        try:
+                            post_date = datetime.strptime(created_val, "%a %b %d %H:%M:%S %z %Y")
+                        except ValueError:
+                            post_date = datetime.fromisoformat(created_val.replace("Z", "+00:00"))
+                except Exception:
+                    post_date = datetime.now(timezone.utc)
+                    
+                if post_date < thirty_days_ago:
+                    continue # Skip posts older than 30 days
+                    
+                if is_reddit:
+                    text = f"{item.get('title', '')} {item.get('selftext', '')}".strip()
+                else:
+                    text = item.get("text") or item.get("full_text") or ""
+                    
+                if not text:
+                    continue
+                    
+                if any(promo in str(text).lower() for promo in AGENCY_PROMO_DENYLIST):
+                    continue
+                
+                if is_reddit:
+                    url_val = item.get("url", "")
+                    author_handle = item.get("author") or "reddit_user"
+                    author_name = item.get("author") or "Reddit User"
+                else:
+                    author_obj = item.get("author", {}) if isinstance(item.get("author"), dict) else {}
+                    author_handle = item.get("username") or item.get("userName") or author_obj.get("userName") or f"tw_user_{random.randint(100,999)}"
+                    author_name = item.get("user_name") or item.get("name") or author_obj.get("name") or author_handle
+                    url_val = item.get("url") or f"https://twitter.com/{author_handle}/status/{item.get('id', random.randint(1000,9999))}"
+                    
+                if not url_val:
+                    continue
+                    
+                results.append({
+                    "company_name": author_name,
+                    "author_handle": author_handle,
+                    "author_name": author_name,
+                    "platform": platform_name,
+                    "content": str(text),
+                    "post_url": url_val,
+                    "keyword_matched": "marketing agency",
+                    "published_at": post_date.isoformat()
+                })
+                
+    # Deduplicate results by post_url locally before returning
     seen_urls = set()
     unique_results = []
     for r in results:
@@ -222,3 +370,4 @@ async def fetch_founder_post(post_url: str) -> dict | None:
         "event_date": "2026-07-21T10:00:00Z",
         "platform": "reddit"
     }
+

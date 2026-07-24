@@ -25,17 +25,13 @@
     "search engine marketing",
     "growth marketing agency"
   ],
-  "social_keywords": [
-    "looking for marketing agency",
-    "recommend Google Ads agency",
-    "need fractional CMO",
-    "looking for PPC expert",
-    "recommend local SEO agency",
-    "hiring growth marketing agency",
-    "need help with Facebook ads",
-    "looking for performance marketing agency",
-    "recommend lead gen agency",
-    "who manages your paid ads",
-    "looking for franchise marketing agency"
+  "social_triggers": [
+    "looking for",
+    "need",
+    "hiring"
+  ],
+  "social_topics": [
+    "marketing agency",
+    "fractional CMO"
   ]
 }

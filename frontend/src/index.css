@@ -55,6 +55,24 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Buttery Smooth Universal Theme Transition */
+html,
+body,
+*,
+*::before,
+*::after {
+  transition: background-color 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+              color 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+              fill 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+              stroke 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+              backdrop-filter 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+              -webkit-backdrop-filter 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+
+
 button,
 input,
 textarea {
@@ -206,3 +224,281 @@ textarea {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--nexa-text-muted);
 }
+
+/* ============================================================
+   Light Glassmorphic System (Exact Match for Theme Toggle)
+   ============================================================ */
+html.light-theme {
+  color-scheme: light;
+  background: linear-gradient(135deg, #dceefb 0%, #e0f2fe 30%, #e6f4ea 70%, #f0fdf4 100%) !important;
+  color: #1e293b !important;
+
+  --nexa-bg: #e2eff7;
+  --nexa-card: rgba(255, 255, 255, 0.65);
+  --nexa-card-hover: rgba(255, 255, 255, 0.85);
+  --nexa-surface: rgba(255, 255, 255, 0.75);
+  --nexa-border: rgba(255, 255, 255, 0.85);
+  --nexa-border-strong: rgba(255, 255, 255, 1);
+
+  --nexa-accent: #d97706;
+  --nexa-accent-bright: #b45309;
+  --nexa-accent-dim: rgba(217, 119, 6, 0.12);
+  --nexa-accent-glow: rgba(217, 119, 6, 0.2);
+
+  --nexa-emerald: #059669;
+  --nexa-emerald-dim: rgba(5, 150, 105, 0.12);
+  --nexa-amber: #d97706;
+  --nexa-amber-dim: rgba(217, 119, 6, 0.12);
+  --nexa-rose: #e11d48;
+  --nexa-rose-dim: rgba(225, 29, 72, 0.12);
+  --nexa-indigo: #4f46e5;
+  --nexa-indigo-dim: rgba(79, 70, 229, 0.12);
+
+  --nexa-text-primary: #0f172a;
+  --nexa-text-secondary: #334155;
+  --nexa-text-muted: #64748b;
+}
+
+html.light-theme .nexa-flare {
+  background: radial-gradient(
+    ellipse 60% 50% at 50% 15%,
+    rgba(56, 189, 248, 0.3) 0%,
+    rgba(52, 211, 153, 0.2) 45%,
+    transparent 80%
+  ) !important;
+}
+
+/* Glassmorphic card styling for light theme */
+html.light-theme .nexa-card {
+  background: rgba(255, 255, 255, 0.6) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.85) !important;
+  box-shadow: 0 10px 30px -5px rgba(0, 100, 150, 0.07), 0 4px 12px 0 rgba(0, 0, 0, 0.03) !important;
+}
+
+html.light-theme .nexa-card:hover {
+  border-color: rgba(255, 255, 255, 1) !important;
+  box-shadow: 0 12px 36px -4px rgba(0, 100, 150, 0.1) !important;
+}
+
+
+/* Text overrides in Light Theme */
+html.light-theme .text-zinc-100,
+html.light-theme .text-white {
+  color: #0f172a !important;
+}
+
+html.light-theme .text-zinc-200,
+html.light-theme .text-zinc-300 {
+  color: #1e293b !important;
+}
+
+html.light-theme .text-zinc-400,
+html.light-theme .text-zinc-500 {
+  color: #475569 !important;
+}
+
+html.light-theme .text-zinc-600 {
+  color: #64748b !important;
+}
+
+/* Background overrides in Light Theme */
+html.light-theme .bg-nexa-bg {
+  background: transparent !important;
+}
+
+html.light-theme .bg-nexa-surface {
+  background: rgba(255, 255, 255, 0.75) !important;
+  border-color: rgba(255, 255, 255, 0.9) !important;
+}
+
+html.light-theme div.bg-white\/5,
+html.light-theme div.bg-white\/10,
+html.light-theme span.bg-white\/5,
+html.light-theme span.bg-white\/10 {
+  background-color: rgba(255, 255, 255, 0.65) !important;
+}
+
+html.light-theme .border-white\/5,
+html.light-theme .border-white\/10,
+html.light-theme .border-white\/15,
+html.light-theme .border-white\/20 {
+  border-color: rgba(255, 255, 255, 0.85) !important;
+}
+
+html.light-theme .border-nexa-border {
+  border-color: rgba(226, 232, 240, 0.6) !important;
+}
+
+/* Row Hover in Light Theme — Only hovered row highlights in crisp white */
+html.light-theme tr.nexa-row-hover {
+  background-color: transparent !important;
+  border-bottom: 1px solid rgba(226, 232, 240, 0.5) !important;
+}
+
+html.light-theme tr.nexa-row-hover:hover {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  border-left-color: #d97706 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* Executive Contacts Drawer & Highlighted Cards in Light Theme */
+html.light-theme .expanded-contacts-container {
+  background-color: rgba(241, 245, 249, 0.6) !important;
+  border-top-color: rgba(226, 232, 240, 0.8) !important;
+}
+
+html.light-theme .contact-card {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(255, 255, 255, 1) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.03) !important;
+}
+
+html.light-theme .contact-card:hover {
+  background-color: #ffffff !important;
+  border-color: rgba(217, 119, 6, 0.5) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1) !important;
+  transform: translateY(-1px);
+}
+
+
+
+/* Sidebar Active Navigation Pill in Light Theme */
+html.light-theme aside button.bg-[var\(--nexa-accent-dim\)],
+html.light-theme aside button.bg-zinc-800\/20 {
+  background: rgba(16, 185, 129, 0.14) !important;
+  color: #047857 !important;
+  border: 1px solid rgba(16, 185, 129, 0.3) !important;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.1) !important;
+  font-weight: 700 !important;
+}
+
+html.light-theme aside button:not(.bg-\[var\(--nexa-accent-dim\)\]) {
+  color: #475569 !important;
+}
+
+html.light-theme aside button:not(.bg-\[var\(--nexa-accent-dim\)\]):hover {
+  background: rgba(255, 255, 255, 0.6) !important;
+  color: #0f172a !important;
+}
+
+/* Inputs & Form Controls in Light Theme */
+html.light-theme input {
+  background: rgba(255, 255, 255, 0.8) !important;
+  border-color: rgba(255, 255, 255, 0.95) !important;
+  color: #0f172a !important;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.03) !important;
+}
+
+html.light-theme input::placeholder {
+  color: #64748b !important;
+}
+
+/* Gauge tracks & text in Light Theme */
+html.light-theme .gauge-track {
+  stroke: rgba(203, 213, 225, 0.8) !important;
+}
+
+html.light-theme svg text {
+  fill: #0f172a !important;
+}
+
+
+/* Scan Company & Run Pipeline buttons in Light Theme */
+html.light-theme button.bg-\[var\(--nexa-accent-dim\)\] {
+  background: rgba(254, 243, 199, 0.9) !important;
+  color: #92400e !important;
+  border-color: rgba(252, 211, 77, 0.8) !important;
+  font-weight: 700 !important;
+}
+
+html.light-theme button.bg-\[var\(--nexa-emerald-dim\)\] {
+  background: rgba(209, 250, 229, 0.9) !important;
+  color: #065f46 !important;
+  border-color: rgba(110, 231, 183, 0.8) !important;
+  font-weight: 700 !important;
+}
+
+/* Pitcher AI & Delete Buttons in Light Theme */
+html.light-theme button:has(.lucide-sparkles) {
+  background: rgba(255, 255, 255, 0.85) !important;
+  color: #047857 !important;
+  border: 1px solid rgba(110, 231, 183, 0.8) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
+  font-weight: 700 !important;
+}
+
+html.light-theme button:has(.lucide-sparkles):hover {
+  background: rgba(209, 250, 229, 0.9) !important;
+}
+
+html.light-theme button:has(.lucide-trash-2) {
+  background: rgba(255, 255, 255, 0.85) !important;
+  color: #64748b !important;
+  border: 1px solid rgba(226, 232, 240, 0.9) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04) !important;
+}
+
+html.light-theme button:has(.lucide-trash-2):hover {
+  background: #fff1f2 !important;
+  color: #e11d48 !important;
+  border-color: #fecdd3 !important;
+}
+
+/* Tier Filter Buttons in Light Theme */
+html.light-theme button.bg-\[var\(--nexa-accent\)\] {
+  background: #fbbf24 !important;
+  color: #0f172a !important;
+  font-weight: 700 !important;
+  box-shadow: 0 2px 6px rgba(251, 191, 36, 0.3) !important;
+}
+
+/* Pitcher Mode Slide-over Drawer in Light Theme */
+html.light-theme .pitcher-mode-drawer {
+  background-color: rgba(255, 255, 255, 0.88) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.9) !important;
+  box-shadow: -10px 0 40px rgba(0, 50, 100, 0.12) !important;
+  color: #0f172a !important;
+}
+
+html.light-theme .pitcher-mode-drawer input {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(226, 232, 240, 0.9) !important;
+  color: #0f172a !important;
+  font-weight: 700 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+}
+
+html.light-theme .pitcher-mode-drawer .min-h-\[280px\] {
+  background-color: rgba(255, 255, 255, 0.95) !important;
+  border: 1px solid rgba(226, 232, 240, 0.9) !important;
+  color: #1e293b !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04) !important;
+}
+
+html.light-theme .pitcher-mode-drawer strong {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+}
+
+html.light-theme .pitcher-mode-drawer li,
+html.light-theme .pitcher-mode-drawer p {
+  color: #334155 !important;
+}
+
+html.light-theme .pitcher-mode-drawer button.bg-nexa-card {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(226, 232, 240, 0.9) !important;
+  color: #64748b !important;
+}
+
+html.light-theme .pitcher-mode-drawer button.bg-nexa-card:hover {
+  color: #0f172a !important;
+  background-color: #ffffff !important;
+}
+
+
+

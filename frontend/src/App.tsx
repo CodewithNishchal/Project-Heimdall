@@ -139,22 +139,33 @@ export default function App() {
             </button>
 
             {/* Theme Toggle */}
-            <div className="flex items-center gap-1 rounded-xl border border-white/5 bg-white/5 p-1">
+            <div className="flex items-center gap-1 rounded-xl border border-white/10 bg-white/5 p-1 backdrop-blur-md">
               <button
                 type="button"
-                className={`rounded-lg p-2 transition ${!isDark ? 'bg-[var(--nexa-accent)] text-zinc-900 shadow-[0_0_8px_var(--nexa-accent-glow)]' : 'text-zinc-400 hover:text-zinc-200'}`}
+                className={`rounded-lg p-2 transition-all duration-300 ${
+                  !isDark 
+                    ? 'bg-[var(--nexa-accent)] text-zinc-950 shadow-[0_0_12px_var(--nexa-accent-glow)] scale-105 font-bold' 
+                    : 'text-zinc-400 hover:text-zinc-200'
+                }`}
                 onClick={() => setIsDark(false)}
+                title="Switch to Light Glass Theme"
               >
-                <Sun size={16} aria-hidden="true" />
+                <Sun size={16} aria-hidden="true" className={`transition-transform duration-500 ${!isDark ? 'rotate-0' : '-rotate-90'}`} />
               </button>
               <button
                 type="button"
-                className={`rounded-lg p-2 transition ${isDark ? 'bg-[var(--nexa-accent)] text-zinc-900 shadow-[0_0_8px_var(--nexa-accent-glow)]' : 'text-zinc-400 hover:text-zinc-200'}`}
+                className={`rounded-lg p-2 transition-all duration-300 ${
+                  isDark 
+                    ? 'bg-[var(--nexa-accent)] text-zinc-950 shadow-[0_0_12px_var(--nexa-accent-glow)] scale-105 font-bold' 
+                    : 'text-zinc-400 hover:text-zinc-200'
+                }`}
                 onClick={() => setIsDark(true)}
+                title="Switch to Dark Glass Theme"
               >
-                <Moon size={16} aria-hidden="true" />
+                <Moon size={16} aria-hidden="true" className={`transition-transform duration-500 ${isDark ? 'rotate-0' : 'rotate-90'}`} />
               </button>
             </div>
+
           </div>
         </header>
       </div>
