@@ -2,8 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { Trash2, Search, RefreshCw, MessageSquare, ExternalLink } from 'lucide-react';
 import { fetchSocialPosts, deleteSocialPost, triggerSocialSweep } from '../lib/api';
 import type { SocialPost } from '../types/lead';
-
-const TABS = ['All', 'Reddit', 'Yelp', 'X', 'Facebook', 'Instagram', 'LinkedIn', 'Quora', 'Google', 'Discord', 'Slack', 'Skool', 'Threads'];
+const TABS = ['All', 'Reddit', 'X', 'Facebook', 'Instagram', 'LinkedIn', 'Google', 'Skool', 'Threads'];
 
 function timeAgo(dateString: string) {
   if (!dateString) return '1h ago';
@@ -84,10 +83,7 @@ export default function SocialPostsView() {
     let text = '#ffffff';
     let label = platform.toUpperCase();
 
-    if (plat === 'yelp') {
-      bg = '#991b1b';
-      label = 'YELP';
-    } else if (plat === 'x' || plat === 'twitter') {
+    if (plat === 'x' || plat === 'twitter') {
       bg = '#27272a';
       label = 'X';
     } else if (plat === 'reddit') {
@@ -102,18 +98,9 @@ export default function SocialPostsView() {
     } else if (plat === 'linkedin') {
       bg = '#0369a1';
       label = 'LINKEDIN';
-    } else if (plat === 'quora') {
-      bg = '#b92b27';
-      label = 'QUORA';
     } else if (plat === 'google') {
       bg = '#1d4ed8';
       label = 'GOOGLE Q&A';
-    } else if (plat === 'discord') {
-      bg = '#4338ca';
-      label = 'DISCORD';
-    } else if (plat === 'slack') {
-      bg = '#581c87';
-      label = 'SLACK';
     } else if (plat === 'skool') {
       bg = '#1d4ed8';
       label = 'SKOOL';

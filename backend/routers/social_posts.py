@@ -77,57 +77,47 @@ async def trigger_fetch_social_posts(db: Session = Depends(get_db)):
     new_posts = await fetch_social_micro_intent(triggers, topics)
     
     saved_count = 0
-    from backend.pipeline.social_classifier import classify_social_intent
+    from backend.pipeline.social_classifier import batch_classify_social_intent
     from backend.models import ScrapeCache
     import logging
     logger = logging.getLogger("SocialPosts")
     
     # Process only a batch to save tokens/time if we got too many
-    max_to_process = 40
-    posts_processed = 0
-
-    for p in new_posts:
-        if posts_processed >= max_to_process:
-            break
-
-        url_key = p["post_url"]
-        
-        # 1. Deduplicate globally across scheduled runs (ScrapeCache)
-        # TEMPORARILY BYPASSED FOR TESTING:
-        # if db.query(ScrapeCache).filter(ScrapeCache.post_url == url_key).first():
-        #     continue
-        #     
-        # # Add to cache so we don't process it again next run
-        # db.add(ScrapeCache(id=str(uuid.uuid4()), post_url=url_key))
-        # db.commit()
-
-        # 2. Extract 2-5 lines for Groq to save tokens
-        short_content = "\n".join(p["content"].split("\n")[:5])[:300]
-        
-        # 3. Classify posts with Qwen
-        classification = await classify_social_intent(short_content, author_bio="")
-        logger.info(f"[OpenRouter Qwen2.5-7B Result] {classification} for text: {short_content[:100]}...")
-        
-        posts_processed += 1
-
-        if classification.get("intent") == "seeking_provider" and classification.get("confidence", 0) > 0.6:
-            # Check if it was saved by another thread or previously
-            existing = db.query(SocialPostSnapshot).filter(SocialPostSnapshot.post_url == url_key).first()
-            if not existing:
-                db_post = SocialPostSnapshot(
-                    id=str(uuid.uuid4()),
-                    platform=p["platform"],
-                    author_name=p["author_name"],
-                    author_handle=p["author_handle"],
-                    content=p["content"],
-                    post_url=p["post_url"],
-                    keyword_matched=classification.get("service_category", p.get("keyword_matched")) if classification else p.get("keyword_matched"),
-                    company_name=p["company_name"],
-                    published_at=p["published_at"]
-                )
-                db.add(db_post)
-                saved_count += 1
+    max_to_process = 60
+    posts_to_process = new_posts[:max_to_process]
+    
+    batch_size = 20
+    
+    for i in range(0, len(posts_to_process), batch_size):
+        batch = posts_to_process[i:i+batch_size]
+        try:
+            classifications = await batch_classify_social_intent(batch)
+            
+            for idx, p in enumerate(batch):
+                c = classifications[idx] if idx < len(classifications) else None
+                url_key = p["post_url"]
                 
+                # In production, check cache here before evaluating to skip it
+                if c and c.get("intent") == "seeking_provider" and c.get("confidence", 0) > 0.6:
+                    existing = db.query(SocialPostSnapshot).filter(SocialPostSnapshot.post_url == url_key).first()
+                    if not existing:
+                        db_post = SocialPostSnapshot(
+                            id=str(uuid.uuid4()),
+                            platform=p["platform"],
+                            author_name=p["author_name"],
+                            author_handle=p["author_handle"],
+                            content=p["content"],
+                            post_url=p["post_url"],
+                            keyword_matched=c.get("service_category", p.get("keyword_matched")),
+                            company_name=p["company_name"],
+                            published_at=p["published_at"]
+                        )
+                        db.add(db_post)
+                        saved_count += 1
+        except Exception as e:
+            logger.error(f"Batch processing failed for chunk: {e}")
+            continue
+
     db.commit()
     return {
         "status": "success", 

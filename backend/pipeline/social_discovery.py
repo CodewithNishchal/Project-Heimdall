@@ -169,6 +169,139 @@ async def fetch_apify_twitter(client: httpx.AsyncClient, search_terms: list[str]
         logger.error(f"[Apify Twitter] Error: {e}")
     return []
 
+async def fetch_scrapecreators_threads(client: httpx.AsyncClient, query: str) -> list:
+    """
+    Fetches Threads posts via ScrapeCreators API for a plain keyword query.
+    Endpoint: GET https://api.scrapecreators.com/v1/threads/search?query={query}&start_date=YYYY-DD-MM&end_date=YYYY-DD-MM
+    Header: x-api-key: {settings.SCRAPE_CREATORS_API_KEY}
+    """
+    url = "https://api.scrapecreators.com/v1/threads/search"
+    api_key = settings.SCRAPE_CREATORS_API_KEY
+    if not api_key:
+        logger.warning("[ScrapeCreators Threads] SCRAPE_CREATORS_API_KEY is missing. Skipping Threads sweep.")
+        return []
+
+    headers = {
+        "x-api-key": api_key
+    }
+    
+    now = datetime.now(timezone.utc)
+    thirty_days_ago = now - timedelta(days=30)
+    
+    params = {
+        "query": query,
+        "start_date": thirty_days_ago.strftime("%Y-%m-%d"),
+        "end_date": now.strftime("%Y-%m-%d")
+    }
+
+    for attempt in range(2):
+        try:
+            resp = await client.get(url, params=params, headers=headers, timeout=30.0)
+            if resp.status_code == 200:
+                data = resp.json()
+                items = (
+                    data.get("posts") or 
+                    data.get("data") or 
+                    data.get("threads") or 
+                    data.get("results") or 
+                    (data if isinstance(data, list) else [])
+                )
+                logger.info(f"[ScrapeCreators Threads] Received {len(items)} items for query '{query}'")
+                return items
+            elif resp.status_code in (502, 503, 504) and attempt == 0:
+                logger.warning(f"[ScrapeCreators Threads] Got {resp.status_code} Bad Gateway. Retrying in 1.5s...")
+                await asyncio.sleep(1.5)
+                continue
+            else:
+                log_msg = resp.text[:150].replace('\n', ' ') if resp.text else ""
+                logger.error(f"[ScrapeCreators Threads] {resp.status_code} Error: {log_msg}")
+        except Exception as e:
+            logger.error(f"[ScrapeCreators Threads] Error: {e}")
+            break
+    return []
+
+async def fetch_scrapecreators_google(client: httpx.AsyncClient, query: str) -> list:
+    url = "https://api.scrapecreators.com/v1/google/search"
+    api_key = settings.SCRAPE_CREATORS_API_KEY
+    if not api_key:
+        logger.warning("[ScrapeCreators Google] API key missing. Skipping.")
+        return []
+
+    headers = {
+        "x-api-key": api_key
+    }
+    params = {
+        "query": query,
+        "date_posted": "last-month",
+        "page": 1
+    }
+
+    for attempt in range(2):
+        try:
+            resp = await client.get(url, params=params, headers=headers, timeout=30.0)
+            if resp.status_code == 200:
+                data = resp.json()
+                items = (
+                    data.get("organic") or 
+                    data.get("results") or 
+                    data.get("data") or 
+                    data.get("posts") or 
+                    (data if isinstance(data, list) else [])
+                )
+                logger.info(f"[ScrapeCreators Google] Received {len(items)} items for query '{query}'")
+                return items
+            elif resp.status_code in (502, 503, 504) and attempt == 0:
+                logger.warning(f"[ScrapeCreators Google] Got {resp.status_code}. Retrying in 1.5s...")
+                await asyncio.sleep(1.5)
+                continue
+            else:
+                log_msg = resp.text[:150].replace('\n', ' ') if resp.text else ""
+                logger.error(f"[ScrapeCreators Google] {resp.status_code} Error: {log_msg}")
+        except Exception as e:
+            logger.error(f"[ScrapeCreators Google] Error: {e}")
+            break
+    return []
+
+async def fetch_apify_linkedin(client: httpx.AsyncClient, query: str) -> list:
+    if not settings.APIFY_API_KEY:
+        logger.warning("[Apify LinkedIn] API key missing. Skipping.")
+        return []
+        
+    url = f"https://api.apify.com/v2/acts/harvestapi~linkedin-post-search/run-sync-get-dataset-items?token={settings.APIFY_API_KEY}"
+    
+    thirty_days_ago = datetime.now(timezone.utc) - timedelta(days=30)
+    limit_date_str = thirty_days_ago.strftime("%Y-%m-%d")
+    
+    payload = {
+        "maxPosts": 20,
+        "postNestedComments": False,
+        "postNestedReactions": False,
+        "postedLimitDate": limit_date_str,
+        "scrapeComments": False,
+        "scrapeReactions": False,
+        "searchQueries": [query]
+    }
+    
+    for attempt in range(2):
+        try:
+            resp = await client.post(url, json=payload, timeout=90.0)
+            if resp.status_code in (200, 201):
+                data = resp.json()
+                items = data if isinstance(data, list) else data.get("data", [])
+                logger.info(f"[Apify LinkedIn] Received {len(items)} items for query '{query}'")
+                return items
+            elif resp.status_code in (502, 503, 504) and attempt == 0:
+                logger.warning(f"[Apify LinkedIn] Got {resp.status_code}. Retrying in 1.5s...")
+                await asyncio.sleep(1.5)
+                continue
+            else:
+                log_msg = resp.text[:150].replace('\n', ' ') if resp.text else ""
+                logger.error(f"[Apify LinkedIn] {resp.status_code} Error: {log_msg}")
+        except Exception as e:
+            logger.error(f"[Apify LinkedIn] Error: {e}")
+            break
+    return []
+
 async def fetch_serper_reddit(client: httpx.AsyncClient, query: str) -> list[dict]:
     if not settings.SERPER_API_KEY:
         return []
@@ -282,6 +415,27 @@ async def fetch_social_micro_intent(triggers: list[str], topics: list[str]) -> l
     
     reddit_query = f'{base_query} {reddit_negative}'
     twitter_query = f'{base_query} {twitter_negative}'
+
+    # Threads plain string queries (2 iterations for optimal relevance)
+    threads_q1 = f"{clean_trigs[0]} {clean_tops[0]}"
+    if len(clean_tops) > 1:
+        threads_q2 = f"{clean_trigs[0]} {clean_tops[1]}"
+    elif len(clean_trigs) > 1:
+        threads_q2 = f"{clean_trigs[1]} {clean_tops[0]}"
+    else:
+        threads_q2 = f"recommend {clean_tops[0]}"
+        
+    # LinkedIn queries (with blacklists)
+    clean_trigs_linkedin = [t for t in clean_trigs if "looking for a" not in t.lower() and "hiring agency" not in t.lower()]
+    if not clean_trigs_linkedin:
+        clean_trigs_linkedin = ["RFP", "recommend"]
+    
+    formatted_trigs_li = [f'"{t}"' for t in clean_trigs_linkedin]
+    trig_clause_li = f"({' OR '.join(formatted_trigs_li)})" if len(formatted_trigs_li) > 1 else formatted_trigs_li[0]
+    linkedin_query = f"{trig_clause_li} {topic_clause}"
+    
+    # Google query (force RFP intent to bypass SEO directories)
+    google_query = f"RFP {clean_tops[0]}"
             
     results = []
     
@@ -293,10 +447,14 @@ async def fetch_social_micro_intent(triggers: list[str], topics: list[str]) -> l
                 await asyncio.sleep(0.3)
                 return await fetch_func(client, query)
                 
-        # Launch single combined tasks for Reddit and Twitter
+        # Launch tasks for Reddit, Twitter, 2 Threads iterations, LinkedIn, and Google
         tasks = [
             fetch_with_sem(fetch_scrapebadger_reddit, reddit_query),
-            fetch_with_sem(fetch_scrapebadger_twitter, twitter_query)
+            fetch_with_sem(fetch_scrapebadger_twitter, twitter_query),
+            fetch_with_sem(fetch_scrapecreators_threads, threads_q1),
+            fetch_with_sem(fetch_scrapecreators_threads, threads_q2),
+            fetch_with_sem(fetch_apify_linkedin, linkedin_query),
+            fetch_with_sem(fetch_scrapecreators_google, google_query)
         ]
             
         responses = await asyncio.gather(*tasks, return_exceptions=True)
@@ -307,15 +465,44 @@ async def fetch_social_micro_intent(triggers: list[str], topics: list[str]) -> l
             if isinstance(response_items, Exception) or not isinstance(response_items, list):
                 continue
                 
-            is_reddit = idx == 0
-            platform_name = "reddit" if is_reddit else "x"
+            if idx == 0:
+                platform_name = "reddit"
+            elif idx == 1:
+                platform_name = "x"
+            elif idx == 2 or idx == 3:
+                platform_name = "threads"
+            elif idx == 4:
+                platform_name = "linkedin"
+            else:
+                platform_name = "google"
                 
             for item in response_items:
+                if not isinstance(item, dict):
+                    continue
+                    
                 # Local Timestamp Filter (< 30 days old)
-                created_val = item.get("created_utc") if is_reddit else (item.get("createdAt") or item.get("created_at"))
+                if platform_name == "reddit":
+                    created_val = item.get("created_utc")
+                elif platform_name == "x":
+                    created_val = item.get("createdAt") or item.get("created_at")
+                elif platform_name == "linkedin":
+                    posted_at = item.get("postedAt", {}) if isinstance(item.get("postedAt"), dict) else {}
+                    created_val = posted_at.get("date") or posted_at.get("timestamp")
+                elif platform_name == "google":
+                    # Google search usually doesn't return standard strict dates in standard scrape,
+                    # but we can check standard keys. We will just fallback to now if not found, since
+                    # the query parameter handles the 'last-month' filter on the API side.
+                    created_val = item.get("date") or datetime.now(timezone.utc).isoformat()
+                else:  # threads (ScrapeCreators)
+                    created_val = (
+                        item.get("published_at") or 
+                        item.get("created_at") or 
+                        item.get("timestamp") or 
+                        item.get("taken_at")
+                    )
                 
                 if not created_val:
-                    continue
+                    created_val = datetime.now(timezone.utc).isoformat()
                 
                 try:
                     if isinstance(created_val, (int, float)):
@@ -324,33 +511,44 @@ async def fetch_social_micro_intent(triggers: list[str], topics: list[str]) -> l
                         try:
                             post_date = datetime.strptime(created_val, "%a %b %d %H:%M:%S %z %Y")
                         except ValueError:
-                            post_date = datetime.fromisoformat(created_val.replace("Z", "+00:00"))
+                            post_date = datetime.fromisoformat(str(created_val).replace("Z", "+00:00"))
                 except Exception:
                     post_date = datetime.now(timezone.utc)
                     
                 if post_date < thirty_days_ago:
                     continue # Skip posts older than 30 days
                     
-                if is_reddit:
+                if platform_name == "reddit":
                     text = f"{item.get('title', '')} {item.get('selftext', '')}".strip()
-                else:
-                    text = item.get("text") or item.get("full_text") or ""
-                    
-                if not text:
-                    continue
-                    
-                if any(promo in str(text).lower() for promo in AGENCY_PROMO_DENYLIST):
-                    continue
-                
-                if is_reddit:
                     url_val = item.get("url", "")
                     author_handle = item.get("author") or "reddit_user"
                     author_name = item.get("author") or "Reddit User"
-                else:
+                elif platform_name == "x":
+                    text = item.get("text") or item.get("full_text") or ""
                     author_obj = item.get("author", {}) if isinstance(item.get("author"), dict) else {}
                     author_handle = item.get("username") or item.get("userName") or author_obj.get("userName") or f"tw_user_{random.randint(100,999)}"
                     author_name = item.get("user_name") or item.get("name") or author_obj.get("name") or author_handle
                     url_val = item.get("url") or f"https://twitter.com/{author_handle}/status/{item.get('id', random.randint(1000,9999))}"
+                elif platform_name == "threads":
+                    text = item.get("caption") or item.get("text") or item.get("post_text") or item.get("content") or ""
+                    if isinstance(text, dict):
+                        text = text.get("text", "")
+                    user_obj = item.get("user", {}) if isinstance(item.get("user"), dict) else {}
+                    author_handle = user_obj.get("username") or item.get("username") or f"th_user_{random.randint(100,999)}"
+                    author_name = user_obj.get("full_name") or user_obj.get("name") or item.get("name") or author_handle
+                    code = item.get("code")
+                    url_val = item.get("url") or item.get("post_url") or (f"https://www.threads.net/@{author_handle}/post/{code}" if code else f"https://www.threads.net/@{author_handle}")
+                elif platform_name == "linkedin":
+                    text = item.get("content") or item.get("text") or ""
+                    author_obj = item.get("author", {}) if isinstance(item.get("author"), dict) else {}
+                    author_name = author_obj.get("name") or item.get("authorName") or "LinkedIn User"
+                    author_handle = author_obj.get("publicIdentifier") or author_obj.get("urn") or f"li_user_{random.randint(100,999)}"
+                    url_val = item.get("linkedinUrl") or item.get("postUrl") or item.get("url") or f"https://linkedin.com/in/{author_handle}"
+                elif platform_name == "google":
+                    text = item.get("snippet") or item.get("description") or item.get("content") or ""
+                    author_name = item.get("title") or item.get("name") or "Google Result"
+                    author_handle = "google_search"
+                    url_val = item.get("url") or item.get("link") or ""
                     
                 if not url_val:
                     continue
