@@ -9,7 +9,7 @@ import TrendPanel from './components/TrendPanel';
 import Settings from './components/Settings';
 import SocialPostsView from './components/SocialPostsView';
 import SignalDistribution from './components/SignalDistribution';
-import { fetchLeads } from './lib/api';
+import { fetchLeads, fetchPipelineStatus } from './lib/api';
 import type { LeadDetailResponse } from './types/lead';
 
 export default function App() {
@@ -45,6 +45,28 @@ export default function App() {
       isMounted = false;
     };
   }, []);
+
+  // Ping backend every 5 seconds ONLY if frontend is disconnected
+  useEffect(() => {
+    if (status !== 'error') return;
+
+    const interval = setInterval(() => {
+      fetchPipelineStatus()
+        .then(() => {
+          fetchLeads().then((apiLeads) => {
+            setLeads(apiLeads);
+            setStatus('success');
+          }).catch(() => {
+            setStatus('success');
+          });
+        })
+        .catch(() => {
+          // Still down, keep disconnected status
+        });
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [status]);
 
   const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null);
 

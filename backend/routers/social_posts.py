@@ -93,19 +93,20 @@ async def trigger_fetch_social_posts(db: Session = Depends(get_db)):
         url_key = p["post_url"]
         
         # 1. Deduplicate globally across scheduled runs (ScrapeCache)
-        if db.query(ScrapeCache).filter(ScrapeCache.post_url == url_key).first():
-            continue
-            
-        # Add to cache so we don't process it again next run
-        db.add(ScrapeCache(id=str(uuid.uuid4()), post_url=url_key))
-        db.commit()
+        # TEMPORARILY BYPASSED FOR TESTING:
+        # if db.query(ScrapeCache).filter(ScrapeCache.post_url == url_key).first():
+        #     continue
+        #     
+        # # Add to cache so we don't process it again next run
+        # db.add(ScrapeCache(id=str(uuid.uuid4()), post_url=url_key))
+        # db.commit()
 
         # 2. Extract 2-5 lines for Groq to save tokens
         short_content = "\n".join(p["content"].split("\n")[:5])[:300]
         
-        # 3. Classify Reddit posts with Groq
+        # 3. Classify posts with Qwen
         classification = await classify_social_intent(short_content, author_bio="")
-        logger.info(f"[Groq Reddit Result] {classification} for text: {short_content[:100]}...")
+        logger.info(f"[OpenRouter Qwen2.5-7B Result] {classification} for text: {short_content[:100]}...")
         
         posts_processed += 1
 

@@ -258,32 +258,46 @@ async def fetch_social_micro_intent(triggers: list[str], topics: list[str]) -> l
     if not triggers or not topics:
         return []
         
-    sentences = []
-    # Build natural sentences like "looking for a marketing agency"
-    for trigger in triggers[:1]: # Limit to 1 trigger * 2 topics = 2 sentences * 2 platforms = 4 requests (Under 5 limit)
-        for topic in topics[:2]: 
-            clean_trig = trigger.strip('\'"')
-            clean_top = topic.strip('\'"')
-            sentences.append(f"{clean_trig} a {clean_top}")
-            sentences.append(f"{clean_trig} {clean_top}")
-            
-    sentences = sentences[:2]
+    clean_trigs = [t.strip('\'"') for t in triggers if t.strip()]
+    clean_tops = [tp.strip('\'"') for tp in topics if tp.strip()]
+    
+    if not clean_trigs or not clean_tops:
+        return []
+        
+    # Format triggers: if multiple, combine with OR into ("looking for" OR "need" OR "recommend" OR "hiring")
+    formatted_trigs = [f'"{t}"' for t in clean_trigs]
+    trig_clause = f"({' OR '.join(formatted_trigs)})" if len(formatted_trigs) > 1 else formatted_trigs[0]
+    
+    # Format topics: if multiple, combine with OR into ("marketing agency" OR "fractional CMO")
+    formatted_tops = [f'"{tp}"' for tp in clean_tops]
+    topic_clause = f"({' OR '.join(formatted_tops)})" if len(formatted_tops) > 1 else formatted_tops[0]
+    
+    base_query = f"{trig_clause} {topic_clause}"
+    
+    # Platform-specific combined queries
+    # Reddit supports extended negative exclusions
+    reddit_negative = '-"we are" -"our agency" -"I run a" -"video editor" -"we are hiring"'
+    # Twitter (X) API requires leaner negative queries to prevent returning 0 items
+    twitter_negative = '-"we are" -"our agency"'
+    
+    reddit_query = f'{base_query} {reddit_negative}'
+    twitter_query = f'{base_query} {twitter_negative}'
             
     results = []
     
     async with httpx.AsyncClient(timeout=95.0) as client:
-        sem = asyncio.Semaphore(3)
+        sem = asyncio.Semaphore(2)
         
         async def fetch_with_sem(fetch_func, query):
             async with sem:
-                await asyncio.sleep(0.5)
+                await asyncio.sleep(0.3)
                 return await fetch_func(client, query)
                 
-        # Launch tasks for both Reddit and Twitter
-        tasks = []
-        for sentence in sentences:
-            tasks.append(fetch_with_sem(fetch_scrapebadger_reddit, sentence))
-            tasks.append(fetch_with_sem(fetch_scrapebadger_twitter, sentence))
+        # Launch single combined tasks for Reddit and Twitter
+        tasks = [
+            fetch_with_sem(fetch_scrapebadger_reddit, reddit_query),
+            fetch_with_sem(fetch_scrapebadger_twitter, twitter_query)
+        ]
             
         responses = await asyncio.gather(*tasks, return_exceptions=True)
         
@@ -293,7 +307,7 @@ async def fetch_social_micro_intent(triggers: list[str], topics: list[str]) -> l
             if isinstance(response_items, Exception) or not isinstance(response_items, list):
                 continue
                 
-            is_reddit = idx % 2 == 0
+            is_reddit = idx == 0
             platform_name = "reddit" if is_reddit else "x"
                 
             for item in response_items:

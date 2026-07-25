@@ -7,9 +7,23 @@ export default function Settings() {
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  // Local raw text states to allow typing commas, spaces, and newlines smoothly
+  const [rawKeywords, setRawKeywords] = useState('');
+  const [rawTriggers, setRawTriggers] = useState('');
+  const [rawTopics, setRawTopics] = useState('');
+  const [rawNews, setRawNews] = useState('');
+  const [rawSerper, setRawSerper] = useState('');
+  const [rawJobspy, setRawJobspy] = useState('');
+
   useEffect(() => {
     fetchIntents().then(data => {
       setIntents(data);
+      setRawKeywords((data.extraction_keywords || []).join(', '));
+      setRawTriggers((data.social_triggers || []).join(', '));
+      setRawTopics((data.social_topics || []).join(', '));
+      setRawNews((data.news_queries || []).join('\n'));
+      setRawSerper((data.serper_queries || []).join('\n'));
+      setRawJobspy(data.jobspy_search_term || '');
       setLoading(false);
     }).catch(err => {
       console.error(err);
@@ -18,16 +32,29 @@ export default function Settings() {
   }, []);
 
   const handleSaveIntents = async () => {
-    if (!intents) return;
     setSaving(true);
+    const payloadToSave: IntentConfig = {
+      extraction_keywords: rawKeywords.split(',').map(s => s.trim()).filter(Boolean),
+      social_triggers: rawTriggers.split(',').map(s => s.trim()).filter(Boolean),
+      social_topics: rawTopics.split(',').map(s => s.trim()).filter(Boolean),
+      news_queries: rawNews.split('\n').map(s => s.trim()).filter(Boolean),
+      serper_queries: rawSerper.split('\n').map(s => s.trim()).filter(Boolean),
+      jobspy_search_term: rawJobspy.trim(),
+    };
     try {
-      await updateIntents(intents);
+      await updateIntents(payloadToSave);
+      setIntents(payloadToSave);
     } catch (err) {
       console.error(err);
     } finally {
       setSaving(false);
     }
   };
+
+  const parsedTriggers = rawTriggers.split(',').map(s => s.trim()).filter(Boolean);
+  const parsedTopics = rawTopics.split(',').map(s => s.trim()).filter(Boolean);
+  const previewQuery = `(${ (parsedTriggers.map(t => `"${t}"`).join(' OR ')) || '"looking for"' }) ${ (parsedTopics.map(t => `"${t}"`).join(' OR ')) || '"marketing agency"' }`;
+
   return (
     <div className="flex-1 overflow-y-auto pr-2">
       <div className="nexa-card p-6">
@@ -90,6 +117,7 @@ export default function Settings() {
               </div>
             </div>
           </section>
+
           {/* Intent Keywords Section */}
           <section className="space-y-3">
             <h3 className="text-sm font-semibold uppercase tracking-wider text-zinc-500 flex items-center gap-2">
@@ -105,57 +133,61 @@ export default function Settings() {
                   <div>
                     <label className="block text-xs font-medium text-zinc-400 mb-1">Extraction Keywords (comma separated)</label>
                     <textarea
-                      className="w-full bg-black/20 border border-white/10 rounded-md p-2 text-sm text-zinc-200 focus:outline-none focus:border-[var(--nexa-accent)]"
+                      className="w-full glass-input rounded-md p-2.5 text-sm"
                       rows={2}
-                      value={(intents.extraction_keywords || []).join(', ')}
-                      onChange={e => setIntents({ ...intents, extraction_keywords: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })}
+                      value={rawKeywords}
+                      onChange={e => setRawKeywords(e.target.value)}
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-xs font-medium text-zinc-400 mb-1">Social Triggers (comma separated)</label>
                       <textarea
-                        className="w-full bg-black/20 border border-white/10 rounded-md p-2 text-sm text-zinc-200 focus:outline-none focus:border-[var(--nexa-accent)]"
+                        className="w-full glass-input rounded-md p-2.5 text-sm"
                         rows={2}
-                        value={(intents.social_triggers || []).join(', ')}
-                        onChange={e => setIntents({ ...intents, social_triggers: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })}
+                        value={rawTriggers}
+                        onChange={e => setRawTriggers(e.target.value)}
                       />
                     </div>
                     <div>
                       <label className="block text-xs font-medium text-zinc-400 mb-1">Social Topics (comma separated)</label>
                       <textarea
-                        className="w-full bg-black/20 border border-white/10 rounded-md p-2 text-sm text-zinc-200 focus:outline-none focus:border-[var(--nexa-accent)]"
+                        className="w-full glass-input rounded-md p-2.5 text-sm"
                         rows={2}
-                        value={(intents.social_topics || []).join(', ')}
-                        onChange={e => setIntents({ ...intents, social_topics: e.target.value.split(',').map(s => s.trim()).filter(Boolean) })}
+                        value={rawTopics}
+                        onChange={e => setRawTopics(e.target.value)}
                       />
                     </div>
+                  </div>
+                  <div className="boolean-preview-box rounded-md p-3 text-xs font-mono">
+                    <span className="boolean-preview-title font-sans block mb-1 font-semibold">Generated Boolean Query Preview (Reddit & X):</span>
+                    {previewQuery}
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-zinc-400 mb-1">News Queries (one per line)</label>
                     <textarea
-                      className="w-full bg-black/20 border border-white/10 rounded-md p-2 text-sm text-zinc-200 focus:outline-none focus:border-[var(--nexa-accent)]"
+                      className="w-full glass-input rounded-md p-2.5 text-sm"
                       rows={3}
-                      value={intents.news_queries.join('\n')}
-                      onChange={e => setIntents({ ...intents, news_queries: e.target.value.split('\n').map(s => s.trim()).filter(Boolean) })}
+                      value={rawNews}
+                      onChange={e => setRawNews(e.target.value)}
                     />
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-zinc-400 mb-1">Serper Google Search Queries (one per line)</label>
                     <textarea
-                      className="w-full bg-black/20 border border-white/10 rounded-md p-2 text-sm text-zinc-200 focus:outline-none focus:border-[var(--nexa-accent)]"
+                      className="w-full glass-input rounded-md p-2.5 text-sm"
                       rows={2}
-                      value={(intents.serper_queries || []).join('\n')}
-                      onChange={e => setIntents({ ...intents, serper_queries: e.target.value.split('\n').map(s => s.trim()).filter(Boolean) })}
+                      value={rawSerper}
+                      onChange={e => setRawSerper(e.target.value)}
                     />
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-zinc-400 mb-1">Job Role Search Term (JobSpy)</label>
                     <input
                       type="text"
-                      className="w-full bg-black/20 border border-white/10 rounded-md p-2 text-sm text-zinc-200 focus:outline-none focus:border-[var(--nexa-accent)]"
-                      value={intents.jobspy_search_term || ''}
-                      onChange={e => setIntents({ ...intents, jobspy_search_term: e.target.value })}
+                      className="w-full glass-input rounded-md p-2.5 text-sm"
+                      value={rawJobspy}
+                      onChange={e => setRawJobspy(e.target.value)}
                     />
                   </div>
                   <div className="flex justify-end">

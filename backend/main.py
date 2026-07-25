@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
-load_dotenv("backend/.env")
+load_dotenv("backend/.env", override=True)
+# Reload trigger: 2026-07-25 14:13
 
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
@@ -81,6 +82,7 @@ app.add_middleware(
 # ======================================================================
 app.include_router(pipeline.router)
 app.include_router(leads.router)
+
 from backend.routers import settings, social_posts
 app.include_router(settings.router)
 app.include_router(social_posts.router)

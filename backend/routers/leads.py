@@ -174,25 +174,19 @@ def get_lazy_loaded_pitch_verdict(lead_id: str):
 
     from backend.config import settings
 
-    # Try Grok API first
-    if settings.GROK_API_KEY:
-        result = _generate_summary_with_grok(lead, settings.GROK_API_KEY)
-        if result:
-            return {"lead_id": lead_id, **result}
-            
-    # Fallback to Claude API
-    if settings.CLAUDE_API_KEY:
-        result = _generate_summary_with_claude(lead, settings.CLAUDE_API_KEY)
+    # Primary: Groq Pitcher AI engine
+    if settings.GROQ_API_KEY:
+        result = _generate_pitch_with_groq(lead, settings.GROQ_API_KEY)
         if result:
             return {"lead_id": lead_id, **result}
 
-    # Final Fallback to Gemini
+    # Fallback to Gemini Pitcher engine
     result = _generate_pitch_with_gemini(lead)
     return {"lead_id": lead_id, **result}
 
-def _generate_summary_with_claude(lead: LeadDetailResponse, api_key: str) -> dict | None:
+def _generate_pitch_with_groq(lead: LeadDetailResponse, api_key: str) -> dict | None:
     """
-    Uses Anthropic's Claude API to generate the intent summary.
+    Uses Groq LLM API as the dedicated Pitcher AI generator.
     """
     import json
     import httpx
@@ -213,39 +207,38 @@ CRITICAL INSTRUCTIONS:
 2. Create a perfect point-wise brief of all the intent layers fetched from the AI verdict and the extracted signals.
 3. The output MUST be a bulleted summary report designed to be shown to a non-tech user.
 4. Keep it clear, concise, and highly informative.
-5. Your entire response must be a valid JSON object matching exactly this schema: {{"subject_line": "Intent Summary for [Company]", "email_body": "markdown bulleted summary text"}}"""
+5. Your entire response must be a valid JSON object matching exactly this schema: {{"subject_line": "Intent Summary for {lead.company_name}", "email_body": "markdown bulleted summary text"}}"""
 
         response = httpx.post(
-            "https://api.anthropic.com/v1/messages",
+            "https://api.groq.com/openai/v1/chat/completions",
             headers={
-                "x-api-key": api_key,
-                "anthropic-version": "2023-06-01",
-                "content-type": "application/json"
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json"
             },
             json={
-                "model": "claude-3-haiku-20240307",
-                "max_tokens": 1024,
-                "system": "You are an expert analyst. You always output raw JSON without markdown blocks.",
+                "model": "llama-3.3-70b-versatile",
                 "messages": [
+                    {"role": "system", "content": "You are Pitcher AI, an expert sales intelligence analyst. You output raw JSON matching the schema."},
                     {"role": "user", "content": prompt}
-                ]
+                ],
+                "response_format": {"type": "json_object"},
+                "temperature": 0.3
             },
             timeout=30.0
         )
         response.raise_for_status()
-        raw = response.json()["content"][0]["text"]
+        raw = response.json()["choices"][0]["message"]["content"]
         
-        # Safe Extraction
         match = re.search(r'\{.*\}', raw, re.DOTALL)
         if match:
             parsed = json.loads(match.group(0))
             return {
                 "subject_line": parsed.get("subject_line", f"Intent Summary for {lead.company_name}"),
                 "email_body": parsed.get("email_body", raw),
-                "model_used": "Claude 3 Haiku"
+                "model_used": "Groq Llama 3.3 70B (Pitcher AI)"
             }
     except Exception as e:
-        print(f"[Claude API Error] {e}")
+        print(f"[Groq Pitcher AI Error] {e}")
     return None
 
 
