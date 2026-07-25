@@ -68,7 +68,7 @@ export interface IntentConfig {
   news_queries: string[];
   serper_queries: string[];
   jobspy_search_term: string;
-  news_signals_query_template: string;
+  news_signals_query_template?: string;
   extraction_keywords: string[];
   social_triggers: string[];
   social_topics: string[];

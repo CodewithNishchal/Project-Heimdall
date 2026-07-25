@@ -40,6 +40,7 @@ export default function Settings() {
       news_queries: rawNews.split('\n').map(s => s.trim()).filter(Boolean),
       serper_queries: rawSerper.split('\n').map(s => s.trim()).filter(Boolean),
       jobspy_search_term: rawJobspy.trim(),
+      news_signals_query_template: intents?.news_signals_query_template || '',
     };
     try {
       await updateIntents(payloadToSave);
