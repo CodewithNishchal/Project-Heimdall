@@ -110,6 +110,10 @@ def process_hybrid_lead_scoring(
         if signals_processed else 100
     )
 
+    ai_verdict = raw_extracted_payload.get("ai_verdict", "Review signals for outreach context.")
+    if isinstance(ai_verdict, list):
+        ai_verdict = " ".join([str(v) for v in ai_verdict])
+
     return {
         "company_name": raw_extracted_payload.get("company_name"),
         "intent_score": final_intent_score,
@@ -118,67 +122,123 @@ def process_hybrid_lead_scoring(
         "icp_fit": icp_fit_label,
         "signals": signals_processed,
         "why_now": raw_extracted_payload.get("why_now", "Intent signals detected"),
-        "ai_verdict": raw_extracted_payload.get("ai_verdict", "Review signals for outreach context.")
+        "ai_verdict": ai_verdict
     }
 
 
-def analyze_lead_with_gemini(
+async def analyze_lead_intent_with_llm(
     company_name: str,
     cleaned_html: str,
     firmographics: dict
 ) -> dict:
     """
-    Calls Gemini API to extract signals and then applies hybrid scoring.
-    If GEMINI_API_KEY is missing, empty, or mock, smoothly falls back to
-    rule-based keyword extraction without interrupting the batch pipeline.
+    Calls Groq API to extract signals and then applies hybrid scoring.
     """
     import os
-    api_key = settings.GEMINI_API_KEY
-    is_key_missing = not api_key or api_key in ["mock_key_if_empty", ""]
+    import httpx
+    from dotenv import dotenv_values
+    
+    env_vars = dotenv_values("backend/.env")
+    groq_key = env_vars.get("GROQ_API_KEY") or os.getenv("GROQ_API_KEY") or getattr(settings, "GROQ_API_KEY", "")
 
-    if not is_key_missing:
-        try:
-            client = genai.Client(api_key=api_key)
-            config_path = os.path.join(os.path.dirname(__file__), "..", "intent_config.json")
-            keywords = ["growth", "hiring", "funding", "expansion"]
-            if os.path.exists(config_path):
-                with open(config_path, "r") as f:
-                    intent_cfg = json.load(f)
-                    keywords = intent_cfg.get("extraction_keywords", keywords)
+    if groq_key:
+        for attempt in range(2):
+            try:
+                config_path = os.path.join(os.path.dirname(__file__), "..", "intent_config.json")
+                keywords = ["growth", "hiring", "funding", "expansion"]
+                if os.path.exists(config_path):
+                    with open(config_path, "r") as f:
+                        intent_cfg = json.load(f)
+                        keywords = intent_cfg.get("extraction_keywords", keywords)
+                    
+                keywords_str = ", ".join(keywords)
+
+                prompt = f"""
+Analyze {company_name} using the provided text below.
+
+=== INPUT TEXT ===
+{cleaned_html}
+==================
+
+TARGET KEYWORDS: [{keywords_str}]
+
+TASK:
+Extract intent signals matching the TARGET KEYWORDS and calculate a composite intent score.
+
+STRICT EXTRACTION RULES:
+1. verbatim_quote: MUST be a 100% exact, contiguous word-for-word substring copied directly from the INPUT TEXT. Do NOT paraphrase, fix typos, reformat, or alter capitalization/punctuation, or validation will fail.
+2. source_url: Copy the exact URL from the `[Source URL: ...]` tag immediately preceding the text block where the quote was found.
+3. Zero Signals Handling: If NO text matches the target keywords, return `"signals": []` and `"intent_score": 0`. Do NOT force or invent quotes if no match exists.
+4. intent_score: Calculate an integer from 0-100 based on this strict rubric:
+   - 0: No matching keywords or intent found.
+   - 1-40: Weak, indirect, or generic brand mentions.
+   - 41-75: Moderate intent (general hiring, active feature discussions, growth chatter).
+   - 76-100: High actionable intent (recent funding rounds, direct vendor/agency requests, C-level expansion announcements).
+
+OUTPUT JSON SCHEMA:
+{{
+  "company_name": "{company_name}",
+  "intent_score": 85,
+  "signals": [
+    {{
+      "signal_type": "Exact keyword or topic matched",
+      "verbatim_quote": "Exact word-for-word string copied directly from text",
+      "source_url": "https://example.com/source-link",
+      "event_date": "YYYY-MM-DD"
+    }}
+  ],
+  "ai_verdict": "Exactly two sentences summarizing the company's verified intent triggers and recommended sales outreach angle."
+}}
+"""
+
+                url = "https://api.groq.com/openai/v1/chat/completions"
+                headers = {
+                    "Authorization": f"Bearer {groq_key}",
+                    "Content-Type": "application/json"
+                }
+                payload = {
+                    "model": "llama-3.1-8b-instant",
+                    "messages": [
+                        {
+                            "role": "system", 
+                            "content": (
+                                "You are a strict, ultra-precise JSON data extraction engine. "
+                                "Output raw JSON ONLY. Do not include markdown code blocks (```json), preambles, reasoning, or explanatory text."
+                            )
+                        },
+                        {"role": "user", "content": prompt}
+                    ],
+                    "temperature": 0.1,
+                    "response_format": {"type": "json_object"}
+                }
+
+                async with httpx.AsyncClient(timeout=45.0) as client:
+                    response = await client.post(url, headers=headers, json=payload)
+                    response.raise_for_status()
+                    
+                resp_data = response.json()
+                raw_text = resp_data["choices"][0]["message"].get("content")
+                if not raw_text:
+                    raise ValueError("Groq returned empty content")
+                # Clean up potential markdown formatting from the response
+                if raw_text.startswith("```json"):
+                    raw_text = raw_text.split("```json")[1].split("```")[0].strip()
+                elif raw_text.startswith("```"):
+                    raw_text = raw_text.split("```")[1].split("```")[0].strip()
+                    
+                token_usage = resp_data.get("usage", {}).get("total_tokens", "Unknown")
+                logger.info(f"Groq Token Usage for {company_name}: {token_usage}")
                 
-            keywords_str = ", ".join(keywords)
+                raw_payload = json.loads(raw_text)
+                raw_payload["company_name"] = company_name
+                return process_hybrid_lead_scoring(raw_payload, firmographics, cleaned_html)
 
-            prompt = (
-                f"Analyze {company_name} from the following text:\n"
-                f"{cleaned_html}\n"
-                f"IMPORTANT: You must calculate the intent_score (0-100) strictly based on how well the text matches these specific target keywords: [{keywords_str}].\n"
-                "Extract intent signals as JSON with keys: "
-                "company_name, intent_score (0-100), "
-                "signals (list of {{signal_type, verbatim_quote, source_url, event_date}}), "
-                "and ai_verdict (must be exactly a 2-line summary using the fetched intent signals and summarizing the articles)."
-            )
+            except Exception as e:
+                logger.warning(f"[Scorer] Groq API attempt {attempt + 1} failed: {e}.")
+                if attempt == 1:
+                    logger.warning("[Scorer] Falling back to rule-based scoring.")
 
-            response = client.models.generate_content(
-                model="gemini-2.5-flash",
-                contents=prompt,
-                config=types.GenerateContentConfig(
-                    response_mime_type="application/json",
-                    temperature=0,
-                    system_instruction="You are an expert SDR extraction engine. Output raw JSON."
-                )
-            )
-            
-            token_usage = getattr(response.usage_metadata, 'total_token_count', 'Unknown')
-            logger.info(f"Gemini Token Usage for {company_name}: {token_usage}")
-            
-            raw_payload = json.loads(response.text)
-            raw_payload["company_name"] = company_name
-            return process_hybrid_lead_scoring(raw_payload, firmographics, cleaned_html)
-
-        except Exception as e:
-            logger.warning(f"[Scorer] Gemini API unavailable: {e}. Falling back to rule-based scoring.")
-
-    # Rule-Based Fallback when Gemini API key is missing or fails
+    # Rule-Based Fallback when API key is missing or fails
     extracted_signals = []
     text_lower = cleaned_html.lower()
     kw_list = ["hiring", "sdr", "series a", "seed", "funding", "raised", "expansion", "redesign", "meta ads", "shopify"]

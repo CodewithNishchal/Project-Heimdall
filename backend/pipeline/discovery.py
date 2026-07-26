@@ -13,6 +13,22 @@ from backend.config import settings
 
 logger = logging.getLogger("Discovery")
 
+def validate_relevance(text: str) -> bool:
+    """
+    Post-Hit Relevance Filter using Extraction Keywords.
+    """
+    from backend.config_manager import load_intent_config
+    config = load_intent_config()
+    extraction_keywords = config.get("extraction_keywords", [
+        "PPC", "local SEO", "fractional CMO", "marketing agency", "lead generation"
+    ])
+    text_lower = text.lower()
+    for kw in extraction_keywords:
+        if kw.lower() in text_lower:
+            return True
+    return False
+
+
 # ---------------------------------------------------------------------------
 # spaCy model — loaded once at module level for ORG entity extraction
 # ---------------------------------------------------------------------------
@@ -41,11 +57,11 @@ def discover_companies_from_jobspy() -> set[str]:
         from backend.config_manager import load_intent_config
         config = load_intent_config()
         # Default niche roles if config is missing
-        job_roles = config.get("jobspy_search_term", "Head of Marketing, Growth Lead, E-commerce Manager")
+        job_roles = config.get("jobspy_search_term", "CMO, VP of Marketing, Director of Marketing, Head of Growth")
         if isinstance(job_roles, str):
             job_roles = [r.strip() for r in job_roles.split(",") if r.strip()]
         if not job_roles:
-            job_roles = ["Head of Marketing"]
+            job_roles = ["CMO", "VP of Marketing", "Director of Marketing", "Head of Growth"]
 
         companies = set()
         for role in job_roles:
@@ -105,24 +121,27 @@ def extract_orgs_from_articles(articles: list[dict]) -> set[str]:
 async def discover_companies_from_news() -> set[str]:
     """
     Phase 1 — NewsAPI sweep. Queries intent phrases, extracts company names
-    from article titles using spaCy ORG entity recogniser.
+    using LLM extraction pass per hit.
     """
     api_key = settings.NEWS_API_KEY
     if not api_key or api_key == "mock_key_if_empty":
         return set()
 
+    from datetime import datetime, timezone, timedelta
+    one_month_ago = (datetime.now(timezone.utc) - timedelta(days=30)).strftime("%Y-%m-%d")
+
     from backend.config_manager import load_intent_config
     config = load_intent_config()
     queries = config.get("news_queries", [
-        "SaaS startup raises funding",
-        "B2B seed round",
-        "series A funding startup",
-        "startup hiring SDR sales",
+        '("expanding to new locations" OR "opening new locations" OR "franchise expansion" OR "multi-unit deal") AND ("marketing" OR "retail" OR "services") -billion -conglomerate -corp'
     ])
     all_articles: list[dict] = []
     try:
         async with httpx.AsyncClient(timeout=10.0) as client:
             for q in queries:
+                import urllib.parse
+                if len(urllib.parse.quote(q)) > 500:
+                    q = q[:200]  # rough truncation to stay under 500 chars when encoded
                 res = await client.get(
                     "https://newsapi.org/v2/everything",
                     params={
@@ -130,6 +149,7 @@ async def discover_companies_from_news() -> set[str]:
                         "apiKey": api_key,
                         "language": "en",
                         "sortBy": "publishedAt",
+                        "from": one_month_ago,
                         "pageSize": 5,
                     },
                 )
@@ -139,15 +159,22 @@ async def discover_companies_from_news() -> set[str]:
     except Exception as e:
         logger.error(f"[NewsAPI] Discovery sweep failed: {e}")
 
-    orgs = extract_orgs_from_articles(all_articles)
-    logger.info(f"[NewsAPI] Discovered {len(orgs)} ORG entities from news articles")
+    # Zero-cost extraction using local spaCy NER
+    orgs = set()
+    for art in all_articles:
+        text = (art.get("title", "") or "") + " " + (art.get("description", "") or "") + " " + (art.get("content", "") or "")
+        if validate_relevance(text):
+            extracted = extract_orgs_from_articles([art])
+            orgs.update(extracted)
+
+    logger.info(f"[NewsAPI] Discovered {len(orgs)} companies from news articles")
     return orgs
 
 
 async def discover_companies_from_serper() -> set[str]:
     """
-    Phase 1 — Serper sweep. Searches LinkedIn for companies hiring SDRs.
-    Strips '| LinkedIn' / '- LinkedIn' suffix from result titles.
+    Phase 1 — Serper sweep. Searches LinkedIn for signals.
+    Uses ScrapeBadger to fetch the post content and LLM extraction to get the company name.
     """
     api_key = settings.SERPER_API_KEY
     if not api_key or api_key == "mock_key_if_empty":
@@ -155,12 +182,14 @@ async def discover_companies_from_serper() -> set[str]:
 
     from backend.config_manager import load_intent_config
     config = load_intent_config()
-    serper_queries = config.get("serper_queries", ['site:linkedin.com/company "hiring SDR" OR "hiring BDR"'])
+    serper_queries = config.get("serper_queries", [
+        'site:linkedin.com/posts ("looking for a marketing agency" OR "recommend a PPC agency" OR "need a fractional CMO") -agency -clutch -top -our -portfolio -"we offer"'
+    ])
     if isinstance(serper_queries, str):
         serper_queries = [serper_queries]
 
     companies = set()
-    async with httpx.AsyncClient(timeout=10.0) as client:
+    async with httpx.AsyncClient(timeout=15.0) as client:
         for query in serper_queries:
             if not query or not query.strip():
                 continue
@@ -171,18 +200,43 @@ async def discover_companies_from_serper() -> set[str]:
                     json={
                         "q": query.strip(),
                         "num": 10,
+                        "tbs": "qdr:m"
                     },
                 )
                 data = res.json()
                 for result in data.get("organic", []):
-                    title = result.get("title", "")
-                    name = (
-                        title.replace("| LinkedIn", "")
-                        .replace("- LinkedIn", "")
-                        .strip()
-                    )
-                    if name and len(name) > 2:
-                        companies.add(name)
+                    link = result.get("link", "")
+                    if link:
+                        text_to_analyze = result.get("snippet", "")
+                        # Use ScrapeBadger to fetch post context if key is present
+                        if settings.SCRAPEBADGER_API_KEY and "/posts/" in link:
+                            try:
+                                import urllib.parse
+                                parsed = urllib.parse.urlparse(link)
+                                post_slug = parsed.path.strip('/').split('/')[-1]
+                                await asyncio.sleep(1.5)  # Rate limit spacing for ScrapeBadger
+                                sb_res = await client.get(
+                                    f"https://scrapebadger.com/v1/linkedin/posts/{post_slug}",
+                                    headers={"x-api-key": settings.SCRAPEBADGER_API_KEY}
+                                )
+                                if sb_res.status_code == 200:
+                                    sb_data = sb_res.json()
+                                    # Depends on API return schema. Trying typical keys.
+                                    text_to_analyze = sb_data.get("text", "") or sb_data.get("content", "") or text_to_analyze
+                                elif sb_res.status_code == 429:
+                                    logger.warning(f"[ScrapeBadger] Rate limited on LinkedIn post, using Serper snippet instead")
+                            except Exception as e:
+                                logger.error(f"[ScrapeBadger Fetch] Failed for {link}: {e}")
+
+                        if validate_relevance(text_to_analyze):
+                            title = result.get("title", "")
+                            name = (
+                                title.replace("| LinkedIn", "")
+                                .replace("- LinkedIn", "")
+                                .strip()
+                            )
+                            if name and len(name) > 2:
+                                companies.add(name.split("-")[0].strip())
             except Exception as e:
                 logger.error(f"[Serper] Discovery sweep failed for query '{query}': {e}")
 
@@ -355,15 +409,12 @@ async def run_autonomous_discovery() -> list[tuple[str, str, dict]]:
     all_companies = jobspy_companies | news_companies | serper_companies | yelp_companies
     logger.info(f"[Discovery] Total unique companies discovered: {len(all_companies)}")
 
-    # Resolve domains and filter cached
-    async def _resolve_single(name):
-        domain, firms = await asyncio.to_thread(resolve_domain, name)
-        return name, domain, firms
+    # We skip domain resolution here! We will use Serper to resolve domains
+    # ONLY for the Top 5 companies selected by Gemini in Phase 2.
+    # This prevents firing 130+ useless API calls to Clearbit/Wikipedia.
+    resolved = [(n, None, {}) for n in all_companies]
 
-    results = await asyncio.gather(*[_resolve_single(n) for n in all_companies])
-    resolved = [(n, d, f) for n, d, f in results if d and not check_recent_cache(d)]
-
-    logger.info(f"[Discovery] {len(resolved)} companies ready for pipeline processing")
+    logger.info(f"[Discovery] {len(resolved)} companies ready for Gemini Phase 1 Top 5 Selection")
     return resolved
 
 
@@ -373,61 +424,44 @@ async def run_autonomous_discovery() -> list[tuple[str, str, dict]]:
 
 async def fetch_news_signals(company_name: str) -> list[dict]:
     """
-    Scrapes the web for recent PR, funding, and growth signals using NewsAPI.
+    Scrapes the web for recent PR, funding, and growth signals using Serper Google News.
     """
-    logger.info(f"[NewsAPI] Initiating live web search for: {company_name}")
-    api_key = settings.NEWS_API_KEY
+    logger.info(f"[Serper News] Initiating live web search for: {company_name}")
+    api_key = settings.SERPER_API_KEY
     if not api_key or api_key == "mock_key_if_empty":
         return []
+        
+    url = "https://google.serper.dev/news"
+    headers = {"X-API-KEY": api_key, "Content-Type": "application/json"}
+    
+    # Target funding, expansion, and corporate milestones explicitly
+    query = f'"{company_name}" (funding OR raised OR valuation OR ARR OR launch)'
+    payload = {"q": query, "num": 5}
+    
     try:
-        from backend.config_manager import load_intent_config
-        config = load_intent_config()
-        query_template = config.get("news_signals_query_template", '"{company_name}" AND (startup OR funding OR expansion OR hiring)')
-        query_str = query_template.replace("{company_name}", company_name)
-        async with httpx.AsyncClient() as client:
-            res = await client.get(
-                "https://newsapi.org/v2/everything",
-                params={
-                    "q": query_str,
-                    "apiKey": settings.NEWS_API_KEY,
-                    "language": "en",
-                    "sortBy": "publishedAt",
-                    "pageSize": 5,
-                },
-            )
-            data = res.json()
-            if data.get("status") == "ok" and data.get("articles"):
+        async with httpx.AsyncClient(timeout=5.0) as client:
+            res = await client.post(url, headers=headers, json=payload)
+            if res.status_code == 200:
+                articles = res.json().get("news", [])
                 signals = []
-                company_variants = list(
-                    set([company_name, company_name.capitalize(), company_name.upper()])
-                )
-
-                for art in data["articles"]:
-                    title = art.get("title") or ""
-                    desc = art.get("description") or ""
-                    content = art.get("content") or ""
-
-                    has_proper_noun_match = any(
-                        (v in title or v in desc or v in content)
-                        for v in company_variants
-                    )
-
-                    if has_proper_noun_match:
-                        published_at = art.get("publishedAt") or "Unknown Date"
-                        url = art.get("url") or ""
-                        text = f"Title: {title}\nDate: {published_at}\nURL: {url}\nDescription: {desc}\nContent: {content}"
-                        signals.append(
-                            {
-                                "company_name": company_name,
-                                "domain": "derived_from_news.com",
-                                "raw_text": text,
-                                "source_api": "NewsAPI",
-                                "extracted_url": art.get("url", ""),
-                            }
-                        )
+                for a in articles:
+                    title = a.get("title") or ""
+                    snippet = a.get("snippet") or ""
+                    date = a.get("date") or "Unknown Date"
+                    link = a.get("link") or ""
+                    
+                    text = f"Title: {title}\nDate: {date}\nURL: {link}\nSnippet: {snippet}"
+                    signals.append({
+                        "company_name": company_name,
+                        "domain": "derived_from_news.com",
+                        "raw_text": text,
+                        "source_api": "SerperNews",
+                        "extracted_url": link,
+                        "url": link
+                    })
                 return signals
     except Exception as e:
-        logger.error(f"[NewsAPI Error] {e}")
+        logger.error(f"[Serper News] Search failed for {company_name}: {e}")
     return []
 
 

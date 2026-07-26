@@ -24,6 +24,7 @@
 
   /* Semantic */
   --nexa-emerald: #34d399;
+  --nexa-emerald-bright: #6ee7b7;
   --nexa-emerald-dim: rgba(52, 211, 153, 0.12);
   --nexa-amber: #fbbf24;
   --nexa-amber-dim: rgba(251, 191, 36, 0.12);
@@ -246,6 +247,7 @@ html.light-theme {
   --nexa-accent-glow: rgba(217, 119, 6, 0.2);
 
   --nexa-emerald: #059669;
+  --nexa-emerald-bright: #047857;
   --nexa-emerald-dim: rgba(5, 150, 105, 0.12);
   --nexa-amber: #d97706;
   --nexa-amber-dim: rgba(217, 119, 6, 0.12);

@@ -8,7 +8,7 @@ import logging
 logger = logging.getLogger("LeadsRouter")
 
 from backend.pipeline.discovery import fetch_public_intent_signals
-from backend.pipeline.scorer import analyze_lead_with_gemini
+
 from backend.pipeline.dns_audit import audit_domain_email_infrastructure
 from backend.models import LeadSnapshot
 from backend.database import SessionLocal

@@ -87,38 +87,7 @@ def run_pipeline_job():
         # 1. Run the autonomous batch pipeline for companies
         result = asyncio.run(run_batch_pipeline())
 
-        # 2. Also run the social media posts discovery sweep
-        try:
-            with open("backend/intent_config.json", "r") as f:
-                config = json.load(f)
-                keywords = config.get("social_keywords", ["looking for marketing agency"])
-        except Exception:
-            keywords = ["looking for marketing agency"]
 
-        try:
-            social_posts = asyncio.run(fetch_social_micro_intent(keywords))
-            for p in social_posts:
-                existing = db.execute(
-                    text("SELECT id FROM social_posts WHERE post_url=:u LIMIT 1"),
-                    {"u": p["post_url"]}
-                ).fetchone()
-                if not existing:
-                    db_post = SocialPostSnapshot(
-                        id=str(uuid.uuid4()),
-                        platform=p["platform"],
-                        author_name=p["author_name"],
-                        author_handle=p["author_handle"],
-                        content=p["content"],
-                        post_url=p["post_url"],
-                        keyword_matched=p["keyword_matched"],
-                        company_name=p["company_name"],
-                        published_at=p["published_at"]
-                    )
-                    db.add(db_post)
-            db.commit()
-            logger.info(f"Social posts sweep complete: fetched {len(social_posts)} posts.")
-        except Exception as s_err:
-            logger.error(f"Social posts sweep inside scheduler error: {s_err}")
 
         success_count = result.get("successes", 0)
         errors = result.get("had_errors", False)
@@ -128,9 +97,14 @@ def run_pipeline_job():
 
         db.execute(
             text(
-                "INSERT OR REPLACE INTO pipeline_status "
+                "INSERT INTO pipeline_status "
                 "(id, last_run_time, lead_count_processed, status, errors_encountered) "
-                "VALUES ('1', :t, :c, :s, :e)"
+                "VALUES ('1', :t, :c, :s, :e) "
+                "ON CONFLICT (id) DO UPDATE SET "
+                "last_run_time = EXCLUDED.last_run_time, "
+                "lead_count_processed = EXCLUDED.lead_count_processed, "
+                "status = EXCLUDED.status, "
+                "errors_encountered = EXCLUDED.errors_encountered"
             ),
             {
                 "t": datetime.now(timezone.utc).isoformat(),

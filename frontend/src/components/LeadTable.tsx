@@ -314,15 +314,15 @@ export default function LeadTable({
                         <span 
                           className={`inline-flex whitespace-nowrap items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-bold border shadow-sm ${
                             nuance.type === 'adjacent'
-                              ? 'border-emerald-500/30 bg-[var(--nexa-emerald-dim)] text-emerald-300'
+                              ? 'border-[var(--nexa-emerald)]/30 bg-[var(--nexa-emerald-dim)] text-[var(--nexa-emerald-bright)]'
                               : nuance.type === 'direct'
-                              ? 'border-amber-500/30 bg-[var(--nexa-amber-dim)] text-amber-300'
-                              : 'border-white/10 bg-white/5 text-zinc-300'
+                              ? 'border-[var(--nexa-amber)]/30 bg-[var(--nexa-amber-dim)] text-[var(--nexa-accent-bright)]'
+                              : 'border-[var(--nexa-border)] bg-[var(--nexa-surface)] text-[var(--nexa-text-secondary)]'
                           }`}
                           title={nuance.desc}
                         >
                           <span className={`w-1.5 h-1.5 rounded-full ${
-                            nuance.type === 'adjacent' ? 'bg-emerald-400 animate-pulse' : nuance.type === 'direct' ? 'bg-amber-400' : 'bg-zinc-500'
+                            nuance.type === 'adjacent' ? 'bg-[var(--nexa-emerald)] animate-pulse' : nuance.type === 'direct' ? 'bg-[var(--nexa-amber)]' : 'bg-[var(--nexa-text-muted)]'
                           }`} />
                           {nuance.label}
                         </span>

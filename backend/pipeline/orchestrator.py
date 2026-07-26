@@ -16,12 +16,13 @@ from backend.pipeline.discovery import (
     resolve_domain,
     run_autonomous_discovery,
 )
-from backend.pipeline.scorer import analyze_lead_with_gemini
+
 from backend.pipeline.dns_audit import audit_domain_email_infrastructure
 from backend.pipeline.filter_funnel import check_recent_cache
 from backend.pipeline.contact_extractor import extract_contacts
 from backend.models import LeadSnapshot
 from backend.database import SessionLocal
+from backend.config import settings
 
 logger = logging.getLogger("PipelineOrchestrator")
 
@@ -200,11 +201,53 @@ async def run_pipeline_for_company(
     except Exception as e:
         logger.error(f"Error executing Scrape Creators validation: {e}")
 
-    cleaned_html = "\n\n".join([s.get("raw_text", "") for s in raw_signals])
+    # Combine text but explicitly attach the source URL above each chunk so the LLM can extract it
+    cleaned_html_parts = []
+    for s in raw_signals:
+        url = s.get("url") or s.get("link") or s.get("extracted_url") or "Unknown URL"
+        text = s.get("raw_text", "")
+        cleaned_html_parts.append(f"[Source URL: {url}]\n{text}")
+    cleaned_html = "\n\n---\n\n".join(cleaned_html_parts)
 
-    # Phase 5: Scoring (Gemini) — calls analyze_lead_with_gemini which internally
-    # calls process_hybrid_lead_scoring
-    scored_data = analyze_lead_with_gemini(company_name, cleaned_html, firmographics)
+    # Phase 5: Fast intent classification using Groq
+    from backend.pipeline.scorer import analyze_lead_intent_with_llm
+    
+    scored_data = {}
+    for attempt in range(3):
+        try:
+            scored_data = await analyze_lead_intent_with_llm(
+                company_name, 
+                cleaned_html, 
+                firmographics
+            )
+            if "API Error" not in scored_data.get("ai_verdict", ""):
+                break
+        except Exception as e:
+            logger.warning(f"Phase 5 LLM Synthesis transient error on attempt {attempt+1}: {e}")
+        
+        if attempt < 2:
+            logger.info("Backing off for 5 seconds before retrying Phase 5 LLM Synthesis...")
+            await asyncio.sleep(5)
+            
+    if not scored_data:
+        scored_data = {
+            "company_name": company_name,
+            "intent_score": 0,
+            "ai_verdict": "API Error: Synthesis failed after 3 retries.",
+            "signals": [],
+            "icp_fit": "Poor"
+        }
+        
+    # Override LLM-generated URLs with exact links from raw payloads
+    if scored_data.get("signals"):
+        for sig in scored_data["signals"]:
+            quote = sig.get("verbatim_quote", "")
+            for raw_s in raw_signals:
+                if quote and quote.lower() in raw_s.get("raw_text", "").lower():
+                    exact_url = raw_s.get("url") or raw_s.get("link") or raw_s.get("extracted_url")
+                    if exact_url:
+                        sig["source_url"] = exact_url
+                    break
 
     # Phase 3b: DNS Audit
     dns_res = await audit_domain_email_infrastructure(domain)
@@ -259,8 +302,30 @@ async def run_pipeline_for_company(
         scored_data["intent_score"] = 0
         scored_data["icp_fit"] = "Poor"
 
+    # URL Override: Replace LLM hallucinated URLs with exact canonical links from ScrapeBadger/Serper
+    if scored_data.get("signals"):
+        for sig in scored_data["signals"]:
+            quote = sig.get("verbatim_quote", "")
+            for raw_s in raw_signals:
+                if quote and quote.lower() in raw_s.get("raw_text", "").lower():
+                    exact_url = raw_s.get("url") or raw_s.get("link") or raw_s.get("extracted_url")
+                    if exact_url:
+                        sig["source_url"] = exact_url
+                    break
+
     # Phase 4: Contact Extraction (real, not mocked)
     contacts = extract_contacts(domain, scored_data.get("company_name", company_name))
+
+    # Safely parse employee count which might come as a string range "50-200" from Gemini
+    raw_emp = firmographics.get("employee_count")
+    emp_val = None
+    if isinstance(raw_emp, int):
+        emp_val = raw_emp
+    elif isinstance(raw_emp, str):
+        import re
+        nums = re.findall(r'\d+', raw_emp.replace(",", ""))
+        if nums:
+            emp_val = int(nums[-1])  # Take upper bound
 
     lead_id = str(uuid.uuid4())
     lead_payload = {
@@ -268,7 +333,7 @@ async def run_pipeline_for_company(
         "company_name": scored_data.get("company_name", company_name),
         "domain": domain,
         "industry": firmographics.get("industry", "Unknown"),
-        "employee_count": firmographics.get("employee_count"),
+        "employee_count": emp_val,
         "intent_score": scored_data.get("intent_score", 0),
         "signal_freshness": scored_data.get("signal_freshness", 100),
         "tier": scored_data.get("tier", "Low"),
@@ -291,6 +356,109 @@ async def run_pipeline_for_company(
     _persist_lead(lead_id, domain, company_name, lead_payload)
     return {"status": "success", "lead": lead_payload}
 
+async def select_top_5_leads(companies: set[str]) -> list[dict]:
+    """
+    Step 1: Gemini 2.5 Flash + Web Search
+    Ranks 100 names -> Picks TOP 5 with live 2026 intent triggers
+    """
+    if not companies:
+        return []
+
+    logger.info(f"Selecting top 5 leads from {len(companies)} candidates using Gemini 2.5 Flash + Web Search...")
+    company_list_str = "\n".join(list(companies))
+    
+    prompt = f"""You are a Lead Scoring AI and Senior B2B Sales Intelligence Analyst.
+
+TASK:
+Analyze the attached list of {len(companies)} company names.
+Use live web search to evaluate recent developments (2025-2026) and identify the TOP 5 companies displaying the highest, most actionable sales intent triggers.
+
+IDEAL CUSTOMER PROFILE (ICP) TARGET:
+- Target Company Scale: Prioritize high-growth mid-market scale-ups and fast-growing startups (typically Series A through Series C/Growth rounds, approximately 20 to 300 employees).
+- Avoid Mega-Unicorns / Enterprise Giants: Exclude mature tech giants or massive mega-unicorns with established >500–1,000+ employee bases (e.g., avoid giant infrastructure plays like Datadog, Perplexity, or ZoomInfo) unless they fit a mid-market scale-up profile.
+
+EVALUATION & RANKING CRITERIA (Prioritize in order):
+1. 💰 Funding & Investment: Recent venture rounds (Series A, B, or C), debt financing, or strategic funding announcements in 2025-2026.
+2. 📈 Revenue & Scale Milestones: Publicly announced ARR milestones ($5M–$50M+ ARR, $1B+ processing volume, etc.).
+3. 👥 Rapid Hiring Spikes: Public leadership announcements hiring for 10+ new roles or filling C-level positions.
+4. 🚀 Major Product / Market Launches: Rollouts of new AI platforms, international expansions, or strategic enterprise partnerships.
+
+STRICT EXCLUSIONS (Do NOT pick):
+- Exclude other service agencies, recruiting/staffing firms, consulting practices, and local boutique studios (e.g., recruitment agencies, design agencies, dev shops).
+- Focus strictly on product-driven SaaS, B2B software platforms, or high-growth D2C scale-ups.
+- Companies undergoing mass layoffs, bankruptcy, or legal/regulatory trouble.
+- Dormant/inactive companies or companies with no verifiable 2025-2026 news.
+- Micro-companies with fewer than 5 employees.
+
+OUTPUT FORMAT:
+Return ONLY a valid JSON array containing exactly the TOP 5 ranked companies formatted as follows:
+
+[
+  {{
+    "rank": 1,
+    "company_name": "Exact Brand Name",
+    "estimated_domain": "companydomain.com",
+    "intent_score": 94,
+    "primary_category": "FUNDING | HIRING_SPIKE | PRODUCT_LAUNCH | STRATEGIC_REVIEW",
+    "employee_count": "Estimated employee tier (e.g., 50-200, 20-300, etc.)",
+    "top_intent_trigger": "1-2 sentence summary of the exact verified trigger event with metrics/dates",
+    "suggested_outreach_angle": "1-sentence pitch hook for B2B vendors/agencies"
+  }}
+]
+
+CRITICAL RULES:
+- Ensure 'estimated_domain' uses the official canonical root website domain (e.g., 'nitra.com', 'readai.com', 'stepful.com').
+- Do not include markdown commentary, introductory text, or conversational explanations outside the JSON array.
+
+COMPANY LIST TO SCREEN ({len(companies)} Companies):
+{company_list_str}
+"""
+
+    import os
+    from google import genai
+    from google.genai import types
+    
+    api_key = settings.GEMINI_API_KEY
+    if not api_key or api_key in ["mock_key_if_empty", ""]:
+        logger.warning("Gemini API key missing, falling back to dummy top 5 selection.")
+        return _select_top_5_leads_dummy(companies)
+        
+    try:
+        client = genai.Client(api_key=api_key, http_options={'timeout': 60.0})
+        # Configure Gemini to use Google Search for grounding (response_mime_type is unsupported with tools)
+        config = types.GenerateContentConfig(
+            temperature=0.2,
+            tools=[{"googleSearch": {}}]
+        )
+        
+        # Use run_in_executor since generate_content can be synchronous
+        loop = asyncio.get_running_loop()
+        response = await loop.run_in_executor(
+            None,
+            lambda: client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=prompt,
+                config=config
+            )
+        )
+        
+        raw_json = response.text.replace("```json", "").replace("```", "").strip()
+        top_5_data = json.loads(raw_json)
+        
+        logger.info(f"Gemini successfully selected top 5 leads: {[c.get('company_name') for c in top_5_data]}")
+        return top_5_data
+        
+    except Exception as e:
+        logger.error(f"Error selecting top 5 leads with Gemini: {e}")
+        return _select_top_5_leads_dummy(companies)
+
+
+def _select_top_5_leads_dummy(companies: set[str]) -> list[dict]:
+    """Fallback dummy function"""
+    logger.info(f"Selecting top 5 leads from {len(companies)} candidates using dummy fallback...")
+    top_5 = list(companies)[:5]
+    return [{"company_name": name, "estimated_domain": f"{name.lower().replace(' ', '').replace(',', '')}.com"} for name in top_5]
+
 
 async def run_batch_pipeline() -> dict:
     """
@@ -302,30 +470,6 @@ async def run_batch_pipeline() -> dict:
 
     # Phase 1: Autonomous discovery
     discovered = await run_autonomous_discovery()
-    
-    # 1.5 Scrape Creators Search Posts discovery
-    try:
-        from backend.pipeline.social_discovery import fetch_social_micro_intent
-        import os, json
-        # Dynamically read allowlist from settings
-        config_path = os.path.join(os.path.dirname(__file__), "..", "intent_config.json")
-        try:
-            with open(config_path, "r") as f:
-                intent_cfg = json.load(f)
-                keywords = intent_cfg.get("extraction_keywords", ["hiring", "series a"])
-        except Exception:
-            keywords = ["hiring", "series a"]
-            
-        social_discovered = await fetch_social_micro_intent(keywords)
-        # Map these to the `discovered` format: (company_name, domain, firmographics)
-        for sig in social_discovered:
-            c_name = sig.get("company_name")
-            if c_name and not any(d[0] == c_name for d in discovered):
-                # Placeholder domain, will be resolved in Phase 2
-                discovered.append((c_name, None, {}))
-    except Exception as e:
-        logger.error(f"Error in social discovery sweep: {e}")
-        
     logger.info(f"Batch pipeline: {len(discovered)} total companies to process after Search Posts sweep.")
 
     # Fetch currently active companies from DB to avoid duplicates (hash map)
@@ -339,36 +483,81 @@ async def run_batch_pipeline() -> dict:
     filtered_discovered = [d for d in discovered if d[0] not in active_companies]
     logger.info(f"Filtered to {len(filtered_discovered)} new companies (skipped {len(discovered) - len(filtered_discovered)} already live).")
 
-    # Limit to top 10 candidates to avoid excessive API usage
-    pool = filtered_discovered[:10]
-    
-    company_signals_map = {}
-    
-    # Fetch signals for all companies in the pool
-    for idx, (company_name, domain, firmographics) in enumerate(pool):
-        logger.info(f"Fetching signals for [{idx + 1}/{len(pool)}]: {company_name}")
-        try:
-            raw_signals = await fetch_public_intent_signals(company_name)
-            filtered_signals = _heuristic_signal_filter(raw_signals)
-            company_signals_map[company_name] = filtered_signals
-        except Exception as e:
-            logger.error(f"Error fetching signals for {company_name}: {e}")
-            company_signals_map[company_name] = []
-        # Brief delay to respect rate limits
-        await asyncio.sleep(1)
+    # Step 1: Gemini 2.5 Flash + Web Search (Ranks 100 names -> Picks TOP 5)
+    pool_candidates = {d[0] for d in filtered_discovered[:100]}
+    if not pool_candidates:
+        logger.info("No new companies to process.")
+        return {"companies_processed": 0, "successes": 0, "had_errors": False}
         
-    # Sort the pool based on the number of fetched signals descending
-    pool.sort(key=lambda x: len(company_signals_map[x[0]]), reverse=True)
+    top_5_leads = await select_top_5_leads(pool_candidates)
     
-    # Select the top 5 companies with the most signals
-    top_5 = pool[:5]
-
+    # Phase 2: Entity Resolution (Top 5 Only)
+    top_5_pool = []
+    for lead in top_5_leads:
+        c_name = lead.get("company_name")
+        # Run Entity Resolution now so deep sweeps have verified domains
+        from backend.pipeline.enrichment import resolve_domain_via_serper
+        from backend.config import settings
+        real_domain = await resolve_domain_via_serper(
+            company_name=c_name, 
+            serper_api_key=settings.SERPER_API_KEY, 
+            phase1_estimated_domain=lead.get("estimated_domain", "")
+        )
+        
+        # Inject the Gemini Phase 1 estimate so it flows into Phase 4 Hybrid Scoring
+        firmos = {"employee_count": lead.get("employee_count", "Unknown")}
+        
+        domain = real_domain or lead.get("estimated_domain") or lead.get("domain")
+        firmographics = firmos if firmos else {}
+        for d in filtered_discovered:
+            if d[0] == c_name:
+                firmographics.update(d[2])
+                break
+        top_5_pool.append((c_name, domain, firmographics))
+    
     success_count = 0
     errors = False
 
-    for idx, (company_name, domain, firmographics) in enumerate(top_5):
-        signals = company_signals_map[company_name]
-        logger.info(f"Processing Top [{idx + 1}/{len(top_5)}]: {company_name} with {len(signals)} signals")
+    # Phase 3 & 4 & 5 & 6: Sequential Deep Sweep, Synthesis, and DB Persist Per Company
+    for idx, (company_name, domain, firmographics) in enumerate(top_5_pool):
+        logger.info(f"Fetching deep signals for [{idx + 1}/{len(top_5_pool)}]: {company_name}")
+        try:
+            import httpx
+            from backend.pipeline.enrichment import fetch_reddit_posts, fetch_twitter_posts
+            
+            raw_signals = await fetch_public_intent_signals(company_name)
+            
+            # ScrapeBadger native 3-times exponential backoff handles 429s automatically
+            async with httpx.AsyncClient(timeout=45.0) as client:
+                reddit_posts = await fetch_reddit_posts(client, company_name, domain)
+                twitter_posts = await fetch_twitter_posts(client, company_name, domain)
+                
+            for reddit_post in reddit_posts:
+                date_str = reddit_post.get("date", "Unknown Date")
+                raw_signals.append({
+                    "company_name": company_name,
+                    "domain": domain,
+                    "raw_text": f"Reddit Post:\nDate: {date_str}\nTitle: {reddit_post.get('title', '')}\nText: {reddit_post.get('text', '')}",
+                    "source_api": "Reddit",
+                    "url": reddit_post.get("url")
+                })
+                
+            for twitter_post in twitter_posts:
+                date_str = twitter_post.get("created_at") or twitter_post.get("date") or "Unknown Date"
+                raw_signals.append({
+                    "company_name": company_name,
+                    "domain": domain,
+                    "raw_text": f"X/Twitter Post:\nDate: {date_str}\nText: {twitter_post.get('text', '')}",
+                    "source_api": "X",
+                    "url": twitter_post.get("url")
+                })
+
+            signals = _heuristic_signal_filter(raw_signals)
+        except Exception as e:
+            logger.error(f"Error fetching signals for {company_name}: {e}")
+            signals = []
+            
+        logger.info(f"Processing Synthesis for Top [{idx + 1}/{len(top_5_pool)}]: {company_name} with {len(signals)} signals")
         try:
             res = await run_pipeline_for_company(
                 company_name, 
@@ -433,6 +622,13 @@ def _heuristic_signal_filter(signals: list[dict]) -> list[dict]:
         has_allowlist = any(term in text for term in allowlist)
         has_denylist = any(term in text for term in denylist)
         
+        # Strict Time-Decay Threshold (Discard > 180 days)
+        from backend.pipeline.time_decay import calculate_time_decay
+        date_str = sig.get("date_posted") or sig.get("event_date") or ""
+        multiplier, _ = calculate_time_decay(date_str)
+        if multiplier < 0.20:
+            continue # Drop anything older than 180 days
+            
         if has_allowlist:
             filtered.append(sig)  # Strong intent, pass immediately
         elif has_denylist and not has_allowlist:

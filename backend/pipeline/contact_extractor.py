@@ -28,7 +28,7 @@ except Exception:
 
 
 TITLE_KEYWORDS = [
-    "CEO", "CTO", "Founder", "Co-founder", "VP Sales",
+    "CEO", "CTO", "Founder", "Co-founder", "Owner", "Franchise Owner", "VP Sales",
     "Head of Sales", "Director", "President", "Partner",
     "Chief", "COO", "CFO", "CMO", "VP", "Head of",
 ]
@@ -124,7 +124,7 @@ def search_linkedin_contacts(company_name: str, domain: str) -> list[dict]:
     if not api_key or api_key == "mock_key_if_empty":
         return []
         
-    query = f'site:linkedin.com/in "{company_name}" "VP Sales" OR "Head of Sales" OR "Director"'
+    query = f'site:linkedin.com/in "{company_name}" "VP Sales" OR "Head of Sales" OR "Director" OR "Founder" OR "Co-Founder" OR "CEO" OR "Owner" OR "Franchise Owner"'
     contacts = []
     try:
         with httpx.Client(timeout=10.0) as client:

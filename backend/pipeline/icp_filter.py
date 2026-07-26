@@ -18,10 +18,22 @@ def apply_icp_filters(
 
     # 1. Scale Constraints: Capacity Check
     if employee_count is not None:
-        if employee_count > 500:
+        if isinstance(employee_count, str):
+            import re
+            # Extract the upper bound of the estimate (e.g., "50-200" -> 200)
+            matches = re.findall(r'\d+', employee_count.replace(',', ''))
+            if matches:
+                # If range, take max. If single number, take it.
+                parsed_count = max(int(m) for m in matches)
+            else:
+                parsed_count = 100  # Default safe assumption
+        else:
+            parsed_count = employee_count
+            
+        if parsed_count > 500:
             score = min(score, 35)  # Enterprise internal sales block cap
             fit_label = "Poor"
-        elif employee_count < 5:
+        elif parsed_count < 5:
             score = min(score, 35)  # Under-resourced/pre-revenue block cap
             fit_label = "Poor"
 

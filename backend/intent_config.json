@@ -1,13 +1,15 @@
 {
   "news_queries": [
     "(\"expanding to new locations\" OR \"opening new locations\" OR \"franchise expansion\" OR \"multi-unit deal\") AND (\"marketing\" OR \"retail\" OR \"services\") -billion -conglomerate -corp",
-    "(\"raised\" OR \"secures funding\" OR \"Series A\" OR \"Seed\") AND (\"growth\" OR \"B2B SaaS\" OR \"franchise\" OR \"healthcare\") AND NOT (\"internal team\") -enterprise -global -inc"
+    "(\"raised\" OR \"secures funding\" OR \"Series A\" OR \"Seed\") AND (\"growth\" OR \"B2B SaaS\" OR \"franchise\" OR \"healthcare\") AND NOT (\"internal team\") -enterprise -global -inc",
+    "(\"names new\" OR \"appoints\" OR \"hires\" OR \"welcomes\") AND (\"Chief Marketing Officer\" OR \"VP of Marketing\" OR \"Head of Marketing\" OR \"Marketing Director\") NOT (\"promoted\")",
+    "(\"marketing team\" AND (\"layoffs\" OR \"restructuring\" OR \"eliminated\" OR \"downsizing\"))"
   ],
   "serper_queries": [
     "site:linkedin.com/posts (\"looking for a marketing agency\" OR \"recommend a PPC agency\" OR \"need a fractional CMO\") -agency -clutch -top -our -portfolio -\"we offer\"",
     "site:linkedin.com/posts (\"looking for local SEO\" OR \"recommend Google Ads expert\" OR \"hiring a growth agency\") -agency -clutch -top -our -portfolio -\"we offer\""
   ],
-  "jobspy_search_term": "Founder, Co-Founder, CEO, Owner, Chief Marketing Officer, CMO, VP of Marketing, Director of Marketing, Head of Growth, Franchise Owner",
+  "jobspy_search_term": "Chief Marketing Officer, CMO, VP of Marketing, Director of Marketing, Head of Growth, Marketing Manager, Digital Marketing Manager",
   "news_signals_query_template": "\"{company_name}\" AND (startup OR funding OR expansion OR hiring)",
   "extraction_keywords": [
     "digital marketing agency",
@@ -23,7 +25,11 @@
     "paid search management",
     "conversion rate optimization",
     "search engine marketing",
-    "growth marketing agency"
+    "growth marketing agency",
+    "marketing agency partner",
+    "outsourced marketing",
+    "SEO agency",
+    "content marketing agency"
   ],
   "social_triggers": [
     "looking for",
