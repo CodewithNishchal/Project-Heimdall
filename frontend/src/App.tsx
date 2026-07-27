@@ -100,6 +100,15 @@ export default function App() {
     }).format(estimatedVal);
   }, [leads]);
 
+  const newTodayCount = useMemo(() => {
+    const todayStr = new Date().toISOString().split('T')[0];
+    return leads.filter((l) => {
+      if (!l.last_updated) return l.badge === 'new_today';
+      const leadDateStr = new Date(l.last_updated).toISOString().split('T')[0];
+      return (l.badge === 'new_today' || leadDateStr === todayStr) && leadDateStr === todayStr;
+    }).length;
+  }, [leads]);
+
   const containerVariants: Variants = {
     hidden: { opacity: 0 },
     show: {
@@ -129,7 +138,7 @@ export default function App() {
               <Shield size={20} strokeWidth={2.5} aria-hidden="true" />
             </div>
             <h1 className="text-xl font-bold tracking-tight text-zinc-100">
-              Heimdall
+              Prospector AI
             </h1>
           </div>
 
@@ -244,21 +253,18 @@ export default function App() {
                   </div>
                 </motion.div>
 
-                {/* Card 3: Contact Reliability Gauge Card (Interactive row selection) */}
-                <motion.div variants={itemVariants} className="nexa-card p-2.5 px-4 flex items-center justify-between h-24 relative overflow-hidden">
-                  <div className="flex flex-col justify-between h-full py-0.5 min-w-0 flex-1">
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">
-                      Contact Reliability
+                {/* Card 3: NEW TODAY */}
+                <motion.div variants={itemVariants} className="nexa-card p-4 flex flex-col justify-between h-24 relative overflow-hidden">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">
+                    NEW TODAY
+                  </span>
+                  <div className="flex items-baseline gap-2 mt-1">
+                    <span className="text-3xl font-extrabold text-zinc-100">
+                      {newTodayCount}
                     </span>
-                    <span className="text-xs text-zinc-400 font-mono flex flex-col mt-2">
-                      {selectedLead ? 'Individual score' : 'Global average'}
-                      <span className="text-[13px] font-semibold text-[var(--nexa-accent)] leading-tight truncate pr-2 mt-1" title={selectedLead ? selectedLead.company_name : 'Global Avg'}>
-                        {selectedLead ? selectedLead.company_name : 'Global Avg'}
-                      </span>
+                    <span className="text-xs text-zinc-500 font-mono">
+                      Across 5 platforms
                     </span>
-                  </div>
-                  <div className="w-20 h-20 flex items-center justify-center flex-shrink-0 -mr-2">
-                    <ConfidenceGauge verified={activeConfidence} total={100} noCard={true} />
                   </div>
                 </motion.div>
 

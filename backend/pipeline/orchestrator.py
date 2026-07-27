@@ -457,8 +457,7 @@ def _select_top_5_leads_dummy(companies: set[str]) -> list[dict]:
     """Fallback dummy function"""
     logger.info(f"Selecting top 5 leads from {len(companies)} candidates using dummy fallback...")
     top_5 = list(companies)[:5]
-    return [{"company_name": name, "estimated_domain": f"{name.lower().replace(' ', '').replace(',', '')}.com"} for name in top_5]
-
+    return [{"company_name": name, "estimated_domain": f"{name.lower().replace(' ', '').replace(',', '')}.com", "industry": "B2B Software & Services"} for name in top_5]
 
 async def run_batch_pipeline() -> dict:
     """
@@ -505,7 +504,10 @@ async def run_batch_pipeline() -> dict:
         )
         
         # Inject the Gemini Phase 1 estimate so it flows into Phase 4 Hybrid Scoring
-        firmos = {"employee_count": lead.get("employee_count", "Unknown")}
+        firmos = {
+            "employee_count": lead.get("employee_count", "Unknown"),
+            "industry": lead.get("industry", "B2B Software & Services")
+        }
         
         domain = real_domain or lead.get("estimated_domain") or lead.get("domain")
         firmographics = firmos if firmos else {}

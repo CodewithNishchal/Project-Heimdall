@@ -85,43 +85,78 @@ export default function SocialPostsView() {
 
     if (plat === 'x' || plat === 'twitter') {
       bg = '#27272a';
+      text = '#ffffff';
       label = 'X';
     } else if (plat === 'reddit') {
-      bg = '#c2410c';
-      label = 'REDDIT';
+      bg = '#7c2d12';
+      text = '#ffedd5';
+      label = 'Reddit';
     } else if (plat === 'instagram') {
-      bg = '#831843';
-      label = 'INSTAGRAM';
+      bg = '#701a75';
+      text = '#fae8ff';
+      label = 'Instagram';
     } else if (plat === 'facebook') {
-      bg = '#1e40af';
-      label = 'FACEBOOK';
+      bg = '#1e3a8a';
+      text = '#dbeafe';
+      label = 'Facebook';
     } else if (plat === 'linkedin') {
-      bg = '#0369a1';
-      label = 'LINKEDIN';
+      bg = '#1e3a8a';
+      text = '#dbeafe';
+      label = 'LinkedIn';
     } else if (plat === 'google') {
-      bg = '#1d4ed8';
-      label = 'GOOGLE Q&A';
+      bg = '#14532d';
+      text = '#dcfce7';
+      label = 'Google Q&A';
     } else if (plat === 'skool') {
-      bg = '#1d4ed8';
-      label = 'SKOOL';
+      bg = '#1e3a8a';
+      text = '#dbeafe';
+      label = 'Skool';
     } else if (plat === 'threads') {
-      bg = '#09090b';
-      label = 'THREADS';
+      bg = '#18181b';
+      text = '#ffffff';
+      label = 'Threads';
+    } else if (plat === 'yelp') {
+      bg = '#7f1d1d';
+      text = '#ffe4e6';
+      label = 'Yelp';
     }
-
 
     return (
       <span
         style={{ backgroundColor: bg, color: text }}
-        className="text-[10px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider shadow-sm"
+        className="text-[11px] font-bold px-2.5 py-0.5 rounded-md shadow-sm"
       >
         {label}
       </span>
     );
   };
 
+  const getIntentBadge = (post: SocialPost) => {
+    const isHot = (post.company_name && post.company_name !== 'Prospect Team') || 
+                  (post.keyword_matched && (post.keyword_matched.includes('agency') || post.keyword_matched.includes('hiring') || post.keyword_matched.includes('recommend')));
+    
+    if (isHot) {
+      return (
+        <span 
+          style={{ backgroundColor: 'rgba(6, 78, 59, 0.85)', color: '#34d399', borderColor: 'rgba(16, 185, 129, 0.4)' }}
+          className="text-[11px] font-bold px-2 py-0.5 rounded-md border flex items-center gap-1 shadow-sm"
+        >
+          <span className="text-[10px]">☐</span> Hot
+        </span>
+      );
+    }
+    return (
+      <span 
+        style={{ backgroundColor: 'rgba(120, 53, 15, 0.85)', color: '#fbbf24', borderColor: 'rgba(217, 119, 6, 0.4)' }}
+        className="text-[11px] font-bold px-2 py-0.5 rounded-md border flex items-center gap-1 shadow-sm"
+      >
+        Warm
+      </span>
+    );
+  };
+
   return (
-    <div className="flex flex-col h-full space-y-6">
+    <div className="flex flex-col h-full space-y-5">
       {/* Header Bar */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center">
@@ -179,8 +214,24 @@ export default function SocialPostsView() {
         </div>
       </div>
 
+      {/* Summary KPI Pills Bar */}
+      <div className="flex items-center gap-2.5 overflow-x-auto pb-1 text-xs">
+        <span className="nexa-card text-zinc-300 px-3.5 py-1.5 rounded-full font-medium border border-nexa-border shadow-sm flex items-center gap-1.5">
+          <strong className="font-extrabold text-zinc-100">{filteredPosts.length}</strong> threads found
+        </span>
+        <span className="nexa-card text-zinc-300 px-3.5 py-1.5 rounded-full font-medium border border-nexa-border shadow-sm flex items-center gap-1.5">
+          <strong className="font-extrabold text-zinc-100">{filteredPosts.filter(p => (p.keyword_matched && (p.keyword_matched.includes('agency') || p.keyword_matched.includes('hiring')))).length}</strong> hot leads
+        </span>
+        <span className="nexa-card text-zinc-300 px-3.5 py-1.5 rounded-full font-medium border border-nexa-border shadow-sm flex items-center gap-1.5">
+          <strong className="font-extrabold text-zinc-100">{Math.max(0, filteredPosts.length - filteredPosts.filter(p => (p.keyword_matched && (p.keyword_matched.includes('agency') || p.keyword_matched.includes('hiring')))).length)}</strong> warm
+        </span>
+        <span className="nexa-card text-zinc-400 px-3.5 py-1.5 rounded-full font-medium border border-nexa-border shadow-sm">
+          Last fetched: recently
+        </span>
+      </div>
+
       {/* Tabs Row */}
-      <div className="flex gap-2.5 overflow-x-auto pb-1 scrollbar-hide">
+      <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
         {TABS.map((tab) => {
           const isActive = activeTab === tab;
           return (
@@ -190,7 +241,7 @@ export default function SocialPostsView() {
               className={`px-4 py-1.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap shadow-sm ${
                 isActive
                   ? 'bg-[var(--nexa-accent)] text-zinc-950 border-[var(--nexa-accent)] font-extrabold'
-                  : 'border-nexa-border bg-nexa-surface text-zinc-400 hover:text-zinc-200'
+                  : 'border-nexa-border bg-nexa-surface text-zinc-400 hover:text-zinc-100'
               }`}
             >
               {tab}
@@ -199,8 +250,8 @@ export default function SocialPostsView() {
         })}
       </div>
 
-      {/* Content Feed */}
-      <div className="flex-1 overflow-y-auto pr-1 pb-6 space-y-4">
+      {/* Content Feed — Row-Based Design */}
+      <div className="flex-1 overflow-y-auto pr-1 pb-6">
         {loading ? (
           <div className="flex justify-center items-center h-48">
             <RefreshCw className="animate-spin text-[var(--nexa-accent)]" size={28} />
@@ -212,70 +263,87 @@ export default function SocialPostsView() {
             <p className="text-zinc-500 text-xs mt-1">Try clicking "Fetch Intent Posts" to run a fresh sweep.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-            {filteredPosts.map((post) => (
-              <div
-                key={post.id}
-                className="nexa-card group relative p-5 shadow-xl flex flex-col justify-between transition-all"
-              >
-                {/* Top Badge & Time */}
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    {getPlatformBadge(post.platform)}
+          <div className="flex flex-col space-y-3.5">
+            {filteredPosts.map((post) => {
+              const tags = (post.keyword_matched || 'marketing agency')
+                .split(',')
+                .flatMap(k => k.trim().split(' '))
+                .filter(Boolean)
+                .slice(0, 4);
+
+              const mainHeadline = post.company_name 
+                ? `${post.company_name} — "${post.content.length > 90 ? post.content.slice(0, 90).trim() + '...' : post.content}"`
+                : post.content;
+
+              const subText = post.content.length > 90 && post.company_name
+                ? post.content
+                : `Verified intent post by @${post.author_handle || post.author_name || 'growth_lead'} · Matched keyword "${post.keyword_matched || 'agency'}"`;
+
+              return (
+                <div
+                  key={post.id}
+                  className="nexa-card rounded-2xl p-5 shadow-lg flex flex-col justify-between transition-all group border border-nexa-border hover:border-nexa-border-strong"
+                >
+                  {/* Top Header Row: Platform Badge + Intent Tag on Left, Time & Author on Right */}
+                  <div className="flex items-center justify-between mb-2.5">
+                    <div className="flex items-center gap-2">
+                      {getPlatformBadge(post.platform)}
+                      {getIntentBadge(post)}
+                    </div>
+                    <span className="text-xs text-zinc-400 font-medium">
+                      {timeAgo(post.published_at)} {post.author_handle ? `· @${post.author_handle}` : ''}
+                    </span>
                   </div>
 
-                  {/* Company & Handle Header */}
-                  <div className="mb-2">
-                    <h3 className="text-sm font-bold text-zinc-100 inline-block mr-2">
-                      {post.company_name || post.author_name || 'Prospect Team'}
+                  {/* Body Content: Main Title & Subtitle */}
+                  <div className="mb-3.5">
+                    <h3 className="text-base font-bold text-zinc-100 mb-1 leading-snug tracking-tight">
+                      {mainHeadline}
                     </h3>
-                    <span className="text-xs text-zinc-400 font-normal">
-                      @{post.author_handle || 'growth_lead'}
-                    </span>
+                    <p className="text-xs text-zinc-300 leading-relaxed font-normal line-clamp-2">
+                      {subText}
+                    </p>
                   </div>
 
-                  {/* Body Content */}
-                  <p className="text-xs text-zinc-300 leading-relaxed font-normal mb-4 line-clamp-4">
-                    {post.content}
-                  </p>
-                </div>
+                  {/* Bottom Footer Row: Keywords on Left, View Thread/Post Button on Right */}
+                  <div className="flex items-center justify-between pt-1">
+                    <div className="flex flex-wrap gap-1.5 items-center">
+                      {tags.map((tag, idx) => (
+                        <span
+                          key={idx}
+                          className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-[var(--nexa-indigo-dim)] text-[var(--nexa-indigo)] border border-indigo-500/30"
+                        >
+                          {tag.toLowerCase()}
+                        </span>
+                      ))}
+                    </div>
 
-                {/* Footer Section */}
-                <div className="border-t border-white/10 pt-3.5 mt-2 flex items-center justify-between">
-                  <div>
-                    <span className="text-[9px] uppercase tracking-wider text-zinc-500 font-semibold block mb-0.5">
-                      MATCHED KEYWORD
-                    </span>
-                    <span style={{ color: 'var(--nexa-accent)' }} className="text-xs font-semibold">
-                      {post.keyword_matched || 'marketing agency'}
-                    </span>
-                  </div>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={(e) => handleDelete(post.id, e)}
+                        className="p-1.5 text-zinc-400 hover:text-rose-500 hover:bg-white/10 rounded-lg transition-all"
+                        title="Delete Post"
+                      >
+                        <Trash2 size={14} />
+                      </button>
 
-                  <div className="flex items-center gap-2">
-                    <a
-                      href={post.post_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 hover:bg-white/10 text-zinc-200 text-xs font-medium rounded-lg border border-white/10 transition-all shadow-sm"
-                    >
-                      View Post
-                      <ExternalLink size={12} />
-                    </a>
-                    <button
-                      onClick={(e) => handleDelete(post.id, e)}
-                      className="p-1.5 text-zinc-500 hover:text-red-400 hover:bg-white/10 rounded-lg transition-all"
-                      title="Delete Post"
-                    >
-                      <Trash2 size={13} />
-                    </button>
+                      <a
+                        href={post.post_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1.5 px-4 py-1.5 bg-nexa-surface hover:bg-nexa-card-hover text-zinc-100 text-xs font-semibold rounded-xl border border-nexa-border transition-all shadow-sm"
+                      >
+                        {post.platform.toLowerCase() === 'reddit' ? 'View thread' : 'View post'}
+                        <span className="text-sm font-sans leading-none">↗</span>
+                      </a>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         )}
       </div>
-
     </div>
   );
 }

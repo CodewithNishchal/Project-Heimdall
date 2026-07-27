@@ -114,8 +114,11 @@ def process_hybrid_lead_scoring(
     if isinstance(ai_verdict, list):
         ai_verdict = " ".join([str(v) for v in ai_verdict])
 
+    extracted_industry = raw_extracted_payload.get("industry") or firmographics.get("industry", "Technology & Services")
+
     return {
         "company_name": raw_extracted_payload.get("company_name"),
+        "industry": extracted_industry,
         "intent_score": final_intent_score,
         "signal_freshness": min(avg_freshness, 100),
         "tier": assigned_tier,
@@ -178,6 +181,7 @@ STRICT EXTRACTION RULES:
 OUTPUT JSON SCHEMA:
 {{
   "company_name": "{company_name}",
+  "industry": "Specific Industry Name (e.g. EdTech, B2B SaaS, E-Commerce, Healthcare, FinTech, Retail)",
   "intent_score": 85,
   "signals": [
     {{
