@@ -367,6 +367,11 @@ async def select_top_5_leads(companies: set[str]) -> list[dict]:
     logger.info(f"Selecting top 5 leads from {len(companies)} candidates using Gemini 2.5 Flash + Web Search...")
     company_list_str = "\n".join(list(companies))
     
+    from backend.config_manager import load_intent_config
+    config = load_intent_config()
+    target_topics = config.get("social_topics", ["B2B services"])
+    topics_str = ", ".join(target_topics)
+    
     prompt = f"""You are a Lead Scoring AI and Senior B2B Sales Intelligence Analyst.
 
 TASK:
@@ -378,6 +383,7 @@ IDEAL CUSTOMER PROFILE (ICP) TARGET:
 - Avoid Mega-Unicorns / Enterprise Giants: Exclude mature tech giants or massive mega-unicorns with established >500–1,000+ employee bases (e.g., avoid giant infrastructure plays like Datadog, Perplexity, or ZoomInfo) unless they fit a mid-market scale-up profile.
 
 EVALUATION & RANKING CRITERIA (Prioritize in order):
+0. 🎯 EXPLICIT INTENT: Strong preference for companies displaying a high likelihood of needing {topics_str} (e.g. searching for leadership, growth consulting, specific marketing services).
 1. 💰 Funding & Investment: Recent venture rounds (Series A, B, or C), debt financing, or strategic funding announcements in 2025-2026.
 2. 📈 Revenue & Scale Milestones: Publicly announced ARR milestones ($5M–$50M+ ARR, $1B+ processing volume, etc.).
 3. 👥 Rapid Hiring Spikes: Public leadership announcements hiring for 10+ new roles or filling C-level positions.
@@ -402,7 +408,7 @@ Return ONLY a valid JSON array containing exactly the TOP 5 ranked companies for
     "primary_category": "FUNDING | HIRING_SPIKE | PRODUCT_LAUNCH | STRATEGIC_REVIEW",
     "employee_count": "Estimated employee tier (e.g., 50-200, 20-300, etc.)",
     "top_intent_trigger": "1-2 sentence summary of the exact verified trigger event with metrics/dates",
-    "suggested_outreach_angle": "1-sentence pitch hook for B2B vendors/agencies"
+    "suggested_outreach_angle": "1-sentence pitch hook specifically related to {topics_str}"
   }}
 ]
 

@@ -6,6 +6,7 @@ from typing import Dict, Any
 from backend.config import settings
 
 from dotenv import dotenv_values, load_dotenv
+from backend.config_manager import load_intent_config
 
 logger = logging.getLogger("SocialClassifier")
 
@@ -32,12 +33,16 @@ async def classify_social_intent(post_text: str, author_bio: str = "") -> Dict[s
         logger.warning("[OpenRouter Classifier] OPENROUTER_API_KEY is not set. Defaulting to seeking_provider.")
         return {"intent": "seeking_provider", "service_category": "marketing_agency", "confidence": 0.9}
 
+    config = load_intent_config()
+    target_topics = config.get("social_topics", ["B2B services"])
+    topics_str = "/".join(target_topics)
+
     prompt = f"""
-Classify this post about marketing/advertising services.
+Classify this post about {topics_str}.
 Return JSON ONLY matching this schema:
 {{
   "intent": "seeking_provider" | "is_provider" | "unrelated" | "unclear",
-  "service_category": "marketing_agency" | "ppc" | "seo" | "cmo" | "facebook_ads" | "growth_marketing" | "lead_gen" | "franchise_marketing" | "other",
+  "service_category": "<extract the specific service they are seeking related to {topics_str}, or 'other'>",
   "confidence": 0.0-1.0
 }}
 
@@ -108,17 +113,21 @@ async def batch_classify_social_intent(posts: list[dict]) -> list[dict]:
             "author": p.get("author_name", "")
         })
 
+    config = load_intent_config()
+    target_topics = config.get("social_topics", ["B2B services"])
+    topics_str = "/".join(target_topics)
+
     prompt = f"""
-You are an expert lead classifier for a marketing agency.
+You are an expert lead classifier for {topics_str}.
 Evaluate this batch of {len(posts)} social media posts.
 
-For EACH post, determine if the author is seeking marketing/advertising/agency services.
+For EACH post, determine if the author is seeking services related to: {topics_str}.
 Return a JSON array of objects. EACH object MUST have this exact schema and match the input 'id':
 [
   {{
     "id": <integer>,
     "intent": "seeking_provider" | "is_provider" | "unrelated" | "unclear",
-    "service_category": "marketing_agency" | "ppc" | "seo" | "cmo" | "facebook_ads" | "growth_marketing" | "lead_gen" | "other",
+    "service_category": "<extract the specific service they are seeking related to {topics_str}, or 'other'>",
     "confidence": 0.0-1.0
   }}
 ]

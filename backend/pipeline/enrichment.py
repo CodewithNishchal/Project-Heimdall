@@ -7,6 +7,7 @@ import re
 from datetime import datetime, timezone, timedelta
 from backend.config import settings
 from dotenv import dotenv_values
+from backend.config_manager import load_intent_config
 
 logger = logging.getLogger("Enrichment")
 
@@ -31,7 +32,11 @@ def sanitize_url(url: str, platform: str) -> str | None:
 
     return url
 
-SYSTEM_INSTRUCTION = """
+config = load_intent_config()
+target_topics = config.get("social_topics", ["B2B services"])
+topics_str = "/".join(target_topics)
+
+SYSTEM_INSTRUCTION_TEMPLATE = """
 You are an execution agent responsible for populating a B2B Lead Intelligence Dashboard.
 You will be provided with an array of 5 target company objects at runtime, each containing { "company_name": "...", "domain": "..." } and their raw extracted signals.
 
@@ -63,7 +68,7 @@ Inject placeholders with explicit status tags for fields reserved for paid enric
 STEP 5: INTENT SYNTHESIS & AI VERDICT
 Synthesize all collected social posts and news articles into the final JSON output:
 1. composite_intent_score: Numeric score (0–100) based on signal recency, density, and growth indicators.
-2. ai_verdict: A concise 2-sentence pitch strategy. The first sentence MUST reference exact numbers from the data (e.g., "$187M funding", "$1B volume", "50 locations"). The second sentence must pitch a specific agency service (e.g., scale-up infrastructure, enterprise security, performance marketing) to support that exact metric.
+2. ai_verdict: A concise 2-sentence pitch strategy. The first sentence MUST reference exact numbers from the data (e.g., "$187M funding", "$1B volume", "50 locations"). The second sentence must pitch a specific service related to {topics_str} to support that exact metric.
 3. Populate detected_signals (max 8 signals total per company across LinkedIn, X, Reddit, and Serper News) to feed directly into the EXTRACTION EVIDENCE LOG UI.
 
 ### CRITICAL SCHEMA RULES
@@ -122,6 +127,9 @@ Return ONLY a valid JSON array of objects for the 5 target companies. Do not inc
   }
 ]
 """
+
+SYSTEM_INSTRUCTION = SYSTEM_INSTRUCTION_TEMPLATE.replace("{topics_str}", topics_str)
+
 
 async def fetch_linkedin_slug(client: httpx.AsyncClient, company_name: str) -> str:
     clean_name = company_name.replace(" World", "").replace(" Inc", "").replace(" LLC", "").replace(" Inc.", "").strip()

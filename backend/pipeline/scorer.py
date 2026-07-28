@@ -191,7 +191,7 @@ OUTPUT JSON SCHEMA:
       "event_date": "YYYY-MM-DD"
     }}
   ],
-  "ai_verdict": "Exactly two sentences summarizing the company's verified intent triggers and recommended sales outreach angle."
+  "ai_verdict": "A highly specific 2-3 sentence summary. Sentence 1: explicitly state the verified intent triggers (e.g. funding amount, exact hiring roles, growth metrics) found in the text. Sentence 2-3: propose a specific, actionable sales outreach strategy tailored to the target keywords."
 }}
 """
 
@@ -262,7 +262,7 @@ OUTPUT JSON SCHEMA:
         "intent_score": fallback_score,
         "signals": extracted_signals,
         "why_now": f"Matched {len(found_matches)} core intent triggers in public discovery sweeps.",
-        "ai_verdict": f"Public intent signals detected for {company_name}. Strong candidate for targeted outreach."
+        "ai_verdict": f"[Groq API limit exhausted] Public intent signals detected for {company_name} (including {', '.join(found_matches[:2]) if found_matches else 'general growth'}). Recommend targeted outreach highlighting how your services can support their recent growth."
     }
 
     return process_hybrid_lead_scoring(fallback_payload, firmographics, cleaned_html)

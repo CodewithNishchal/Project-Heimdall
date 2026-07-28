@@ -560,7 +560,7 @@ async def fetch_social_micro_intent(triggers: list[str], topics: list[str]) -> l
                     "platform": platform_name,
                     "content": str(text),
                     "post_url": url_val,
-                    "keyword_matched": "marketing agency",
+                    "keyword_matched": topics[0] if topics else "target topic",
                     "published_at": post_date.isoformat()
                 })
                 
