@@ -1,37 +1,46 @@
 {
   "news_queries": [
-    "(\"FinTech\" OR \"B2B SaaS\" OR \"financial technology\") AND (\"raised\" OR \"funding\" OR \"Series A\" OR \"Series B\") AND (\"growth\" OR \"marketing\" OR \"expansion\") -enterprise -global",
-    "(\"names new\" OR \"appoints\" OR \"hires\" OR \"welcomes\") AND (\"Chief Marketing Officer\" OR \"VP of Marketing\" OR \"Head of Growth\") AND (\"FinTech\" OR \"SaaS\")",
-    "(\"B2B SaaS\" OR \"FinTech\") AND (\"expanding to new markets\" OR \"product launch\" OR \"rapid growth\")"
+    "(\"expanding to new locations\" OR \"opening new locations\" OR \"franchise expansion\" OR \"multi-unit deal\") AND (\"marketing\" OR \"retail\" OR \"services\") -billion -conglomerate -corp",
+    "(\"raised\" OR \"secures funding\" OR \"Series A\" OR \"Seed\") AND (\"growth\" OR \"B2B SaaS\" OR \"franchise\" OR \"healthcare\") AND NOT (\"internal team\") -enterprise -global -inc",
+    "(\"names new\" OR \"appoints\" OR \"hires\" OR \"welcomes\") AND (\"Chief Marketing Officer\" OR \"VP of Marketing\" OR \"Head of Marketing\" OR \"Marketing Director\") NOT (\"promoted\")",
+    "(\"marketing team\" AND (\"layoffs\" OR \"restructuring\" OR \"eliminated\" OR \"downsizing\"))"
   ],
   "serper_queries": [
-    "site:linkedin.com/posts (\"looking for a fractional CMO\" OR \"recommend a B2B SaaS growth consultant\" OR \"need a FinTech marketing expert\") -agency -clutch -portfolio",
-    "site:linkedin.com/posts (\"hiring a Head of Growth\" OR \"need help scaling our SaaS\" OR \"B2B SaaS marketing consultant\") -agency -clutch"
+    "site:linkedin.com/posts (\"looking for a marketing agency\" OR \"recommend a PPC agency\" OR \"need a fractional CMO\") -agency -clutch -top -our -portfolio -\"we offer\"",
+    "site:linkedin.com/posts (\"looking for local SEO\" OR \"recommend Google Ads expert\" OR \"hiring a growth agency\") -agency -clutch -top -our -portfolio -\"we offer\""
   ],
-  "jobspy_search_term": "Fractional CMO, Chief Marketing Officer, Head of Growth, VP of Marketing, SaaS Growth Consultant",
-  "news_signals_query_template": "\"{company_name}\" AND (SaaS OR FinTech) AND (funding OR growth OR hiring)",
+  "jobspy_search_term": "Chief Marketing Officer, CMO, VP of Marketing, Director of Marketing, Head of Growth, Marketing Manager, Digital Marketing Manager",
+  "news_signals_query_template": "\"{company_name}\" AND (startup OR funding OR expansion OR hiring)",
   "extraction_keywords": [
+    "digital marketing agency",
+    "local SEO optimization",
+    "PPC management",
+    "Google Ads agency",
+    "Meta Ads management",
     "fractional CMO",
-    "B2B SaaS growth",
-    "FinTech marketing",
-    "growth marketing consultant",
-    "SaaS go-to-market",
-    "B2B growth agency",
-    "product led growth",
-    "demand generation strategy",
-    "fractional marketing leadership"
+    "multi-location SEO",
+    "franchise marketing",
+    "lead generation agency",
+    "performance marketing",
+    "paid search management",
+    "conversion rate optimization",
+    "search engine marketing",
+    "growth marketing agency",
+    "marketing agency partner",
+    "outsourced marketing",
+    "SEO agency",
+    "content marketing agency"
   ],
   "social_triggers": [
     "looking for",
     "need a",
     "recommend",
-    "any recommendations",
-    "hiring a"
+    "any recommendations"
   ],
   "social_topics": [
-    "fractional CMO",
-    "B2B SaaS growth consultant",
-    "FinTech marketing expert",
-    "SaaS marketing leadership"
-  ]
+    "marketing agency"
+  ],
+  "min_employees": 10,
+  "max_employees": 500,
+  "target_industries": []
 }

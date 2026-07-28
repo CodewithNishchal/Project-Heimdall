@@ -118,6 +118,7 @@ async def trigger_fetch_social_posts(db: Session = Depends(get_db)):
             logger.error(f"Batch processing failed for chunk: {e}")
             continue
 
+    logger.info(f"Saving {saved_count} new high-intent posts to the database out of {len(new_posts)} fetched posts.")
     db.commit()
     return {
         "status": "success", 

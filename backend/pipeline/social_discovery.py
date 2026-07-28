@@ -409,9 +409,9 @@ async def fetch_social_micro_intent(triggers: list[str], topics: list[str]) -> l
     
     # Platform-specific combined queries
     # Reddit supports extended negative exclusions
-    reddit_negative = '-"we are" -"our agency" -"I run a" -"video editor" -"we are hiring"'
+    reddit_negative = '-"I run a" -"video editor" -"we are hiring"'
     # Twitter (X) API requires leaner negative queries to prevent returning 0 items
-    twitter_negative = '-"we are" -"our agency"'
+    twitter_negative = ''
     
     reddit_query = f'{base_query} {reddit_negative}'
     twitter_query = f'{base_query} {twitter_negative}'
