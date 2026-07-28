@@ -65,16 +65,24 @@ export default function SocialPostsView() {
   };
 
   const filteredPosts = useMemo(() => {
-    if (!searchQuery.trim()) return posts;
-    const q = searchQuery.toLowerCase();
-    return posts.filter(
-      (p) =>
-        p.content.toLowerCase().includes(q) ||
-        p.company_name?.toLowerCase().includes(q) ||
-        p.author_name?.toLowerCase().includes(q) ||
-        p.author_handle?.toLowerCase().includes(q) ||
-        p.keyword_matched?.toLowerCase().includes(q)
-    );
+    let list = posts;
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      list = posts.filter(
+        (p) =>
+          p.content.toLowerCase().includes(q) ||
+          p.company_name?.toLowerCase().includes(q) ||
+          p.author_name?.toLowerCase().includes(q) ||
+          p.author_handle?.toLowerCase().includes(q) ||
+          p.keyword_matched?.toLowerCase().includes(q)
+      );
+    }
+    // Sort so most recent posts appear first (newest published_at timestamp first)
+    return [...list].sort((a, b) => {
+      const timeA = a.published_at ? new Date(a.published_at).getTime() : 0;
+      const timeB = b.published_at ? new Date(b.published_at).getTime() : 0;
+      return timeB - timeA;
+    });
   }, [posts, searchQuery]);
 
   const getPlatformBadge = (platform: string) => {
@@ -131,9 +139,18 @@ export default function SocialPostsView() {
     );
   };
 
+  const isPostHot = (post: SocialPost) => {
+    const postDate = new Date(post.published_at);
+    const now = new Date();
+    if (!isNaN(postDate.getTime())) {
+      const diffDays = Math.floor((now.getTime() - postDate.getTime()) / (1000 * 60 * 60 * 24));
+      return diffDays < 10;
+    }
+    return true;
+  };
+
   const getIntentBadge = (post: SocialPost) => {
-    const isHot = (post.company_name && post.company_name !== 'Prospect Team') || 
-                  (post.keyword_matched && (post.keyword_matched.includes('agency') || post.keyword_matched.includes('hiring') || post.keyword_matched.includes('recommend')));
+    const isHot = isPostHot(post);
     
     if (isHot) {
       return (
@@ -141,7 +158,7 @@ export default function SocialPostsView() {
           style={{ backgroundColor: 'rgba(6, 78, 59, 0.85)', color: '#34d399', borderColor: 'rgba(16, 185, 129, 0.4)' }}
           className="text-[11px] font-bold px-2 py-0.5 rounded-md border flex items-center gap-1 shadow-sm"
         >
-          <span className="text-[10px]">☐</span> Hot
+          <span className="text-[10px]">🔥</span> Hot
         </span>
       );
     }
@@ -156,49 +173,49 @@ export default function SocialPostsView() {
   };
 
   return (
-    <div className="flex flex-col h-full space-y-5">
+    <div className="flex flex-col flex-1 min-h-0 h-[calc(100vh-6rem)] space-y-3.5 overflow-hidden">
       {/* Header Bar */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shrink-0">
         <div className="flex items-center">
           <div
             style={{
               background: 'radial-gradient(circle at 30% 30%, #F5C563 0%, #E5A93C 55%, #B37E25 100%)',
               borderRadius: '50%',
-              width: '42px',
-              height: '42px',
-              minWidth: '42px',
-              minHeight: '42px',
-              maxWidth: '42px',
-              maxHeight: '42px',
+              width: '38px',
+              height: '38px',
+              minWidth: '38px',
+              minHeight: '38px',
+              maxWidth: '38px',
+              maxHeight: '38px',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               flexShrink: 0,
-              marginRight: '1.25rem',
+              marginRight: '1rem',
             }}
             className="shadow-md shadow-[#E5A93C]/25"
           >
-            <MessageSquare size={19} style={{ color: '#121215' }} className="stroke-[2.3]" />
+            <MessageSquare size={17} style={{ color: '#121215' }} className="stroke-[2.3]" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-zinc-100 tracking-tight">Social Media Signals</h1>
-            <p className="text-xs text-zinc-400 font-medium">Discover active intent posts from Scrape Creators</p>
+            <h1 className="text-xl font-bold text-slate-900 dark:text-zinc-100 tracking-tight">Social Media Signals</h1>
+            <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">Discover active intent posts from Scrape Creators</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 w-full sm:w-auto">
-          <div className="relative flex-1 sm:w-72">
+        <div className="flex items-center gap-2.5 w-full sm:w-auto">
+          <div className="relative flex-1 sm:w-64">
             <Search
               style={{ left: '0.875rem' }}
-              className="absolute top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none"
-              size={15}
+              className="absolute top-1/2 -translate-y-1/2 text-slate-400 dark:text-zinc-400 pointer-events-none"
+              size={14}
             />
             <input
               type="text"
               placeholder="Search keywords or posts..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full border border-nexa-border bg-nexa-surface rounded-full py-2.5 pl-10 pr-4 text-xs text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-[var(--nexa-accent)] transition-all"
+              className="w-full rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-white/5 py-2 pl-9 pr-4 text-xs font-medium text-slate-900 dark:text-zinc-100 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-400 focus:border-amber-500/50 focus:bg-white dark:focus:bg-white/10 shadow-inner backdrop-blur-md"
             />
           </div>
 
@@ -206,7 +223,7 @@ export default function SocialPostsView() {
             onClick={handleFetch}
             disabled={fetching}
             style={{ backgroundColor: 'var(--nexa-accent)', color: '#000000' }}
-            className="flex items-center gap-2 px-4 py-2.5 text-xs font-bold rounded-xl hover:opacity-90 transition-all shadow-md disabled:opacity-50 whitespace-nowrap"
+            className="flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-xl hover:opacity-90 transition-all shadow-md disabled:opacity-50 whitespace-nowrap shrink-0"
           >
             {fetching ? <RefreshCw className="animate-spin" size={14} /> : <RefreshCw size={14} />}
             Fetch Intent Posts
@@ -215,33 +232,33 @@ export default function SocialPostsView() {
       </div>
 
       {/* Summary KPI Pills Bar */}
-      <div className="flex items-center gap-2.5 overflow-x-auto pb-1 text-xs">
-        <span className="nexa-card text-zinc-300 px-3.5 py-1.5 rounded-full font-medium border border-nexa-border shadow-sm flex items-center gap-1.5">
-          <strong className="font-extrabold text-zinc-100">{filteredPosts.length}</strong> threads found
+      <div className="flex items-center gap-2.5 overflow-x-auto pb-1 text-xs shrink-0">
+        <span className="bg-white dark:bg-white/5 text-slate-700 dark:text-zinc-300 px-3.5 py-1 rounded-full font-medium border border-slate-200 dark:border-white/10 shadow-xs flex items-center gap-1.5">
+          <strong className="font-extrabold text-slate-900 dark:text-zinc-100">{filteredPosts.length}</strong> threads found
         </span>
-        <span className="nexa-card text-zinc-300 px-3.5 py-1.5 rounded-full font-medium border border-nexa-border shadow-sm flex items-center gap-1.5">
-          <strong className="font-extrabold text-zinc-100">{filteredPosts.filter(p => (p.keyword_matched && (p.keyword_matched.includes('agency') || p.keyword_matched.includes('hiring')))).length}</strong> hot leads
+        <span className="bg-white dark:bg-white/5 text-slate-700 dark:text-zinc-300 px-3.5 py-1 rounded-full font-medium border border-slate-200 dark:border-white/10 shadow-xs flex items-center gap-1.5">
+          <strong className="font-extrabold text-slate-900 dark:text-zinc-100">{filteredPosts.filter(isPostHot).length}</strong> hot leads
         </span>
-        <span className="nexa-card text-zinc-300 px-3.5 py-1.5 rounded-full font-medium border border-nexa-border shadow-sm flex items-center gap-1.5">
-          <strong className="font-extrabold text-zinc-100">{Math.max(0, filteredPosts.length - filteredPosts.filter(p => (p.keyword_matched && (p.keyword_matched.includes('agency') || p.keyword_matched.includes('hiring')))).length)}</strong> warm
+        <span className="bg-white dark:bg-white/5 text-slate-700 dark:text-zinc-300 px-3.5 py-1 rounded-full font-medium border border-slate-200 dark:border-white/10 shadow-xs flex items-center gap-1.5">
+          <strong className="font-extrabold text-slate-900 dark:text-zinc-100">{Math.max(0, filteredPosts.length - filteredPosts.filter(isPostHot).length)}</strong> warm
         </span>
-        <span className="nexa-card text-zinc-400 px-3.5 py-1.5 rounded-full font-medium border border-nexa-border shadow-sm">
+        <span className="bg-white dark:bg-white/5 text-slate-500 dark:text-zinc-400 px-3.5 py-1 rounded-full font-medium border border-slate-200 dark:border-white/10 shadow-xs">
           Last fetched: recently
         </span>
       </div>
 
       {/* Tabs Row */}
-      <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
+      <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide shrink-0">
         {TABS.map((tab) => {
           const isActive = activeTab === tab;
           return (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-4 py-1.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap shadow-sm ${
+              className={`px-3.5 py-1 rounded-full text-xs font-semibold border transition-all whitespace-nowrap shadow-xs ${
                 isActive
-                  ? 'bg-[var(--nexa-accent)] text-zinc-950 border-[var(--nexa-accent)] font-extrabold'
-                  : 'border-nexa-border bg-nexa-surface text-zinc-400 hover:text-zinc-100'
+                  ? 'bg-amber-500 text-black border-amber-500 font-extrabold shadow-xs'
+                  : 'border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-white/10 hover:text-slate-950 dark:hover:text-white'
               }`}
             >
               {tab}
@@ -250,8 +267,8 @@ export default function SocialPostsView() {
         })}
       </div>
 
-      {/* Content Feed — Row-Based Design */}
-      <div className="flex-1 overflow-y-auto pr-1 pb-6">
+      {/* Content Feed — Fitted strictly to vertical height */}
+      <div className="flex-1 min-h-0 overflow-y-auto pr-1 pb-4">
         {loading ? (
           <div className="flex justify-center items-center h-48">
             <RefreshCw className="animate-spin text-[var(--nexa-accent)]" size={28} />
@@ -263,7 +280,7 @@ export default function SocialPostsView() {
             <p className="text-zinc-500 text-xs mt-1">Try clicking "Fetch Intent Posts" to run a fresh sweep.</p>
           </div>
         ) : (
-          <div className="flex flex-col space-y-3.5">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
             {filteredPosts.map((post) => {
               const tags = (post.keyword_matched || 'marketing agency')
                 .split(',')
@@ -271,37 +288,35 @@ export default function SocialPostsView() {
                 .filter(Boolean)
                 .slice(0, 4);
 
-              const mainHeadline = post.company_name 
-                ? `${post.company_name} — "${post.content.length > 90 ? post.content.slice(0, 90).trim() + '...' : post.content}"`
-                : post.content;
-
-              const subText = post.content.length > 90 && post.company_name
-                ? post.content
-                : `Verified intent post by @${post.author_handle || post.author_name || 'growth_lead'} · Matched keyword "${post.keyword_matched || 'agency'}"`;
+              // Clean content by stripping names, handles, quotes, and platform header prefixes
+              const rawContent = (post.content || '').replace(/["“”]/g, '').trim();
+              const cleanContent = rawContent
+                .replace(/^[^—–\n]+(?:\(@[^\)]+\)|•|\bInstagram\b|\bLinkedIn\b|\bTwitter\b|\bReddit\b|\bFacebook\b)[^—–\n]*[—–]\s*/gi, '')
+                .replace(/^[^—–\n]*\(@[^\)]+\)[^—–\n]*[—–]\s*/gi, '')
+                .trim();
+              
+              const displayContent = cleanContent || rawContent;
 
               return (
                 <div
                   key={post.id}
-                  className="nexa-card rounded-2xl p-5 shadow-lg flex flex-col justify-between transition-all group border border-nexa-border hover:border-nexa-border-strong"
+                  className="nexa-card nexa-card-no-hover rounded-2xl p-4 shadow-xs flex flex-col justify-between transition-colors duration-150 group border border-slate-200 dark:border-nexa-border hover:border-emerald-500/40"
                 >
-                  {/* Top Header Row: Platform Badge + Intent Tag on Left, Time & Author on Right */}
+                  {/* Top Header Row: Platform Badge + Intent Tag on Left, Time on Right */}
                   <div className="flex items-center justify-between mb-2.5">
                     <div className="flex items-center gap-2">
                       {getPlatformBadge(post.platform)}
                       {getIntentBadge(post)}
                     </div>
                     <span className="text-xs text-zinc-400 font-medium">
-                      {timeAgo(post.published_at)} {post.author_handle ? `· @${post.author_handle}` : ''}
+                      {timeAgo(post.published_at)}
                     </span>
                   </div>
 
-                  {/* Body Content: Main Title & Subtitle */}
+                  {/* Body Content: 4 lines of clean post content without company/author names */}
                   <div className="mb-3.5">
-                    <h3 className="text-base font-bold text-zinc-100 mb-1 leading-snug tracking-tight">
-                      {mainHeadline}
-                    </h3>
-                    <p className="text-xs text-zinc-300 leading-relaxed font-normal line-clamp-2">
-                      {subText}
+                    <p className="social-post-card-content text-sm font-normal text-slate-800 dark:text-zinc-200 leading-relaxed tracking-normal line-clamp-4">
+                      {displayContent}
                     </p>
                   </div>
 

@@ -72,6 +72,22 @@ export interface IntentConfig {
   extraction_keywords: string[];
   social_triggers: string[];
   social_topics: string[];
+  min_employees?: number;
+  max_employees?: number;
+  target_industries?: string[];
+}
+
+export interface AIICPResponse {
+  min_employees: number;
+  max_employees: number;
+  target_industries: string[];
+  jobspy_search_term: string;
+  extraction_keywords: string[];
+  social_triggers: string[];
+  social_topics: string[];
+  news_queries: string[];
+  serper_queries: string[];
+  summary_explanation: string;
 }
 
 export function fetchIntents(): Promise<IntentConfig> {
@@ -82,6 +98,13 @@ export function updateIntents(config: IntentConfig): Promise<IntentConfig> {
   return requestJson<IntentConfig>('/api/settings/intents', {
     method: 'POST',
     body: JSON.stringify(config),
+  });
+}
+
+export function generateICPWithAI(prompt: string): Promise<AIICPResponse> {
+  return requestJson<AIICPResponse>('/api/settings/ai-icp-assistant', {
+    method: 'POST',
+    body: JSON.stringify({ prompt }),
   });
 }
 

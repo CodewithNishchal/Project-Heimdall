@@ -7,14 +7,14 @@ function parseMarkdown(text: string) {
   return text.split('\n').map((line, idx) => {
     let formatted = line;
     // Replace **bold** with <strong>bold</strong>
-    formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong class="text-zinc-200">$1</strong>');
+    formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong class="text-slate-900 dark:text-zinc-200 font-bold">$1</strong>');
     
     if (line.trim().startsWith('* ') || line.trim().startsWith('- ')) {
       return (
-        <li key={idx} className="mb-2 ml-4 list-disc marker:text-[var(--nexa-accent)]" dangerouslySetInnerHTML={{ __html: formatted.replace(/^[-*]\s/, '') }} />
+        <li key={idx} className="mb-2 ml-4 list-disc marker:text-[var(--nexa-accent)] text-slate-800 dark:text-zinc-300 font-medium" dangerouslySetInnerHTML={{ __html: formatted.replace(/^[-*]\s/, '') }} />
       );
     }
-    return <p key={idx} className="mb-2" dangerouslySetInnerHTML={{ __html: formatted }} />;
+    return <p key={idx} className="mb-2 text-slate-800 dark:text-zinc-300 font-medium" dangerouslySetInnerHTML={{ __html: formatted }} />;
   });
 }
 
@@ -22,9 +22,10 @@ interface PitcherModeProps {
   id: string;
   company_name: string;
   onClose: () => void;
+  inline?: boolean;
 }
 
-export default function PitcherMode({ id, company_name, onClose }: PitcherModeProps) {
+export default function PitcherMode({ id, company_name, onClose, inline = false }: PitcherModeProps) {
   const [loading, setLoading] = useState(true);
   const [pitchData, setPitchData] = useState<PitcherModeResponse | null>(null);
   const [copied, setCopied] = useState(false);
@@ -71,12 +72,16 @@ export default function PitcherMode({ id, company_name, onClose }: PitcherModePr
     }
   };
 
+  const containerClasses = inline
+    ? 'side-drawer-card rounded-2xl border border-[var(--nexa-accent)]/30 bg-nexa-surface p-5 space-y-4 shadow-sm animate-fade-in my-3'
+    : 'pitcher-mode-drawer fixed inset-y-0 right-0 z-50 flex w-full flex-col border-l border-nexa-border bg-[#0a0a0f]/90 backdrop-blur-2xl p-6 shadow-2xl sm:w-[460px]';
+
   return (
     <motion.div 
-      initial={{ opacity: 0, x: '100%' }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: '100%' }}
-      className="pitcher-mode-drawer fixed inset-y-0 right-0 z-50 flex w-full flex-col border-l border-nexa-border bg-[#0a0a0f]/70 backdrop-blur-2xl p-6 shadow-2xl sm:w-[460px]"
+      initial={{ opacity: 0, y: inline ? 10 : 0, x: inline ? 0 : '100%' }}
+      animate={{ opacity: 1, y: 0, x: 0 }}
+      exit={{ opacity: 0, y: inline ? 10 : 0, x: inline ? 0 : '100%' }}
+      className={containerClasses}
     >
 
       {/* Header */}
@@ -88,7 +93,7 @@ export default function PitcherMode({ id, company_name, onClose }: PitcherModePr
           >
             Intent Summary
           </h2>
-          <p className="mt-1 text-xs text-zinc-500">
+          <p className="mt-1 text-xs text-slate-500 dark:text-zinc-500 font-medium">
             Summarised signal context for {company_name}
           </p>
         </div>
@@ -105,33 +110,32 @@ export default function PitcherMode({ id, company_name, onClose }: PitcherModePr
       {/* Content */}
       <div className="flex-1 overflow-y-auto py-6">
         {loading ? (
-          <div className="flex h-full flex-col items-center justify-center gap-3 text-center font-mono text-xs text-zinc-600">
+          <div className="flex h-full flex-col items-center justify-center gap-3 text-center font-mono text-xs text-slate-500 dark:text-zinc-600">
             <Loader2
-              className="animate-spin"
+              className="animate-spin text-emerald-500"
               size={22}
               aria-hidden="true"
-              style={{ color: 'var(--nexa-accent)' }}
             />
             Lazy loading targeted model template...
           </div>
         ) : (
           <div className="space-y-4">
             <label className="block space-y-2">
-              <span className="block text-[11px] font-bold uppercase tracking-wider text-zinc-600">
+              <span className="block text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-zinc-400">
                 Summary Title
               </span>
               <input
-                className="w-full rounded-lg border border-nexa-border bg-nexa-card p-3 text-xs text-zinc-300 outline-none"
+                className="deep-research-input w-full rounded-xl border border-slate-200 dark:border-nexa-border bg-slate-100 dark:bg-nexa-card p-3 text-xs font-bold text-slate-900 dark:text-zinc-200 outline-none"
                 readOnly
                 type="text"
                 value={pitchData?.subject_line ?? ''}
               />
             </label>
             <label className="block space-y-2 flex-1 flex flex-col">
-              <span className="block text-[11px] font-bold uppercase tracking-wider text-zinc-600">
+              <span className="block text-[11px] font-bold uppercase tracking-wider text-slate-600 dark:text-zinc-400">
                 Intent Signals Summary
               </span>
-              <div className="flex-1 min-h-[280px] w-full overflow-y-auto rounded-lg border border-nexa-border bg-nexa-card p-4 text-sm leading-relaxed text-zinc-400 outline-none">
+              <div className="deep-research-box flex-1 min-h-[280px] w-full overflow-y-auto rounded-2xl border border-slate-200 dark:border-nexa-border bg-slate-50 dark:bg-nexa-card p-4 text-sm leading-relaxed text-slate-800 dark:text-zinc-300 outline-none">
                 {pitchData?.email_body ? parseMarkdown(pitchData.email_body) : ''}
               </div>
             </label>

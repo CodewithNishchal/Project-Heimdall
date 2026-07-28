@@ -24,6 +24,7 @@ export interface DNSAuditObjective {
   dkim: string;
   dmarc: string;
   issues: string[];
+  provider?: string;
 }
 
 export interface IntentConfig {

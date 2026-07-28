@@ -21,7 +21,7 @@ def get_social_posts(platform: Optional[str] = None, keyword: Optional[str] = No
     if keyword:
         query = query.filter(SocialPostSnapshot.keyword_matched == keyword)
     
-    posts = query.order_by(SocialPostSnapshot.created_at.desc()).all()
+    posts = query.order_by(SocialPostSnapshot.published_at.desc(), SocialPostSnapshot.created_at.desc()).all()
 
     # Enforce strict 30-day freshness filter (drop any thread > 30 days old)
     cutoff = datetime.now(timezone.utc) - timedelta(days=30)

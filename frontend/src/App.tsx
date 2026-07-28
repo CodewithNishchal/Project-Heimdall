@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { motion, Variants } from 'framer-motion';
-import { Bell, Shield, Sun, Moon, CheckCircle2 } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
+import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import LeadTable from './components/LeadTable';
 import ConfidenceGauge from './components/ConfidenceGauge';
@@ -15,57 +16,51 @@ import type { LeadDetailResponse } from './types/lead';
 export default function App() {
   const [leads, setLeads] = useState<LeadDetailResponse[]>([]);
   const [status, setStatus] = useState<'loading' | 'success' | 'error'>('loading');
-  const [isDark, setIsDark] = useState(true);
+  const [isDark, setIsDark] = useState(false);
   const [currentView, setCurrentView] = useState('dashboard');
+  const [globalSearchTerm, setGlobalSearchTerm] = useState('');
 
   useEffect(() => {
     if (isDark) {
+      document.documentElement.classList.add('dark');
       document.documentElement.classList.remove('light-theme');
     } else {
+      document.documentElement.classList.remove('dark');
       document.documentElement.classList.add('light-theme');
     }
   }, [isDark]);
 
+  // Continuous backend health check & auto-reconnect polling
   useEffect(() => {
     let isMounted = true;
-    fetchLeads()
-      .then((apiLeads) => {
+
+    const checkBackend = async () => {
+      try {
+        const apiLeads = await fetchLeads();
         if (isMounted) {
           setLeads(apiLeads);
           setStatus('success');
         }
-      })
-      .catch(() => {
+      } catch (err) {
         if (isMounted) {
-          setLeads([]);
           setStatus('error');
         }
-      });
+      }
+    };
+
+    // Initial fetch on mount
+    checkBackend();
+
+    // Polling interval:
+    // Fast polling (3s) when offline to reconnect instantly as soon as backend starts.
+    // Periodic health check (15s) when online to detect if server goes offline.
+    const pollInterval = status === 'error' ? 3000 : 15000;
+    const interval = setInterval(checkBackend, pollInterval);
+
     return () => {
       isMounted = false;
+      clearInterval(interval);
     };
-  }, []);
-
-  // Ping backend every 5 seconds ONLY if frontend is disconnected
-  useEffect(() => {
-    if (status !== 'error') return;
-
-    const interval = setInterval(() => {
-      fetchPipelineStatus()
-        .then(() => {
-          fetchLeads().then((apiLeads) => {
-            setLeads(apiLeads);
-            setStatus('success');
-          }).catch(() => {
-            setStatus('success');
-          });
-        })
-        .catch(() => {
-          // Still down, keep disconnected status
-        });
-    }, 5000);
-
-    return () => clearInterval(interval);
   }, [status]);
 
   const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null);
@@ -130,92 +125,81 @@ export default function App() {
       {/* Golden Light Flare */}
       <div className="nexa-flare" />
 
-      {/* ===== Top Header Bar ===== */}
-      <div className="relative z-10 p-2 sm:p-4 lg:px-6 lg:pt-4 lg:pb-1 pb-1">
-        <header className="nexa-card flex flex-col sm:flex-row items-center justify-between px-4 sm:px-5 py-3 gap-3 sm:gap-0">
-          <div className="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-start">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-amber-600 to-amber-400 text-white shadow-[0_0_15px_rgba(232,164,58,0.4)]">
-              <Shield size={20} strokeWidth={2.5} aria-hidden="true" />
-            </div>
-            <h1 className="text-xl font-bold tracking-tight text-zinc-100">
-              Prospector AI
-            </h1>
-          </div>
-
-          <div className="flex items-center gap-4">
-            {/* Connection Badge */}
-            {status === 'loading' && (
-              <span className="rounded-md border border-amber-600/30 bg-[var(--nexa-amber-dim)] px-2.5 py-1 font-mono text-[11px] text-amber-400">
-                Connecting…
-              </span>
-            )}
-            {status === 'success' && (
-              <span className="rounded-md border border-emerald-500/30 bg-[var(--nexa-emerald-dim)] px-2.5 py-1 font-mono text-[11px] text-emerald-400 shadow-[0_0_8px_var(--nexa-emerald-dim)]">
-                ● Engine Active
-              </span>
-            )}
-            {status === 'error' && (
-              <span className="rounded-md border border-rose-600/30 bg-[var(--nexa-rose-dim)] px-2.5 py-1 font-mono text-[11px] text-rose-400">
-                ✕ Disconnected
-              </span>
-            )}
-
-            {/* Bell Icon */}
-            <button
-              type="button"
-              className="relative rounded-xl border border-white/5 bg-white/5 p-2.5 text-zinc-400 transition hover:bg-white/10 hover:text-zinc-200"
-            >
-              <div className="absolute right-2.5 top-2.5 h-1.5 w-1.5 rounded-full bg-[var(--nexa-accent)] shadow-[0_0_6px_var(--nexa-accent)]" />
-              <Bell size={18} aria-hidden="true" />
-            </button>
-
-            {/* Theme Toggle */}
-            <div className="flex items-center gap-1 rounded-xl border border-white/10 bg-white/5 p-1 backdrop-blur-md">
-              <button
-                type="button"
-                className={`rounded-lg p-2 transition-all duration-300 ${
-                  !isDark 
-                    ? 'bg-[var(--nexa-accent)] text-zinc-950 shadow-[0_0_12px_var(--nexa-accent-glow)] scale-105 font-bold' 
-                    : 'text-zinc-400 hover:text-zinc-200'
-                }`}
-                onClick={() => setIsDark(false)}
-                title="Switch to Light Glass Theme"
-              >
-                <Sun size={16} aria-hidden="true" className={`transition-transform duration-500 ${!isDark ? 'rotate-0' : '-rotate-90'}`} />
-              </button>
-              <button
-                type="button"
-                className={`rounded-lg p-2 transition-all duration-300 ${
-                  isDark 
-                    ? 'bg-[var(--nexa-accent)] text-zinc-950 shadow-[0_0_12px_var(--nexa-accent-glow)] scale-105 font-bold' 
-                    : 'text-zinc-400 hover:text-zinc-200'
-                }`}
-                onClick={() => setIsDark(true)}
-                title="Switch to Dark Glass Theme"
-              >
-                <Moon size={16} aria-hidden="true" className={`transition-transform duration-500 ${isDark ? 'rotate-0' : 'rotate-90'}`} />
-              </button>
-            </div>
-
-          </div>
-        </header>
-      </div>
-
       {/* ===== Main Dashboard Layout ===== */}
-      <div className="relative z-10 flex flex-1 gap-4 sm:gap-6 p-2 sm:p-4 lg:px-6 lg:pb-6 lg:pt-1 pt-1 overflow-hidden">
+      <div className="relative z-10 flex flex-1 gap-2.5 sm:gap-4 px-4 py-3 lg:px-6 lg:py-4 overflow-hidden">
         {/* Left Column: Sidebar Navigation only */}
-        <div className="hidden w-52 flex-col gap-4 lg:flex self-start">
-          <Sidebar currentView={currentView} setCurrentView={setCurrentView} />
-        </div>
+        <Sidebar
+          currentView={currentView}
+          setCurrentView={setCurrentView}
+          isDark={isDark}
+          setIsDark={setIsDark}
+          status={status}
+        />
 
-        {/* Main Workspace (Takes full width now) */}
-        <main className="flex min-w-0 flex-1 flex-col gap-6 overflow-hidden">
+        {/* Main Workspace */}
+        <main className="flex min-w-0 flex-1 flex-col gap-4 pl-1 pr-3 py-1 overflow-y-auto overflow-x-hidden">
+          {/* Top Header Bar */}
+          <Header
+            status={status}
+            searchTerm={globalSearchTerm}
+            setSearchTerm={setGlobalSearchTerm}
+            isDark={isDark}
+            setIsDark={setIsDark}
+          />
+
           {currentView === 'settings' ? (
             <Settings />
           ) : currentView === 'social media posts' ? (
             <SocialPostsView />
+          ) : currentView === 'pipeline' ? (
+            <div className="flex flex-col flex-1 min-h-0">
+              <LeadTable
+                leads={leads}
+                selectedLeadId={selectedLeadId}
+                onSelectLead={setSelectedLeadId}
+                onLeadIngested={(newLead) => setLeads([newLead, ...leads])}
+                onLeadDeleted={(id) => {
+                  if (selectedLeadId === id) setSelectedLeadId(null);
+                  setLeads(leads.filter((l) => l.id !== id));
+                }}
+                status={status}
+                externalSearchTerm={globalSearchTerm}
+                isPipelineTab={true}
+              />
+            </div>
+          ) : currentView === 'statistics' ? (
+            <div className="flex flex-col flex-1 min-h-0">
+              <LeadTable
+                leads={leads.filter((l) => l.badge === 'new_today' || l.icp_fit === 'Strong')}
+                selectedLeadId={selectedLeadId}
+                onSelectLead={setSelectedLeadId}
+                onLeadIngested={(newLead) => setLeads([newLead, ...leads])}
+                onLeadDeleted={(id) => {
+                  if (selectedLeadId === id) setSelectedLeadId(null);
+                  setLeads(leads.filter((l) => l.id !== id));
+                }}
+                status={status}
+                externalSearchTerm={globalSearchTerm}
+                isTrackRecordsTab={true}
+              />
+            </div>
           ) : (
             <>
+              {/* Default Main Dashboard Hero Banner */}
+              <div className="flex items-center gap-3 px-1 pb-1">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#dfa32b] text-zinc-950 shadow-xs">
+                  <Sparkles size={17} className="stroke-[2.5px]" />
+                </div>
+                <div>
+                  <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-zinc-100 tracking-tight">
+                    Lead Intelligence Signals
+                  </h2>
+                  <p className="text-xs text-slate-600 dark:text-zinc-400 mt-0.5 font-medium">
+                    Discover active intent signals and monitor target companies
+                  </p>
+                </div>
+              </div>
+
               {/* ===== KPI Ribbon row ===== */}
               <motion.div
                 className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 w-full flex-shrink-0"
@@ -229,7 +213,7 @@ export default function App() {
                     Automated Sweeps
                   </span>
                   <div className="flex items-baseline gap-2 mt-1">
-                    <span className="text-3xl font-extrabold text-white">
+                    <span className="text-3xl font-extrabold text-zinc-100">
                       {totalScans}
                     </span>
                     <span className="text-xs text-emerald-400 font-mono">
@@ -298,6 +282,8 @@ export default function App() {
                     if (selectedLeadId === id) setSelectedLeadId(null);
                     setLeads(leads.filter((l) => l.id !== id));
                   }}
+                  status={status}
+                  externalSearchTerm={globalSearchTerm}
                 />
               </motion.div>
             </>
