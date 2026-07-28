@@ -242,9 +242,10 @@ export default function LeadTable({
 
       // 4. Score Filter
       let matchesScore = true;
-      if (scoreFilter === 'HIGH') matchesScore = lead.icp_score >= 80;
-      else if (scoreFilter === 'MEDIUM') matchesScore = lead.icp_score >= 60 && lead.icp_score < 80;
-      else if (scoreFilter === 'LOW') matchesScore = lead.icp_score < 60;
+      const leadScore = lead.icp_score ?? lead.intent_score ?? 0;
+      if (scoreFilter === 'HIGH') matchesScore = leadScore >= 80;
+      else if (scoreFilter === 'MEDIUM') matchesScore = leadScore >= 60 && leadScore < 80;
+      else if (scoreFilter === 'LOW') matchesScore = leadScore < 60;
 
       // 5. Signal Filter
       let matchesSignal = true;

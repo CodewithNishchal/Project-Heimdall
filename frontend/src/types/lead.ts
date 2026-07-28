@@ -72,6 +72,7 @@ export interface LeadDetailResponse {
   employee_count: number | null;
   funding_stage: string | null;
   intent_score: number;
+  icp_score?: number;
   signal_freshness: number;
   tier: LeadTier;
   icp_fit: ICPFit;
