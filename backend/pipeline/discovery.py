@@ -173,75 +173,10 @@ async def discover_companies_from_news() -> set[str]:
 
 async def discover_companies_from_serper() -> set[str]:
     """
-    Phase 1 — Serper sweep. Searches LinkedIn for signals.
-    Uses ScrapeBadger to fetch the post content and LLM extraction to get the company name.
+    [Deprecated] Formerly used Serper + ScrapeBadger to search LinkedIn posts.
+    Replaced by Apify HarvestAPI ('harvestapi~linkedin-company-posts') in enrichment.
     """
-    api_key = settings.SERPER_API_KEY
-    if not api_key or api_key == "mock_key_if_empty":
-        return set()
-
-    from backend.config_manager import load_intent_config
-    config = load_intent_config()
-    serper_queries = config.get("serper_queries", [
-        'site:linkedin.com/posts ("looking for a marketing agency" OR "recommend a PPC agency" OR "need a fractional CMO") -agency -clutch -top -our -portfolio -"we offer"'
-    ])
-    if isinstance(serper_queries, str):
-        serper_queries = [serper_queries]
-
-    companies = set()
-    async with httpx.AsyncClient(timeout=15.0) as client:
-        for query in serper_queries:
-            if not query or not query.strip():
-                continue
-            try:
-                res = await client.post(
-                    "https://google.serper.dev/search",
-                    headers={"X-API-KEY": api_key, "Content-Type": "application/json"},
-                    json={
-                        "q": query.strip(),
-                        "num": 10,
-                        "tbs": "qdr:m"
-                    },
-                )
-                data = res.json()
-                for result in data.get("organic", []):
-                    link = result.get("link", "")
-                    if link:
-                        text_to_analyze = result.get("snippet", "")
-                        # Use ScrapeBadger to fetch post context if key is present
-                        if settings.SCRAPEBADGER_API_KEY and "/posts/" in link:
-                            try:
-                                import urllib.parse
-                                parsed = urllib.parse.urlparse(link)
-                                post_slug = parsed.path.strip('/').split('/')[-1]
-                                await asyncio.sleep(1.5)  # Rate limit spacing for ScrapeBadger
-                                sb_res = await client.get(
-                                    f"https://scrapebadger.com/v1/linkedin/posts/{post_slug}",
-                                    headers={"x-api-key": settings.SCRAPEBADGER_API_KEY}
-                                )
-                                if sb_res.status_code == 200:
-                                    sb_data = sb_res.json()
-                                    # Depends on API return schema. Trying typical keys.
-                                    text_to_analyze = sb_data.get("text", "") or sb_data.get("content", "") or text_to_analyze
-                                elif sb_res.status_code == 429:
-                                    logger.warning(f"[ScrapeBadger] Rate limited on LinkedIn post, using Serper snippet instead")
-                            except Exception as e:
-                                logger.error(f"[ScrapeBadger Fetch] Failed for {link}: {e}")
-
-                        if validate_relevance(text_to_analyze):
-                            title = result.get("title", "")
-                            name = (
-                                title.replace("| LinkedIn", "")
-                                .replace("- LinkedIn", "")
-                                .strip()
-                            )
-                            if name and len(name) > 2:
-                                companies.add(name.split("-")[0].strip())
-            except Exception as e:
-                logger.error(f"[Serper] Discovery sweep failed for query '{query}': {e}")
-
-    logger.info(f"[Serper] Discovered {len(companies)} companies from LinkedIn search")
-    return companies
+    return set()
 
 
 async def discover_companies_from_yelp() -> set[str]:
@@ -385,37 +320,84 @@ def resolve_domain(company_name: str) -> tuple[str | None, dict]:
     return None, {}
 
 
+async def discover_companies_from_exa() -> list[dict]:
+    """
+    Phase 1 — Exa AI Neural Search Sweep.
+    Executes a high-intent neural search query to fetch up to 100 raw company snippets,
+    titles, summaries, and URLs for B2B intent leads.
+    """
+    import os
+    exa_api_key = getattr(settings, "EXA_API_KEY", None) or os.getenv("EXA_API_KEY")
+    if not exa_api_key or exa_api_key == "mock_key_if_empty":
+        logger.warning("[Exa AI] API key missing, returning empty discovery list")
+        return []
+
+    url = "https://api.exa.ai/search"
+    headers = {
+        "accept": "application/json",
+        "content-type": "application/json",
+        "x-api-key": exa_api_key
+    }
+    
+    from backend.config_manager import load_intent_config
+    config = load_intent_config()
+    default_query = "multi-location franchise, healthcare, home services, or B2B companies in the US that recently opened a new location, expanded operations, or scaled revenue to $5M-$20M without a listed in-house marketing director"
+    query = config.get("exa_query", default_query)
+
+    payload = {
+        "query": query,
+        "type": "neural",
+        "useAutoprompt": False,
+        "category": "company",
+        "excludeDomains": ["clutch.co", "upcity.com", "designrush.com", "goodfirms.co", "42web.io", "byethost7.com", "zya.me"],
+        "numResults": 100,
+        "contents": {
+            "text": True,
+            "summary": True
+        }
+    }
+
+    results = []
+    try:
+        async with httpx.AsyncClient(timeout=25.0) as client:
+            res = await client.post(url, headers=headers, json=payload)
+            if res.status_code == 200:
+                data = res.json()
+                raw_items = data.get("results", [])
+                logger.info(f"[Exa AI Discovery] Successfully fetched {len(raw_items)} neural search results")
+                for r in raw_items:
+                    text_snippet = r.get("text", "")
+                    title = r.get("title", "")
+                    summary = r.get("summary", "")
+                    
+                    extracted_names = list(extract_orgs_from_articles([{"title": title, "description": summary}]))
+                    comp_name = extracted_names[0] if extracted_names else title.split("|")[0].split("-")[0].strip()
+
+                    results.append({
+                        "company_name": comp_name,
+                        "title": title,
+                        "url": r.get("url", ""),
+                        "summary": summary,
+                        "text_snippet": text_snippet[:600] if text_snippet else ""
+                    })
+    except Exception as e:
+        logger.error(f"[Exa AI Discovery] Sweep failed: {e}")
+
+    return results
+
+
 # ======================================================================
 # Unified autonomous discovery pipeline
 # ======================================================================
 
-async def run_autonomous_discovery() -> list[tuple[str, str, dict]]:
+async def run_autonomous_discovery() -> list[dict]:
     """
-    Runs all three discovery sweeps concurrently, deduplicates,
-    resolves domains, and checks 7-day cache.
-    Returns list of (company_name, domain, firmographics) ready for scoring.
+    Phase 1 — Runs Exa AI Neural Discovery and returns candidate context objects
+    (including title, url, summary, text_snippet) ready for Gemini Phase 1 Top 5 Selection.
     """
-    from backend.pipeline.filter_funnel import check_recent_cache
-
-    # Run JobSpy in a thread (it's sync), NewsAPI + Serper + Yelp are async
-    jobspy_companies = await asyncio.to_thread(discover_companies_from_jobspy)
-    news_companies, serper_companies, yelp_companies = await asyncio.gather(
-        discover_companies_from_news(),
-        discover_companies_from_serper(),
-        discover_companies_from_yelp(),
-    )
-
-    # Union + dedup
-    all_companies = jobspy_companies | news_companies | serper_companies | yelp_companies
-    logger.info(f"[Discovery] Total unique companies discovered: {len(all_companies)}")
-
-    # We skip domain resolution here! We will use Serper to resolve domains
-    # ONLY for the Top 5 companies selected by Gemini in Phase 2.
-    # This prevents firing 130+ useless API calls to Clearbit/Wikipedia.
-    resolved = [(n, None, {}) for n in all_companies]
-
-    logger.info(f"[Discovery] {len(resolved)} companies ready for Gemini Phase 1 Top 5 Selection")
-    return resolved
+    exa_results = await discover_companies_from_exa()
+    logger.info(f"[Discovery] Total candidate context objects fetched via Exa AI: {len(exa_results)}")
+    return exa_results
 
 
 # ======================================================================

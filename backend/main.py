@@ -24,14 +24,35 @@ from backend.routers import pipeline, leads
 
 
 # ======================================================================
-# Database initialization — creates all ORM tables on startup
+# Database initialization — creates all ORM tables & auto-migrates columns
 # ======================================================================
 try:
-    if not settings.DATABASE_URL.startswith("sqlite"):
-        from sqlalchemy import text
-        with engine.connect() as conn:
+    from sqlalchemy import text
+    with engine.connect() as conn:
+        if not settings.DATABASE_URL.startswith("sqlite"):
             conn.execute(text("CREATE SCHEMA IF NOT EXISTS heimdall;"))
-            conn.commit()
+            conn.execute(text("ALTER TABLE lead_snapshots ADD COLUMN IF NOT EXISTS company_segment VARCHAR(255) DEFAULT 'Growth Scale-up';"))
+            conn.execute(text("ALTER TABLE lead_snapshots ADD COLUMN IF NOT EXISTS why_now TEXT DEFAULT 'Verified public buying intent triggers detected.';"))
+            conn.execute(text("ALTER TABLE lead_snapshots ADD COLUMN IF NOT EXISTS signal_tags JSONB DEFAULT '[]'::jsonb;"))
+            conn.execute(text("ALTER TABLE social_posts ADD COLUMN IF NOT EXISTS summary TEXT;"))
+        else:
+            try:
+                conn.execute(text("ALTER TABLE lead_snapshots ADD COLUMN company_segment TEXT DEFAULT 'Growth Scale-up';"))
+            except Exception:
+                pass
+            try:
+                conn.execute(text("ALTER TABLE lead_snapshots ADD COLUMN why_now TEXT DEFAULT 'Verified public buying intent triggers detected.';"))
+            except Exception:
+                pass
+            try:
+                conn.execute(text("ALTER TABLE lead_snapshots ADD COLUMN signal_tags JSON DEFAULT '[]';"))
+            except Exception:
+                pass
+            try:
+                conn.execute(text("ALTER TABLE social_posts ADD COLUMN summary TEXT;"))
+            except Exception:
+                pass
+        conn.commit()
     Base.metadata.create_all(bind=engine)
 except Exception as e:
     import logging
@@ -44,10 +65,39 @@ except Exception as e:
 # ======================================================================
 scheduler = BackgroundScheduler(timezone='UTC')
 
+def backfill_missing_timestamps():
+    """Backfills missing last_updated timestamps in existing DB snapshots."""
+    from backend.database import SessionLocal
+    from backend.models import LeadSnapshot
+    db = SessionLocal()
+    try:
+        leads = db.query(LeadSnapshot).all()
+        now_dt = datetime.now(timezone.utc)
+        updated_count = 0
+        for lead in leads:
+            if not lead.last_updated:
+                lead.last_updated = now_dt
+                updated_count += 1
+            if lead.full_payload and isinstance(lead.full_payload, dict):
+                if not lead.full_payload.get("last_updated"):
+                    payload = dict(lead.full_payload)
+                    payload["last_updated"] = (lead.last_updated or now_dt).isoformat()
+                    lead.full_payload = payload
+                    updated_count += 1
+        if updated_count > 0:
+            db.commit()
+    except Exception as err:
+        import logging
+        logging.getLogger("uvicorn").error(f"Backfill timestamp warning: {err}")
+    finally:
+        db.close()
+
 from datetime import timedelta
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    # Backfill timestamps for existing DB snapshots
+    backfill_missing_timestamps()
     # Delayed start: wait 12 hours before first run
     start_date = datetime.now(timezone.utc) + timedelta(hours=12)
     scheduler.add_job(

@@ -44,8 +44,10 @@ def apply_icp_filters(
             score = min(score, 30)  # Locked internal operations block cap
             fit_label = "Poor"
 
-    # 3. Industry Vertical Alignment
-    target_list = settings.ICP.TARGET_INDUSTRIES
+    # 3. Industry Vertical Alignment (reads from intent_config.json for consistency with Gemini)
+    from backend.config_manager import load_intent_config
+    _config = load_intent_config()
+    target_list = _config.get("target_industries", settings.ICP.TARGET_INDUSTRIES)
     if not any(tgt.lower() in industry.lower() for tgt in target_list):
         penalties += 10  # Out of sector mismatch deduction
         if fit_label != "Poor":

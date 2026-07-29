@@ -69,19 +69,25 @@ export interface IntentConfig {
   serper_queries: string[];
   jobspy_search_term: string;
   news_signals_query_template?: string;
+  exa_query?: string;
   extraction_keywords: string[];
   social_triggers: string[];
   social_topics: string[];
   min_employees?: number;
   max_employees?: number;
+  min_arr?: string;
+  max_arr?: string;
   target_industries?: string[];
 }
 
 export interface AIICPResponse {
   min_employees: number;
   max_employees: number;
+  min_arr?: string;
+  max_arr?: string;
   target_industries: string[];
   jobspy_search_term: string;
+  exa_query: string;
   extraction_keywords: string[];
   social_triggers: string[];
   social_topics: string[];

@@ -19,6 +19,7 @@ DEFAULT_CONFIG = {
     ],
     "jobspy_search_term": "Sales Development Representative",
     "news_signals_query_template": "\"{company_name}\" AND (startup OR funding OR expansion OR hiring)",
+    "exa_query": "companies looking for a marketing agency, fractional CMO, PPC agency, or lead generation services, expanding operations or hiring growth leaders in the United States",
     "extraction_keywords": [
         "raised", "funding", "hired", "expanded", "launched", "SDR",
         "hiring", "growth", "series", "seed", "round"

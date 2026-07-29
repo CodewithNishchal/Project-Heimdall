@@ -1,46 +1,36 @@
 {
   "news_queries": [
-    "(\"expanding to new locations\" OR \"opening new locations\" OR \"franchise expansion\" OR \"multi-unit deal\") AND (\"marketing\" OR \"retail\" OR \"services\") -billion -conglomerate -corp",
-    "(\"raised\" OR \"secures funding\" OR \"Series A\" OR \"Seed\") AND (\"growth\" OR \"B2B SaaS\" OR \"franchise\" OR \"healthcare\") AND NOT (\"internal team\") -enterprise -global -inc",
-    "(\"names new\" OR \"appoints\" OR \"hires\" OR \"welcomes\") AND (\"Chief Marketing Officer\" OR \"VP of Marketing\" OR \"Head of Marketing\" OR \"Marketing Director\") NOT (\"promoted\")",
-    "(\"marketing team\" AND (\"layoffs\" OR \"restructuring\" OR \"eliminated\" OR \"downsizing\"))"
+    "funding AND (Seed OR 'Series A') AND (B2B SaaS OR Fintech OR 'professional services')",
+    "website AND (redesign OR update) AND (B2B SaaS OR Fintech OR 'professional services')"
   ],
   "serper_queries": [
-    "site:linkedin.com/posts (\"looking for a marketing agency\" OR \"recommend a PPC agency\" OR \"need a fractional CMO\") -agency -clutch -top -our -portfolio -\"we offer\"",
-    "site:linkedin.com/posts (\"looking for local SEO\" OR \"recommend Google Ads expert\" OR \"hiring a growth agency\") -agency -clutch -top -our -portfolio -\"we offer\""
+    "site:linkedin.com/posts ('funding' OR 'new product launch') -clutch -portfolio",
+    "site:linkedin.com/posts ('website redesign')"
   ],
-  "jobspy_search_term": "Chief Marketing Officer, CMO, VP of Marketing, Director of Marketing, Head of Growth, Marketing Manager, Digital Marketing Manager",
+  "jobspy_search_term": "CEO, Founder, Head of Marketing, VP of Product, CMO",
   "news_signals_query_template": "\"{company_name}\" AND (startup OR funding OR expansion OR hiring)",
+  "exa_query": "US-based B2B SaaS scale-ups, Fintech platforms, and professional service firms with 20 to 150 employees and $3M to $25M ARR that have an outdated website, recently raised a Seed or Series A funding round, or are launching a new product rebrand.",
   "extraction_keywords": [
-    "digital marketing agency",
-    "local SEO optimization",
-    "PPC management",
-    "Google Ads agency",
-    "Meta Ads management",
-    "fractional CMO",
-    "multi-location SEO",
-    "franchise marketing",
-    "lead generation agency",
-    "performance marketing",
-    "paid search management",
-    "conversion rate optimization",
-    "search engine marketing",
-    "growth marketing agency",
-    "marketing agency partner",
-    "outsourced marketing",
-    "SEO agency",
-    "content marketing agency"
+    "website redesign",
+    "CRO",
+    "funding round",
+    "product launch",
+    "rebranding"
   ],
   "social_triggers": [
     "looking for",
-    "need a",
     "recommend",
-    "any recommendations"
+    "need an agency"
   ],
   "social_topics": [
-    "marketing agency"
+    "web design",
+    "website redesign"
   ],
-  "min_employees": 10,
-  "max_employees": 500,
-  "target_industries": []
+  "min_employees": 20,
+  "max_employees": 150,
+  "target_industries": [
+    "B2B SaaS",
+    "Fintech",
+    "Professional Services"
+  ]
 }

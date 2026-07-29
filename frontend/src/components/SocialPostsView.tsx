@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { Trash2, Search, RefreshCw, MessageSquare, ExternalLink } from 'lucide-react';
 import { fetchSocialPosts, deleteSocialPost, triggerSocialSweep } from '../lib/api';
 import type { SocialPost } from '../types/lead';
-const TABS = ['All', 'Reddit', 'X', 'Facebook', 'Instagram', 'LinkedIn', 'Google', 'Skool', 'Threads'];
+const TABS = ['All', 'Google', 'Reddit', 'X', 'Facebook', 'LinkedIn', 'Threads'];
 
 function timeAgo(dateString: string) {
   if (!dateString) return '1h ago';
@@ -18,18 +18,63 @@ function timeAgo(dateString: string) {
   return `${days}d ago`;
 }
 
+function formatLastFetched(date: Date | null): string {
+  if (!date) return 'Recently';
+  const seconds = Math.floor((Date.now() - date.getTime()) / 1000);
+  if (isNaN(seconds) || seconds < 10) return 'Just now';
+  if (seconds < 60) return `${seconds}s ago`;
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(seconds / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
+}
+
 export default function SocialPostsView() {
   const [posts, setPosts] = useState<SocialPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [fetching, setFetching] = useState(false);
   const [activeTab, setActiveTab] = useState('All');
   const [searchQuery, setSearchQuery] = useState('');
+  
+  const [lastFetchedTime, setLastFetchedTime] = useState<Date | null>(() => {
+    const saved = localStorage.getItem('social_posts_last_fetched');
+    if (saved) {
+      const parsed = new Date(saved);
+      if (!isNaN(parsed.getTime())) return parsed;
+    }
+    return null;
+  });
+  const [timeAgoText, setTimeAgoText] = useState<string>('Recently');
+
+  useEffect(() => {
+    const updateText = () => {
+      setTimeAgoText(formatLastFetched(lastFetchedTime));
+    };
+    updateText();
+    const interval = setInterval(updateText, 5000);
+    return () => clearInterval(interval);
+  }, [lastFetchedTime]);
 
   const loadPosts = async () => {
     setLoading(true);
     try {
       const data = await fetchSocialPosts(activeTab === 'All' ? undefined : activeTab.toLowerCase());
       setPosts(data);
+
+      // If no fetch timestamp exists in localStorage yet, fallback to the newest post timestamp from backend
+      const saved = localStorage.getItem('social_posts_last_fetched');
+      if (!saved && data.length > 0) {
+        const timestamps = data
+          .map((p) => (p.published_at ? new Date(p.published_at).getTime() : 0))
+          .filter((t) => !isNaN(t) && t > 0);
+        if (timestamps.length > 0) {
+          const newest = new Date(Math.max(...timestamps));
+          setLastFetchedTime(newest);
+          localStorage.setItem('social_posts_last_fetched', newest.toISOString());
+        }
+      }
     } catch (err) {
       console.error('Failed to fetch posts', err);
     } finally {
@@ -45,6 +90,9 @@ export default function SocialPostsView() {
     setFetching(true);
     try {
       await triggerSocialSweep();
+      const now = new Date();
+      setLastFetchedTime(now);
+      localStorage.setItem('social_posts_last_fetched', now.toISOString());
       await loadPosts();
     } catch (err) {
       console.error('Failed to trigger sweep', err);
@@ -87,54 +135,36 @@ export default function SocialPostsView() {
 
   const getPlatformBadge = (platform: string) => {
     const plat = platform.toLowerCase();
-    let bg = '#27272a';
-    let text = '#ffffff';
-    let label = platform.toUpperCase();
+    let label = platform.charAt(0).toUpperCase() + platform.slice(1);
+    let bgClass = 'bg-zinc-900 text-white';
 
-    if (plat === 'x' || plat === 'twitter') {
-      bg = '#27272a';
-      text = '#ffffff';
-      label = 'X';
+    if (plat === 'google' || plat === 'google q&a') {
+      label = 'Google';
+      bgClass = 'bg-[#4285F4] text-white';
     } else if (plat === 'reddit') {
-      bg = '#7c2d12';
-      text = '#ffedd5';
       label = 'Reddit';
-    } else if (plat === 'instagram') {
-      bg = '#701a75';
-      text = '#fae8ff';
-      label = 'Instagram';
-    } else if (plat === 'facebook') {
-      bg = '#1e3a8a';
-      text = '#dbeafe';
-      label = 'Facebook';
+      bgClass = 'bg-[#FF4500] text-white';
     } else if (plat === 'linkedin') {
-      bg = '#1e3a8a';
-      text = '#dbeafe';
       label = 'LinkedIn';
-    } else if (plat === 'google') {
-      bg = '#14532d';
-      text = '#dcfce7';
-      label = 'Google Q&A';
-    } else if (plat === 'skool') {
-      bg = '#1e3a8a';
-      text = '#dbeafe';
-      label = 'Skool';
+      bgClass = 'bg-[#0A66C2] text-white';
+    } else if (plat === 'facebook') {
+      label = 'Facebook';
+      bgClass = 'bg-[#1877F2] text-white';
+    } else if (plat === 'instagram') {
+      label = 'Instagram';
+      bgClass = 'bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 text-white';
+    } else if (plat === 'x' || plat === 'twitter') {
+      label = 'X';
+      bgClass = 'bg-black text-white border border-white/20';
     } else if (plat === 'threads') {
-      bg = '#18181b';
-      text = '#ffffff';
       label = 'Threads';
-    } else if (plat === 'yelp') {
-      bg = '#7f1d1d';
-      text = '#ffe4e6';
-      label = 'Yelp';
+      bgClass = 'bg-zinc-900 text-white border border-white/10';
     }
 
     return (
-      <span
-        style={{ backgroundColor: bg, color: text }}
-        className="text-[11px] font-bold px-2.5 py-0.5 rounded-md shadow-sm"
-      >
-        {label}
+      <span className={`${bgClass} text-[11px] font-bold px-2.5 py-0.5 rounded-full inline-flex items-center gap-1 shadow-xs`}>
+        <MessageSquare size={11} className="stroke-[2.5]" />
+        <span>{label}</span>
       </span>
     );
   };
@@ -151,22 +181,15 @@ export default function SocialPostsView() {
 
   const getIntentBadge = (post: SocialPost) => {
     const isHot = isPostHot(post);
-    
     if (isHot) {
       return (
-        <span 
-          style={{ backgroundColor: 'rgba(6, 78, 59, 0.85)', color: '#34d399', borderColor: 'rgba(16, 185, 129, 0.4)' }}
-          className="text-[11px] font-bold px-2 py-0.5 rounded-md border flex items-center gap-1 shadow-sm"
-        >
-          <span className="text-[10px]">🔥</span> Hot
+        <span className="bg-emerald-600 text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full inline-flex items-center gap-1 shadow-xs">
+          <span>🔥</span> Hot
         </span>
       );
     }
     return (
-      <span 
-        style={{ backgroundColor: 'rgba(120, 53, 15, 0.85)', color: '#fbbf24', borderColor: 'rgba(217, 119, 6, 0.4)' }}
-        className="text-[11px] font-bold px-2 py-0.5 rounded-md border flex items-center gap-1 shadow-sm"
-      >
+      <span className="bg-amber-600 text-white text-[11px] font-bold px-2.5 py-0.5 rounded-full inline-flex items-center gap-1 shadow-xs">
         Warm
       </span>
     );
@@ -242,8 +265,9 @@ export default function SocialPostsView() {
         <span className="bg-white dark:bg-white/5 text-slate-700 dark:text-zinc-300 px-3.5 py-1 rounded-full font-medium border border-slate-200 dark:border-white/10 shadow-xs flex items-center gap-1.5">
           <strong className="font-extrabold text-slate-900 dark:text-zinc-100">{Math.max(0, filteredPosts.length - filteredPosts.filter(isPostHot).length)}</strong> warm
         </span>
-        <span className="bg-white dark:bg-white/5 text-slate-500 dark:text-zinc-400 px-3.5 py-1 rounded-full font-medium border border-slate-200 dark:border-white/10 shadow-xs">
-          Last fetched: recently
+        <span className="bg-white dark:bg-white/5 text-slate-500 dark:text-zinc-400 px-3.5 py-1 rounded-full font-medium border border-slate-200 dark:border-white/10 shadow-xs flex items-center gap-1.5">
+          <span>Last fetched:</span>
+          <strong className="font-extrabold text-slate-900 dark:text-zinc-100">{timeAgoText}</strong>
         </span>
       </div>
 
@@ -280,9 +304,9 @@ export default function SocialPostsView() {
             <p className="text-zinc-500 text-xs mt-1">Try clicking "Fetch Intent Posts" to run a fresh sweep.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4">
             {filteredPosts.map((post) => {
-              const tags = (post.keyword_matched || 'marketing agency')
+              const tags = (post.keyword_matched || 'web design')
                 .split(',')
                 .flatMap(k => k.trim().split(' '))
                 .filter(Boolean)
@@ -300,43 +324,44 @@ export default function SocialPostsView() {
               return (
                 <div
                   key={post.id}
-                  className="nexa-card nexa-card-no-hover rounded-2xl p-4 shadow-xs flex flex-col justify-between transition-colors duration-150 group border border-slate-200 dark:border-nexa-border hover:border-emerald-500/40"
+                  className="bg-white dark:bg-[#14141d] rounded-2xl p-4 sm:p-5 shadow-xs border border-slate-200/80 dark:border-white/10 flex flex-col justify-between transition-all duration-150 hover:shadow-md group"
                 >
-                  {/* Top Header Row: Platform Badge + Intent Tag on Left, Time on Right */}
-                  <div className="flex items-center justify-between mb-2.5">
-                    <div className="flex items-center gap-2">
-                      {getPlatformBadge(post.platform)}
-                      {getIntentBadge(post)}
+                  <div>
+                    {/* Top Header Row: Platform Pill + Hot Pill on Left, Timestamp on Right */}
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        {getPlatformBadge(post.platform)}
+                        {getIntentBadge(post)}
+                      </div>
+                      <span className="text-xs font-medium text-slate-400 dark:text-zinc-500">
+                        {timeAgo(post.published_at)}
+                      </span>
                     </div>
-                    <span className="text-xs text-zinc-400 font-medium">
-                      {timeAgo(post.published_at)}
-                    </span>
-                  </div>
 
-                  {/* Body Content: 4 lines of clean post content without company/author names */}
-                  <div className="mb-3.5">
-                    <p className="social-post-card-content text-sm font-normal text-slate-800 dark:text-zinc-200 leading-relaxed tracking-normal line-clamp-4">
-                      {displayContent}
+                    {/* Headline Section: Slim Greyish Vertical Bar + Bold Summary Title */}
+                    <div className="flex items-stretch mb-2.5">
+                      <div className="w-[3px] min-w-[3px] max-w-[3px] rounded-full bg-slate-300 dark:bg-zinc-600 shrink-0 mr-2.5 self-stretch my-0.5" />
+                      <h3 className="text-base font-extrabold text-slate-900 dark:text-zinc-100 leading-snug tracking-tight line-clamp-2">
+                        {post.summary || displayContent.split('\n')[0] || displayContent}
+                      </h3>
+                    </div>
+
+                    {/* Body Snippet Paragraph */}
+                    <p className="text-xs sm:text-sm font-normal text-slate-600 dark:text-zinc-400 leading-relaxed line-clamp-2 pl-0.5">
+                      {post.summary ? displayContent : (displayContent.split('\n').slice(1).join(' ') || displayContent)}
                     </p>
                   </div>
 
-                  {/* Bottom Footer Row: Keywords on Left, View Thread/Post Button on Right */}
-                  <div className="flex items-center justify-between pt-1">
-                    <div className="flex flex-wrap gap-1.5 items-center">
-                      {tags.map((tag, idx) => (
-                        <span
-                          key={idx}
-                          className="px-2.5 py-0.5 rounded-md text-[11px] font-bold bg-[var(--nexa-indigo-dim)] text-[var(--nexa-indigo)] border border-indigo-500/30"
-                        >
-                          {tag.toLowerCase()}
-                        </span>
-                      ))}
-                    </div>
+                  {/* Horizontal Divider Line */}
+                  <div className="my-3 border-t border-slate-100 dark:border-white/10" />
 
-                    <div className="flex items-center gap-2">
+                  {/* Bottom Footer Row: Delete + View Post Buttons */}
+                  <div className="flex items-center justify-end gap-2">
+                    <div className="flex items-center gap-2 shrink-0">
                       <button
+                        type="button"
                         onClick={(e) => handleDelete(post.id, e)}
-                        className="p-1.5 text-zinc-400 hover:text-rose-500 hover:bg-white/10 rounded-lg transition-all"
+                        className="p-2 rounded-xl border border-slate-200 dark:border-white/10 text-slate-400 dark:text-zinc-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-slate-50 dark:hover:bg-white/5 transition"
                         title="Delete Post"
                       >
                         <Trash2 size={14} />
@@ -346,10 +371,10 @@ export default function SocialPostsView() {
                         href={post.post_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-1.5 px-4 py-1.5 bg-nexa-surface hover:bg-nexa-card-hover text-zinc-100 text-xs font-semibold rounded-xl border border-nexa-border transition-all shadow-sm"
+                        className="flex items-center gap-1.5 px-4 py-2 bg-white/90 dark:bg-white text-slate-900 dark:text-zinc-950 font-bold text-xs rounded-xl shadow-xs hover:shadow-md transition-all hover:scale-105 active:scale-95 border border-slate-300/80 dark:border-white backdrop-blur-md hover:bg-white dark:hover:bg-zinc-100"
                       >
-                        {post.platform.toLowerCase() === 'reddit' ? 'View thread' : 'View post'}
-                        <span className="text-sm font-sans leading-none">↗</span>
+                        <span>View post</span>
+                        <ExternalLink size={12} className="stroke-[2.5]" />
                       </a>
                     </div>
                   </div>

@@ -11,37 +11,20 @@ import json
 
 from datetime import datetime, timezone, timedelta
 
+from sqlalchemy import func
+
 router = APIRouter(prefix="/api/social-posts", tags=["Social Posts"])
 
 @router.get("/")
 def get_social_posts(platform: Optional[str] = None, keyword: Optional[str] = None, db: Session = Depends(get_db)):
     query = db.query(SocialPostSnapshot)
-    if platform:
-        query = query.filter(SocialPostSnapshot.platform == platform)
+    if platform and platform.lower() != 'all':
+        query = query.filter(func.lower(SocialPostSnapshot.platform).contains(platform.lower()))
     if keyword:
         query = query.filter(SocialPostSnapshot.keyword_matched == keyword)
     
-    posts = query.order_by(SocialPostSnapshot.published_at.desc(), SocialPostSnapshot.created_at.desc()).all()
-
-    # Enforce strict 30-day freshness filter (drop any thread > 30 days old)
-    cutoff = datetime.now(timezone.utc) - timedelta(days=30)
-    fresh_posts = []
-    for post in posts:
-        is_fresh = True
-        if post.published_at:
-            try:
-                dt_str = post.published_at.replace("Z", "+00:00")
-                pub_dt = datetime.fromisoformat(dt_str)
-                if pub_dt.tzinfo is None:
-                    pub_dt = pub_dt.replace(tzinfo=timezone.utc)
-                if pub_dt < cutoff:
-                    is_fresh = False
-            except Exception:
-                pass
-        if is_fresh:
-            fresh_posts.append(post)
-
-    return fresh_posts
+    posts = query.order_by(SocialPostSnapshot.created_at.desc(), SocialPostSnapshot.published_at.desc()).all()
+    return posts
 
 @router.get("/test-badger")
 def test_badger_endpoint():
@@ -78,7 +61,6 @@ async def trigger_fetch_social_posts(db: Session = Depends(get_db)):
     
     saved_count = 0
     from backend.pipeline.social_classifier import batch_classify_social_intent
-    from backend.models import ScrapeCache
     import logging
     logger = logging.getLogger("SocialPosts")
     
@@ -96,9 +78,10 @@ async def trigger_fetch_social_posts(db: Session = Depends(get_db)):
             for idx, p in enumerate(batch):
                 c = classifications[idx] if idx < len(classifications) else None
                 url_key = p["post_url"]
+                intent_type = str(c.get("intent", "")).lower() if c else "seeking_provider"
                 
-                # In production, check cache here before evaluating to skip it
-                if c and c.get("intent") == "seeking_provider" and c.get("confidence", 0) > 0.6:
+                # Save post if seeking provider, buyer intent, unclear or confidence >= 0.4
+                if not c or intent_type in ["seeking_provider", "buyer_intent", "seeking_services", "unclear"] or c.get("confidence", 0) >= 0.4:
                     existing = db.query(SocialPostSnapshot).filter(SocialPostSnapshot.post_url == url_key).first()
                     if not existing:
                         db_post = SocialPostSnapshot(
@@ -108,8 +91,9 @@ async def trigger_fetch_social_posts(db: Session = Depends(get_db)):
                             author_handle=p["author_handle"],
                             content=p["content"],
                             post_url=p["post_url"],
-                            keyword_matched=c.get("service_category", p.get("keyword_matched")),
+                            keyword_matched=c.get("service_category") if c and c.get("service_category") != "other" else p.get("keyword_matched", "intent signal"),
                             company_name=p["company_name"],
+                            summary=c.get("one_line_summary") if c else None,
                             published_at=p["published_at"]
                         )
                         db.add(db_post)

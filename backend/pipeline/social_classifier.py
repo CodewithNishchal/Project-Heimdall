@@ -128,6 +128,7 @@ Return a JSON array of objects. EACH object MUST have this exact schema and matc
     "id": <integer>,
     "intent": "seeking_provider" | "is_provider" | "unrelated" | "unclear",
     "service_category": "<extract the specific service they are seeking related to {topics_str}, or 'other'>",
+    "one_line_summary": "<1-sentence summary of the specific intent trigger or request>",
     "confidence": 0.0-1.0
   }}
 ]

@@ -6,11 +6,13 @@ import PitcherMode from './PitcherMode';
 import ScoreBreakdown from './ScoreBreakdown';
 import HackerScanAnimation from './HackerScanAnimation';
 import LeadDetailDrawer from './LeadDetailDrawer';
-import PipelineProgressModal from './PipelineProgressModal';
+import DocumentMagnifierScan from './DocumentMagnifierScan';
 import { ingestLead, deleteLead, runPipeline, fetchLeads } from '../lib/api';
 
 interface LeadTableProps {
   leads: LeadDetailResponse[];
+  scannedLeads?: LeadDetailResponse[];
+  setScannedLeads?: (leads: LeadDetailResponse[]) => void;
   selectedLeadId: string | null;
   onSelectLead: (id: string | null) => void;
   onLeadIngested?: (newLead: LeadDetailResponse) => void;
@@ -19,6 +21,8 @@ interface LeadTableProps {
   externalSearchTerm?: string;
   isPipelineTab?: boolean;
   isTrackRecordsTab?: boolean;
+  trackedLeadIds?: string[];
+  onToggleTrackLead?: (id: string) => void;
 }
 
 const tierOptions: Array<LeadTier | 'ALL'> = ['ALL', 'High', 'Medium', 'Low'];
@@ -72,6 +76,15 @@ function getHiringNuance(lead: LeadDetailResponse) {
   return { label: 'Expansion Mode', type: 'general', desc: 'General hiring & growth velocity' };
 }
 
+function formatEmployeeCount(count: number | null): string {
+  if (!count) return '120 emp';
+  if (count >= 1000) {
+    const inK = count / 1000;
+    return `${inK % 1 === 0 ? inK : inK.toFixed(1)}K emp`;
+  }
+  return `${count} emp`;
+}
+
 function getFirstSentence(text?: string): string {
   if (!text) return 'Intent signals detected for target company.';
   const clean = text.trim();
@@ -81,20 +94,44 @@ function getFirstSentence(text?: string): string {
 
 function getSignalBadgeStyle(signalText: string) {
   const lower = signalText.toLowerCase();
-  if (lower.includes('fund') || lower.includes('series') || lower.includes('seed') || lower.includes('raised')) {
-    return 'border border-indigo-500/30 bg-[var(--nexa-indigo-dim)] text-[var(--nexa-indigo)]';
+
+  // 1. Funding round / Series / Seed / Revenue -> Indigo theme
+  if (lower.includes('fund') || lower.includes('series') || lower.includes('seed') || lower.includes('$')) {
+    return 'border border-indigo-300 bg-indigo-100 text-indigo-900 dark:border-indigo-500/40 dark:bg-indigo-950/80 dark:text-indigo-300 font-mono font-bold shadow-xs';
   }
-  if (lower.includes('hire') || lower.includes('sdr') || lower.includes('gap') || lower.includes('role')) {
-    return 'border border-amber-500/30 bg-[var(--nexa-amber-dim)] text-[var(--nexa-amber)]';
+
+  // 2. Headcount / Growth / Revenue % -> Emerald theme
+  if (lower.includes('headcount') || lower.includes('growth') || lower.includes('%') || lower.includes('+') || lower.includes('expansion')) {
+    return 'border border-emerald-300 bg-emerald-100 text-emerald-900 dark:border-emerald-500/40 dark:bg-emerald-950/80 dark:text-emerald-300 font-mono font-bold shadow-xs';
   }
-  if (lower.includes('headcount') || lower.includes('growth') || lower.includes('expansion') || lower.includes('+')) {
-    return 'border border-emerald-500/30 bg-[var(--nexa-emerald-dim)] text-[var(--nexa-emerald)]';
+
+  // 3. Roles / SDR / Hiring Gap / Hiring -> Amber theme
+  if (lower.includes('role') || lower.includes('sdr') || lower.includes('hire') || lower.includes('gap')) {
+    return 'border border-amber-300 bg-amber-100 text-amber-900 dark:border-amber-500/40 dark:bg-amber-950/80 dark:text-amber-300 font-mono font-bold shadow-xs';
   }
-  return 'border border-nexa-border bg-nexa-surface text-[var(--nexa-accent)]';
+
+  // 4. Executive Hires (CMO, VP Sales) -> Purple theme
+  if (lower.includes('cmo') || lower.includes('vp') || lower.includes('exec') || lower.includes('director')) {
+    return 'border border-purple-300 bg-purple-100 text-purple-900 dark:border-purple-500/40 dark:bg-purple-950/80 dark:text-purple-300 font-mono font-bold shadow-xs';
+  }
+
+  // 5. Agency / Partnership / Intent post -> Teal theme
+  if (lower.includes('agency') || lower.includes('partner') || lower.includes('post') || lower.includes('seek')) {
+    return 'border border-teal-300 bg-teal-100 text-teal-900 dark:border-teal-500/40 dark:bg-teal-950/80 dark:text-teal-300 font-mono font-bold shadow-xs';
+  }
+
+  // 6. Ads paused / Meta ads -> Rose theme
+  if (lower.includes('ad') || lower.includes('meta') || lower.includes('pause') || lower.includes('stop')) {
+    return 'border border-rose-300 bg-rose-100 text-rose-900 dark:border-rose-500/40 dark:bg-rose-950/80 dark:text-rose-300 font-mono font-bold shadow-xs';
+  }
+
+  return 'border border-teal-300 bg-teal-100 text-teal-900 dark:border-teal-500/30 dark:bg-teal-950/60 dark:text-teal-300 font-mono font-bold shadow-xs';
 }
 
 export default function LeadTable({
   leads,
+  scannedLeads = [],
+  setScannedLeads,
   selectedLeadId,
   onSelectLead,
   onLeadIngested,
@@ -102,7 +139,9 @@ export default function LeadTable({
   status,
   externalSearchTerm = '',
   isPipelineTab = false,
-  isTrackRecordsTab = false
+  isTrackRecordsTab = false,
+  trackedLeadIds = [],
+  onToggleTrackLead
 }: LeadTableProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTier, setSelectedTier] = useState<LeadTier | 'ALL'>('ALL');
@@ -113,8 +152,6 @@ export default function LeadTable({
   const [pitcherLead, setPitcherLead] = useState<LeadDetailResponse | null>(null);
   const [isScanning, setIsScanning] = useState(false);
   const [isPipelineRunning, setIsPipelineRunning] = useState(false);
-  const [isPipelineModalOpen, setIsPipelineModalOpen] = useState(false);
-  const [hasRunPipelineInTab, setHasRunPipelineInTab] = useState(false);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [expandedContacts, setExpandedContacts] = useState<Record<string, boolean>>({});
 
@@ -141,23 +178,24 @@ export default function LeadTable({
 
   const handleRunPipeline = async () => {
     setIsPipelineRunning(true);
-    setIsPipelineModalOpen(true);
     try {
+      const existingIds = new Set(leads.map((l) => String(l.id || l.domain || l.company_name)));
       await runPipeline();
-    } catch (e) {
-      console.error('Pipeline trigger catch:', e);
-    }
-  };
-
-  const handlePipelineModalComplete = async () => {
-    setHasRunPipelineInTab(true);
-    try {
       const freshLeads = await fetchLeads();
+
       if (onLeadIngested && freshLeads.length > 0) {
         freshLeads.forEach((l) => onLeadIngested(l));
       }
+
+      // Determine the 5 new/fresh pipeline results
+      const newItems = freshLeads.filter((l) => !existingIds.has(String(l.id || l.domain || l.company_name)));
+      const itemsToStore = newItems.length >= 5 ? newItems.slice(0, 5) : (newItems.length > 0 ? newItems : freshLeads.slice(0, 5));
+
+      if (setScannedLeads) {
+        setScannedLeads(itemsToStore);
+      }
     } catch (e) {
-      console.error('Failed to sync fresh leads after pipeline completion', e);
+      console.error('Pipeline execution failed:', e);
     } finally {
       setIsPipelineRunning(false);
     }
@@ -207,16 +245,14 @@ export default function LeadTable({
   }, [leads, selectedLeadId]);
 
   const filteredLeads = useMemo(() => {
-    if (isPipelineTab && !hasRunPipelineInTab) {
-      return [];
-    }
+    const baseSource = isPipelineTab ? scannedLeads : leads;
 
     const activeSearch = (externalSearchTerm || searchTerm).toLowerCase().trim();
     const todayStr = new Date().toISOString().split('T')[0];
     const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
 
-    return leads.filter((lead) => {
+    return baseSource.filter((lead) => {
       // 1. Search Query
       const matchesSearch = !activeSearch ||
         lead.company_name.toLowerCase().includes(activeSearch) ||
@@ -230,14 +266,16 @@ export default function LeadTable({
       // 3. Date / Recency Filter
       let matchesDate = true;
       if (dateFilter === 'TODAY') {
-        const leadDate = lead.last_updated ? new Date(lead.last_updated).toISOString().split('T')[0] : '';
-        matchesDate = leadDate === todayStr || lead.badge === 'new_today';
+        const startOfToday = new Date();
+        startOfToday.setHours(0, 0, 0, 0);
+        const leadTime = lead.last_updated ? new Date(lead.last_updated).getTime() : 0;
+        matchesDate = leadTime >= startOfToday.getTime() || lead.badge === 'new_today';
       } else if (dateFilter === '7DAYS') {
-        const leadDate = lead.last_updated ? new Date(lead.last_updated) : new Date();
-        matchesDate = leadDate >= sevenDaysAgo;
+        const leadTime = lead.last_updated ? new Date(lead.last_updated).getTime() : 0;
+        matchesDate = leadTime >= sevenDaysAgo.getTime() || lead.badge === 'new_today';
       } else if (dateFilter === '30DAYS') {
-        const leadDate = lead.last_updated ? new Date(lead.last_updated) : new Date();
-        matchesDate = leadDate >= thirtyDaysAgo;
+        const leadTime = lead.last_updated ? new Date(lead.last_updated).getTime() : 0;
+        matchesDate = leadTime >= thirtyDaysAgo.getTime() || lead.badge === 'new_today';
       }
 
       // 4. Score Filter
@@ -250,15 +288,27 @@ export default function LeadTable({
       // 5. Signal Filter
       let matchesSignal = true;
       if (signalFilter !== 'ALL') {
-        const signalsStr = (lead.signals || []).map(s => s.signal_type.toLowerCase()).join(' ') + ' ' + (lead.why_now || '').toLowerCase();
-        if (signalFilter === 'HIRING') matchesSignal = signalsStr.includes('hiring') || signalsStr.includes('sdr');
-        else if (signalFilter === 'FUNDING') matchesSignal = signalsStr.includes('funding') || signalsStr.includes('series');
-        else if (signalFilter === 'HEADCOUNT') matchesSignal = !!lead.employee_count || signalsStr.includes('headcount');
+        const tagStr = (lead.signal_tags || []).map(t => (t.tag || '').toLowerCase()).join(' ');
+        const verbatimStr = (lead.signals || []).map(s => (s.signal_type || '') + ' ' + (s.verbatim_quote || '')).join(' ').toLowerCase();
+        const fundingStageStr = (lead.funding_stage || '').toLowerCase();
+        const socialSegStr = (lead.social_segment || '').toLowerCase();
+        const whyNowStr = (lead.why_now || '').toLowerCase();
+        const verdictStr = (lead.ai_verdict || '').toLowerCase();
+
+        const signalsStr = `${tagStr} ${verbatimStr} ${fundingStageStr} ${socialSegStr} ${whyNowStr} ${verdictStr}`;
+
+        if (signalFilter === 'HIRING') {
+          matchesSignal = signalsStr.includes('hiring') || signalsStr.includes('sdr') || signalsStr.includes('role') || signalsStr.includes('hire') || signalsStr.includes('recruit');
+        } else if (signalFilter === 'FUNDING') {
+          matchesSignal = signalsStr.includes('fund') || signalsStr.includes('series') || signalsStr.includes('seed') || signalsStr.includes('raised') || signalsStr.includes('$') || signalsStr.includes('capital') || signalsStr.includes('venture');
+        } else if (signalFilter === 'HEADCOUNT') {
+          matchesSignal = !!lead.employee_count || signalsStr.includes('headcount') || signalsStr.includes('growth') || signalsStr.includes('expansion') || signalsStr.includes('employee');
+        }
       }
 
       return matchesSearch && matchesTier && matchesDate && matchesScore && matchesSignal;
     });
-  }, [leads, searchTerm, externalSearchTerm, selectedTier, dateFilter, scoreFilter, signalFilter, isPipelineTab, hasRunPipelineInTab]);
+  }, [leads, scannedLeads, searchTerm, externalSearchTerm, selectedTier, dateFilter, scoreFilter, signalFilter, isPipelineTab]);
 
   return (
     <div className="flex flex-col gap-4 flex-1 min-h-0">
@@ -303,7 +353,7 @@ export default function LeadTable({
             </div>
             <div>
               <h2 className="text-lg font-black text-slate-900 dark:text-zinc-100 flex items-center gap-2">
-                Track Records & Active Watchlist
+                Saved Leads & Active Watchlist
                 <span className="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-950/60 px-2.5 py-0.5 rounded-full border border-amber-500/30">
                   {leads.length} Tracked
                 </span>
@@ -346,9 +396,8 @@ export default function LeadTable({
               <tr className="border-b border-slate-200/80 dark:border-white/10 bg-slate-50/70 dark:bg-white/5 text-[11px] font-black uppercase tracking-wider text-slate-700 dark:text-zinc-300">
                 <th className="p-4 text-left min-w-[200px]">COMPANY</th>
                 <th className="p-4 text-center min-w-[90px]">SCORE</th>
-                <th className="p-4 text-center min-w-[260px]">AI SUMMARY</th>
-                <th className="p-4 text-center min-w-[220px]">SIGNALS</th>
-                <th className="p-4 text-center min-w-[220px]">WHY NOW</th>
+                <th className="p-4 text-center min-w-[240px]">SIGNALS</th>
+                <th className="p-4 text-center min-w-[320px]">WHY NOW</th>
                 <th className="p-4 text-center min-w-[120px] relative">
                   <div ref={filterContainerRef} className="relative flex justify-center">
                     <button
@@ -482,13 +531,8 @@ export default function LeadTable({
             <tbody className="text-sm">
               {isPipelineRunning ? (
                 <tr>
-                  <td colSpan={6} className="p-4 sm:p-6 bg-slate-50/50 dark:bg-black/20">
-                    <PipelineProgressModal
-                      isOpen={true}
-                      isInline={true}
-                      onClose={() => setIsPipelineRunning(false)}
-                      onComplete={handlePipelineModalComplete}
-                    />
+                  <td colSpan={5} className="p-4 sm:p-6 bg-slate-950/40">
+                    <DocumentMagnifierScan />
                   </td>
                 </tr>
               ) : (
@@ -505,13 +549,34 @@ export default function LeadTable({
                         >
                           {/* COMPANY */}
                           <td className="p-4 font-medium text-zinc-100 text-left">
-                            <div className="flex flex-col items-start gap-0.5 text-left group">
-                              <span className="font-bold text-zinc-100 text-sm group-hover:text-[var(--nexa-accent)] transition-colors">
-                                {lead.company_name}
-                              </span>
-                              <span className="text-xs text-zinc-400 font-normal">
-                                {(!lead.industry || lead.industry === 'Unknown') ? 'SaaS' : lead.industry} · {lead.funding_stage || 'Series B'} · {lead.employee_count ? `${lead.employee_count} emp` : '120 emp'}
-                              </span>
+                            <div className="flex items-center gap-2 text-left group">
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  onToggleTrackLead?.(leadKey);
+                                }}
+                                className={`p-1.5 rounded-lg transition shrink-0 border ${
+                                  trackedLeadIds.includes(leadKey) || trackedLeadIds.includes(lead.domain) || trackedLeadIds.includes(lead.company_name)
+                                    ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400 font-bold'
+                                    : 'border-transparent text-slate-400 dark:text-zinc-500 hover:text-slate-700 dark:hover:text-zinc-200 hover:bg-slate-100 dark:hover:bg-white/10'
+                                }`}
+                                title={
+                                  trackedLeadIds.includes(leadKey) || trackedLeadIds.includes(lead.domain) || trackedLeadIds.includes(lead.company_name)
+                                    ? 'Tracked in Saved Leads (Click to untrack)'
+                                    : 'Click to Track Company'
+                                }
+                              >
+                                <Target size={14} />
+                              </button>
+                              <div className="flex flex-col items-start gap-0.5 text-left">
+                                <span className="font-bold text-zinc-100 text-sm group-hover:text-[var(--nexa-accent)] transition-colors">
+                                  {lead.company_name}
+                                </span>
+                                <span className="text-xs text-zinc-400 font-normal">
+                                  {(!lead.industry || lead.industry === 'Unknown') ? 'SaaS' : lead.industry} · {lead.funding_stage || 'Series B'} · {formatEmployeeCount(lead.employee_count)}
+                                </span>
+                              </div>
                             </div>
                           </td>
 
@@ -520,10 +585,10 @@ export default function LeadTable({
                             {(() => {
                               const displayScore = (lead.badge === 'filtered' || lead.ai_verdict?.includes('API Error')) ? 0 : lead.intent_score;
                               const scoreColor = displayScore >= 70
-                                ? 'bg-emerald-950/80 text-emerald-400 border border-emerald-500/40'
+                                ? 'bg-emerald-100 text-emerald-900 border border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-400 dark:border-emerald-500/40'
                                 : displayScore >= 40
-                                  ? 'bg-amber-950/80 text-amber-400 border border-amber-500/40'
-                                  : 'bg-rose-950/80 text-rose-400 border border-rose-500/40';
+                                  ? 'bg-amber-100 text-amber-900 border border-amber-300 dark:bg-amber-950/80 dark:text-amber-400 dark:border-amber-500/40'
+                                  : 'bg-rose-100 text-rose-900 border border-rose-300 dark:bg-rose-950/80 dark:text-rose-400 dark:border-rose-500/40';
 
                               return (
                                 <span className={`inline-flex items-center justify-center rounded-full px-3 py-1 text-xs font-bold font-mono ${scoreColor}`}>
@@ -533,53 +598,63 @@ export default function LeadTable({
                             })()}
                           </td>
 
-                          {/* AI SUMMARY (NEW COLUMN) */}
-                          <td className="p-4 text-xs font-medium text-zinc-300 leading-snug max-w-xs text-center">
-                            <span className="line-clamp-2">
-                              {getFirstSentence(lead.ai_verdict)}
-                            </span>
-                          </td>
-
                           {/* SIGNALS */}
                           <td className="p-4 text-center">
-                            <div className="flex flex-wrap gap-1.5 items-center justify-center">
+                            <div className="flex flex-wrap gap-1.5 items-center justify-center max-w-xs">
                               {(() => {
                                 const signalPills: Array<{ label: string; style: string }> = [];
 
-                                if (lead.funding_stage && lead.funding_stage !== 'UNKNOWN') {
-                                  signalPills.push({ label: 'Funding', style: 'border border-indigo-500/30 bg-[var(--nexa-indigo-dim)] text-[var(--nexa-indigo)]' });
-                                }
-
-                                const nuance = getHiringNuance(lead);
-                                if (nuance.type === 'adjacent' || nuance.type === 'direct') {
-                                  signalPills.push({ label: 'Hiring gap', style: 'border border-amber-500/30 bg-[var(--nexa-amber-dim)] text-[var(--nexa-amber)]' });
-                                }
-
-                                if (lead.employee_count) {
-                                  signalPills.push({ label: `+${Math.min(40, Math.max(15, (lead.employee_count % 30) + 15))}% headcount`, style: 'border border-emerald-500/30 bg-[var(--nexa-emerald-dim)] text-[var(--nexa-emerald)]' });
-                                }
-
-                                if (lead.signals && lead.signals.length > 0) {
-                                  lead.signals.slice(0, 3).forEach(s => {
-                                    const typeStr = s.signal_type.replace(/_/g, ' ');
-                                    if (!signalPills.some(p => p.label.toLowerCase().includes(typeStr.toLowerCase()))) {
-                                      const style = getSignalBadgeStyle(typeStr);
-                                      signalPills.push({ label: typeStr, style });
+                                // 1. Backend Signal Tags (from Groq / intent extraction)
+                                if (lead.signal_tags && lead.signal_tags.length > 0) {
+                                  lead.signal_tags.forEach((st) => {
+                                    if (st.tag && !signalPills.some((p) => p.label.toLowerCase() === st.tag.toLowerCase())) {
+                                      signalPills.push({
+                                        label: st.tag,
+                                        style: getSignalBadgeStyle(st.tag)
+                                      });
                                     }
                                   });
                                 }
 
-                                if (signalPills.length === 0) {
-                                  signalPills.push({ label: 'Funding', style: 'border border-indigo-500/30 bg-[var(--nexa-indigo-dim)] text-[var(--nexa-indigo)]' });
-                                  signalPills.push({ label: 'Hiring gap', style: 'border border-amber-500/30 bg-[var(--nexa-amber-dim)] text-[var(--nexa-amber)]' });
-                                  signalPills.push({ label: '+40% headcount', style: 'border border-emerald-500/30 bg-[var(--nexa-emerald-dim)] text-[var(--nexa-emerald)]' });
+                                // 2. Funding Stage
+                                if (lead.funding_stage && lead.funding_stage !== 'UNKNOWN') {
+                                  const fLabel = lead.funding_stage.includes('Series') || lead.funding_stage.includes('Seed')
+                                    ? lead.funding_stage
+                                    : `${lead.funding_stage} Round`;
+                                  if (!signalPills.some((p) => p.label.toLowerCase() === fLabel.toLowerCase())) {
+                                    signalPills.push({ label: fLabel, style: getSignalBadgeStyle(fLabel) });
+                                  }
+                                }
+
+                                // 3. Extracted Verbatim Signals (from Groq)
+                                (lead.signals || []).forEach((s) => {
+                                  const rawLabel = s.signal_type.replace(/_/g, ' ');
+                                  const formattedLabel = rawLabel.charAt(0).toUpperCase() + rawLabel.slice(1);
+                                  if (!signalPills.some((p) => p.label.toLowerCase() === formattedLabel.toLowerCase())) {
+                                    signalPills.push({
+                                      label: formattedLabel,
+                                      style: getSignalBadgeStyle(s.signal_type + ' ' + (s.verbatim_quote || ''))
+                                    });
+                                  }
+                                });
+
+                                // 4. Employee Count (Real count from DB if available)
+                                if (lead.employee_count && signalPills.length < 3) {
+                                  const empLabel = `${lead.employee_count} employees`;
+                                  if (!signalPills.some((p) => p.label.toLowerCase() === empLabel.toLowerCase())) {
+                                    signalPills.push({
+                                      label: empLabel,
+                                      style: getSignalBadgeStyle('growth')
+                                    });
+                                  }
                                 }
 
                                 return signalPills.slice(0, 3).map((pill, idx) => (
                                   <span
                                     key={idx}
-                                    className={`px-2.5 py-1 rounded-md text-[11px] font-semibold whitespace-nowrap ${pill.style}`}
+                                    className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold tracking-wider uppercase font-mono ${pill.style}`}
                                   >
+                                    <Sparkles size={10} />
                                     {pill.label}
                                   </span>
                                 ));
@@ -587,54 +662,51 @@ export default function LeadTable({
                             </div>
                           </td>
 
-                          {/* WHY NOW (SHIFTED TO END) */}
-                          <td className="p-4 text-xs font-medium text-zinc-400 leading-snug max-w-xs text-center">
-                            {lead.why_now || 'Intent signals detected.'}
+                          {/* WHY NOW */}
+                          <td className="p-4 text-xs text-zinc-300 text-left leading-snug max-w-sm">
+                            <div className="flex flex-col gap-1 text-left">
+                              {(() => {
+                                const whyNowText = lead.why_now && lead.why_now !== 'Intent signals detected'
+                                  ? lead.why_now
+                                  : getFirstSentence(lead.ai_verdict);
+                                return (
+                                  <span className="line-clamp-3 text-zinc-300 font-medium leading-relaxed">
+                                    {whyNowText}
+                                  </span>
+                                );
+                              })()}
+                            </div>
                           </td>
 
-                          {/* Actions / Far Right */}
+                          {/* ACTIONS */}
                           <td className="p-4 text-center">
-                            <div className="flex items-center justify-center gap-2">
-                              {confirmDeleteId === lead.id ? (
-                                <>
+                            <div className="flex items-center justify-center gap-2" onClick={(e) => e.stopPropagation()}>
+                              {confirmDeleteId === String(lead.id || lead.domain || lead.company_name) ? (
+                                <div className="flex items-center gap-1.5">
                                   <button
-                                    aria-label={`Confirm delete for ${lead.company_name}`}
-                                    className="inline-flex items-center justify-center rounded-md border border-rose-500/50 bg-[var(--nexa-rose-dim)] p-1 text-rose-400 transition hover:bg-rose-500 hover:text-white"
-                                    onClick={(e) => { e.stopPropagation(); handleDelete(lead.id); }}
                                     type="button"
+                                    onClick={() => handleDelete(String(lead.id || lead.domain || lead.company_name))}
+                                    className="rounded-lg bg-rose-600 px-2.5 py-1 text-[11px] font-bold text-white hover:bg-rose-500 transition shadow-xs"
                                   >
-                                    <Check size={14} aria-hidden="true" />
+                                    Confirm
                                   </button>
                                   <button
-                                    aria-label={`Cancel delete for ${lead.company_name}`}
-                                    className="inline-flex items-center justify-center rounded-md border border-nexa-border bg-nexa-surface p-1 text-zinc-400 transition hover:border-zinc-500 hover:text-zinc-200"
-                                    onClick={(e) => { e.stopPropagation(); setConfirmDeleteId(null); }}
                                     type="button"
+                                    onClick={() => setConfirmDeleteId(null)}
+                                    className="rounded-lg border border-slate-200 bg-slate-100 text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-zinc-300 hover:bg-slate-200 dark:hover:bg-slate-700 px-2.5 py-1 text-[11px] font-bold transition"
                                   >
-                                    <X size={14} aria-hidden="true" />
+                                    Cancel
                                   </button>
-                                </>
+                                </div>
                               ) : (
-                                <>
-                                  <button
-                                    aria-label={`Toggle details for ${lead.company_name}`}
-                                    className="inline-flex items-center justify-center rounded-md border border-white/10 bg-white/5 p-1.5 text-zinc-400 transition hover:border-white/20 hover:text-zinc-200 hover:bg-white/10"
-                                    onClick={(e) => { e.stopPropagation(); onSelectLead(selectedLeadId === lead.id ? null : lead.id); }}
-                                    type="button"
-                                  >
-                                    <div className="w-3.5 h-3.5 border border-zinc-400 rounded-sm flex items-center justify-center text-[9px] font-bold">
-                                      {selectedLeadId === lead.id ? '−' : '□'}
-                                    </div>
-                                  </button>
-                                  <button
-                                    aria-label={`Delete record for ${lead.company_name}`}
-                                    className="inline-flex items-center justify-center rounded-md border border-white/10 bg-white/5 p-1.5 text-zinc-500 transition hover:border-rose-500/40 hover:bg-[var(--nexa-rose-dim)] hover:text-rose-400"
-                                    onClick={(e) => { e.stopPropagation(); setConfirmDeleteId(lead.id); }}
-                                    type="button"
-                                  >
-                                    <Trash2 size={13} aria-hidden="true" />
-                                  </button>
-                                </>
+                                <button
+                                  type="button"
+                                  onClick={() => setConfirmDeleteId(String(lead.id || lead.domain || lead.company_name))}
+                                  className="rounded-xl border border-rose-200 bg-rose-50 p-2 text-rose-600 hover:bg-rose-100 hover:text-rose-700 dark:border-rose-500/30 dark:bg-rose-950/40 dark:text-rose-400 dark:hover:bg-rose-900/60 dark:hover:text-rose-200 transition shadow-xs"
+                                  title="Delete Lead"
+                                >
+                                  <Trash2 size={15} />
+                                </button>
                               )}
                             </div>
                           </td>
@@ -646,22 +718,22 @@ export default function LeadTable({
                     <tr>
                       <td
                         className="p-16 text-center text-sm font-medium text-slate-500"
-                        colSpan={6}
+                        colSpan={5}
                       >
-                        {isPipelineTab && !hasRunPipelineInTab ? (
+                        {isPipelineTab ? (
                           <div className="flex flex-col items-center justify-center py-8">
-                            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 mb-3 shadow-sm">
+                            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 mb-3 shadow-sm">
                               <Workflow size={28} />
                             </div>
                             <h3 className="text-base font-black text-slate-900 dark:text-zinc-100">Pipeline Standby</h3>
-                            <p className="text-xs text-slate-500 dark:text-zinc-400 max-w-md mt-1 font-medium leading-relaxed">
-                              No pipeline execution in progress for this session. Click the <strong>Run Pipeline</strong> button above to launch multi-source lead discovery.
+                            <p className="text-xs text-slate-500 dark:text-zinc-400 max-w-md mt-1 font-medium leading-relaxed text-center">
+                              No pipeline execution results in temporary storage. Click the <strong>Run Pipeline</strong> button above to launch live discovery.
                             </p>
                             <button
                               type="button"
                               onClick={handleRunPipeline}
                               disabled={isPipelineRunning}
-                              className="mt-4 flex items-center gap-2 rounded-2xl bg-emerald-600 px-6 py-3 text-xs font-bold text-white shadow-md hover:bg-emerald-500 transition"
+                              className="mt-4 flex items-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 px-6 py-3 text-xs font-bold text-white shadow-md hover:scale-105 active:scale-95 transition disabled:opacity-50"
                             >
                               <Workflow size={15} />
                               <span>Start Pipeline Execution</span>
@@ -720,6 +792,19 @@ export default function LeadTable({
       <LeadDetailDrawer
         lead={selectedLead}
         onClose={() => onSelectLead(null)}
+        isTracked={
+          selectedLead
+            ? trackedLeadIds.includes(String(selectedLead.id || selectedLead.domain || selectedLead.company_name)) ||
+              trackedLeadIds.includes(selectedLead.domain) ||
+              trackedLeadIds.includes(selectedLead.company_name)
+            : false
+        }
+        onToggleTrack={() => {
+          if (selectedLead) {
+            const key = String(selectedLead.id || selectedLead.domain || selectedLead.company_name);
+            onToggleTrackLead?.(key);
+          }
+        }}
       />
     </div>
   );

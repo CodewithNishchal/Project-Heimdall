@@ -57,6 +57,15 @@ class ContactModel(BaseModel):
     source: Optional[str] = None
 
 
+from pydantic import BaseModel, Field
+
+class SignalTagModel(BaseModel):
+    """Visual Intent Chip Object"""
+    tag: str
+    category: str
+    color_theme: str
+
+
 class LeadDetailResponse(BaseModel):
     """
     Master Lead Object — Strict Data Contract Protocol.
@@ -70,6 +79,7 @@ class LeadDetailResponse(BaseModel):
     company_name: str
     domain: str
     industry: str
+    company_segment: Optional[str] = "Growth Scale-up"
     employee_count: Optional[int] = None
     funding_stage: Optional[str] = None
     intent_score: int
@@ -77,7 +87,11 @@ class LeadDetailResponse(BaseModel):
     tier: Literal["High", "Medium", "Low"]
     icp_fit: Literal["Strong", "Partial", "Poor"]
     confidence: ConfidenceModel
-    why_now: str
+    why_now: str = Field(
+        default="Verified public buying intent triggers detected. Recommend targeted outreach.",
+        description="2-sentence catalyst and strategic opportunity statement."
+    )
+    signal_tags: List[SignalTagModel] = Field(default_factory=list)
     badge: Optional[Literal["new_today", "score_up", "score_down", "signal_added", "filtered"]] = None
     social_segment: Optional[str] = None
     meta_ads_active: Optional[bool] = False
@@ -108,7 +122,11 @@ def list_all_leads():
             if isinstance(payload.get("confidence"), dict):
                 ver = payload["confidence"].get("verified", 0)
                 if ver > 100:
-                    payload["confidence"]["verified"] = min(100, max(0, ver // 40))
+                    payload["confidence"]["verified"] = min(100, max(0, ver))
+            if lead.last_updated:
+                payload["last_updated"] = lead.last_updated.isoformat()
+            elif not payload.get("last_updated"):
+                payload["last_updated"] = datetime.now(timezone.utc).isoformat()
             results.append(payload)
         return results
     finally:
@@ -130,7 +148,7 @@ def get_lead_profile_details(lead_id: str):
         if isinstance(payload.get("confidence"), dict):
             ver = payload["confidence"].get("verified", 0)
             if ver > 100:
-                payload["confidence"]["verified"] = min(100, max(0, ver // 40))
+                payload["confidence"]["verified"] = min(100, max(0, ver))
         return payload
     finally:
         db.close()
@@ -157,8 +175,9 @@ def delete_lead_record(lead_id: str):
 @router.post("/{lead_id}/verdict")
 def get_lazy_loaded_pitch_verdict(lead_id: str):
     """
-    Phase 5.5 — Pitcher Mode. Uses Claude Haiku for high-quality cold email
-    generation. Falls back to Gemini if Claude API key is not configured.
+    Phase 5.5 — Pitcher Mode / Research AI. Uses OpenRouter API for high-quality
+    intent signal summaries around Hiring, Funding, Leadership Change, and Growth.
+    Falls back to Groq and Gemini if OpenRouter is unavailable.
     """
     db = SessionLocal()
     try:
@@ -174,15 +193,89 @@ def get_lazy_loaded_pitch_verdict(lead_id: str):
 
     from backend.config import settings
 
-    # Primary: Groq Pitcher AI engine
+    # Primary: OpenRouter Pitcher AI engine
+    if settings.OPENROUTER_API_KEY:
+        result = _generate_pitch_with_openrouter(lead, settings.OPENROUTER_API_KEY)
+        if result:
+            return {"lead_id": lead_id, **result}
+
+    # Secondary: Groq Pitcher AI engine
     if settings.GROQ_API_KEY:
         result = _generate_pitch_with_groq(lead, settings.GROQ_API_KEY)
         if result:
             return {"lead_id": lead_id, **result}
 
-    # Fallback to Gemini Pitcher engine
+    # Tertiary Fallback: Gemini Pitcher engine
     result = _generate_pitch_with_gemini(lead)
     return {"lead_id": lead_id, **result}
+
+
+def _generate_pitch_with_openrouter(lead: LeadDetailResponse, api_key: str) -> dict | None:
+    """
+    Uses OpenRouter LLM API to generate a focused intent synopsis around
+    Hiring, Funding, Leadership Change, and Growth signals.
+    """
+    import json
+    import httpx
+    import re
+
+    try:
+        signals_text = "\n".join([f"- {s.signal_type}: {s.verbatim_quote}" for s in lead.signals]) if lead.signals else "No specific signals extracted."
+        
+        prompt = f"""Generate a structured, point-wise synopsis of key buying intent signals for {lead.company_name}.
+
+Main AI Verdict: {lead.ai_verdict}
+
+Extracted Signals & Triggers:
+{signals_text}
+
+CRITICAL PROMPT INSTRUCTIONS:
+1. FOCUS STRICTLY ON CORE SIGNALS: Provide a clear synopsis specifically around high-value buying signals:
+   - Hiring (new SDRs, C-level roles, marketing/sales team expansion)
+   - Funding (recent investment rounds, venture capital, seed/series investment)
+   - Leadership Change (new executives, fractional leadership, key executive hires)
+   - Growth & Scaling (new office locations, revenue milestones, expansion)
+   - DO NOT include generic or random press release news.
+2. FORMATTING:
+   - Do NOT write an email. Do NOT include greetings (e.g., 'Hi [Name]') or sign-offs (e.g., 'Best').
+   - Output MUST be a clean, point-wise brief formatted in markdown bullet points.
+3. JSON OUTPUT SCHEMA:
+   - Your ENTIRE response MUST be a valid JSON object matching exactly: {{"subject_line": "Intent Summary for {lead.company_name}", "email_body": "markdown bulleted summary text"}}"""
+
+        response = httpx.post(
+            "https://openrouter.ai/api/v1/chat/completions",
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+                "HTTP-Referer": "https://prospector.ai",
+                "X-Title": "Prospector AI"
+            },
+            json={
+                "model": "meta-llama/llama-3.3-70b-instruct",
+                "messages": [
+                    {"role": "system", "content": "You are Pitcher AI, an expert sales intelligence analyst. You output raw JSON matching the schema."},
+                    {"role": "user", "content": prompt}
+                ],
+                "response_format": {"type": "json_object"},
+                "temperature": 0.3
+            },
+            timeout=30.0
+        )
+        response.raise_for_status()
+        raw = response.json()["choices"][0]["message"]["content"]
+        
+        match = re.search(r'\{.*\}', raw, re.DOTALL)
+        if match:
+            parsed = json.loads(match.group(0))
+            return {
+                "subject_line": parsed.get("subject_line", f"Intent Summary for {lead.company_name}"),
+                "email_body": parsed.get("email_body", raw),
+                "model_used": "OpenRouter Llama 3.3 70B (Pitcher AI)"
+            }
+    except Exception as e:
+        print(f"[OpenRouter Pitcher AI Error] {e}")
+    return None
+
 
 def _generate_pitch_with_groq(lead: LeadDetailResponse, api_key: str) -> dict | None:
     """
@@ -195,19 +288,25 @@ def _generate_pitch_with_groq(lead: LeadDetailResponse, api_key: str) -> dict | 
     try:
         signals_text = "\n".join([f"- {s.signal_type}: {s.verbatim_quote}" for s in lead.signals]) if lead.signals else "No specific signals extracted."
         
-        prompt = f"""Generate a point-wise summary of intent signals for {lead.company_name}.
+        prompt = f"""Generate a structured, point-wise synopsis of key buying intent signals for {lead.company_name}.
 
 Main AI Verdict: {lead.ai_verdict}
 
-Extracted Intent Signals:
+Extracted Signals & Triggers:
 {signals_text}
 
-CRITICAL INSTRUCTIONS:
-1. Do NOT write an email. Do NOT include greetings (e.g., 'Hi [Name]') or sign-offs (e.g., 'Best').
-2. Create a perfect point-wise brief of all the intent layers fetched from the AI verdict and the extracted signals.
-3. The output MUST be a bulleted summary report designed to be shown to a non-tech user.
-4. Keep it clear, concise, and highly informative.
-5. Your entire response must be a valid JSON object matching exactly this schema: {{"subject_line": "Intent Summary for {lead.company_name}", "email_body": "markdown bulleted summary text"}}"""
+CRITICAL PROMPT INSTRUCTIONS:
+1. FOCUS STRICTLY ON CORE SIGNALS: Provide a clear synopsis specifically around high-value buying signals:
+   - Hiring (new SDRs, C-level roles, marketing/sales team expansion)
+   - Funding (recent investment rounds, venture capital, seed/series investment)
+   - Leadership Change (new executives, fractional leadership, key executive hires)
+   - Growth & Scaling (new office locations, revenue milestones, expansion)
+   - DO NOT include generic or random press release news.
+2. FORMATTING:
+   - Do NOT write an email. Do NOT include greetings (e.g., 'Hi [Name]') or sign-offs (e.g., 'Best').
+   - Output MUST be a clean, point-wise brief formatted in markdown bullet points.
+3. JSON OUTPUT SCHEMA:
+   - Your ENTIRE response MUST be a valid JSON object matching exactly: {{"subject_line": "Intent Summary for {lead.company_name}", "email_body": "markdown bulleted summary text"}}"""
 
         response = httpx.post(
             "https://api.groq.com/openai/v1/chat/completions",

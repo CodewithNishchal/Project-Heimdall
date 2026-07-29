@@ -11,6 +11,8 @@ from dotenv import load_dotenv
 from backend.pipeline.discovery import fetch_public_intent_signals
 from backend.pipeline.enrichment import fetch_reddit_posts, fetch_twitter_posts, resolve_domain_via_serper
 from backend.pipeline.orchestrator import _heuristic_signal_filter
+from backend.pipeline.scorer import analyze_lead_intent_with_llm
+from backend.config import settings
 
 
 # Enable concise logging
@@ -33,10 +35,11 @@ async def test_single_company():
         return
 
     print(f"\n[Phase 2] Resolving Domain via Gemini/Serper for {company_name}...")
-    from backend.config import settings
-    domain = await resolve_domain_via_serper(company_name, settings.SERPER_API_KEY, "")
-    firmographics = {"employee_count": "20-300 (Gemini Scale Estimate)"}
+    domain, firmographics = await resolve_domain_via_serper(company_name, settings.SERPER_API_KEY, "")
+    if not firmographics:
+        firmographics = {"employee_count": "20-300 (Gemini Scale Estimate)"}
     print(f"  -> Verified Domain: {domain}")
+    print(f"  -> Harvested Infographics: {json.dumps(firmographics, indent=2, default=str)}")
 
     print(f"\n[Phase 3] Executing Deep Multi-Platform Intent Sweep (Serper + JobSpy + ScrapeBadger)...")
     raw_signals = await fetch_public_intent_signals(company_name)
@@ -76,7 +79,7 @@ async def test_single_company():
     scored_data = {}
     for attempt in range(3):
         try:
-            scored_data = analyze_lead_with_gemini(company_name, cleaned_html, firmographics)
+            scored_data = await analyze_lead_intent_with_llm(company_name, cleaned_html, firmographics)
             if "API Error" not in scored_data.get("ai_verdict", ""):
                 break
         except Exception as e:

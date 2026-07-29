@@ -1,4 +1,4 @@
-import { Shield, Key, Bell, Database, Target, Save, Loader2, Cpu, Wand2, Sliders, Check, RefreshCw, ChevronDown, ChevronUp, History, Sparkles, Clock, Trash2 } from 'lucide-react';
+import { Shield, Key, Bell, Database, Target, Save, Loader2, Cpu, Wand2, Sliders, Check, RefreshCw, ChevronDown, ChevronUp, History, Sparkles, Clock, Trash2, MessageSquare } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { fetchIntents, updateIntents, generateICPWithAI, type IntentConfig, type AIICPResponse } from '../lib/api';
 
@@ -32,8 +32,12 @@ export default function Settings() {
   const [rawNews, setRawNews] = useState('');
   const [rawSerper, setRawSerper] = useState('');
   const [rawJobspy, setRawJobspy] = useState('');
+  const [rawExaQuery, setRawExaQuery] = useState('');
   const [minEmployees, setMinEmployees] = useState(10);
   const [maxEmployees, setMaxEmployees] = useState(2000);
+  const [minArr, setMinArr] = useState('$5M');
+  const [maxArr, setMaxArr] = useState('$50M');
+  const [rawTargetIndustries, setRawTargetIndustries] = useState('');
 
   // AI Assistant states
   const [aiPrompt, setAiPrompt] = useState('');
@@ -66,8 +70,12 @@ export default function Settings() {
       setRawNews((data.news_queries || []).join('\n'));
       setRawSerper((data.serper_queries || []).join('\n'));
       setRawJobspy(data.jobspy_search_term || '');
+      setRawExaQuery(data.exa_query || 'multi-location franchise, healthcare, home services, or B2B companies in the US that recently opened a new location, expanded operations, or scaled revenue to $5M-$20M without a listed in-house marketing director');
       setMinEmployees(data.min_employees || 10);
       setMaxEmployees(data.max_employees || 2000);
+      setMinArr(data.min_arr || '$5M');
+      setMaxArr(data.max_arr || '$50M');
+      setRawTargetIndustries((data.target_industries || []).join(', '));
       setLoading(false);
     }).catch(err => {
       console.error(err);
@@ -110,9 +118,13 @@ export default function Settings() {
       news_queries: rawNews.split('\n').map(s => s.trim()).filter(Boolean),
       serper_queries: rawSerper.split('\n').map(s => s.trim()).filter(Boolean),
       jobspy_search_term: rawJobspy.trim(),
+      exa_query: rawExaQuery.trim(),
       news_signals_query_template: intents?.news_signals_query_template || '',
       min_employees: minEmployees,
       max_employees: maxEmployees,
+      min_arr: minArr.trim(),
+      max_arr: maxArr.trim(),
+      target_industries: rawTargetIndustries.split(',').map(s => s.trim()).filter(Boolean),
     };
     try {
       await updateIntents(payloadToSave);
@@ -138,6 +150,7 @@ export default function Settings() {
 
       // Auto-populate all form fields dynamically while leaving them 100% editable
       if (res.jobspy_search_term) setRawJobspy(res.jobspy_search_term);
+      if (res.exa_query) setRawExaQuery(res.exa_query);
       if (res.extraction_keywords?.length) setRawKeywords(res.extraction_keywords.join(', '));
       if (res.social_triggers?.length) setRawTriggers(res.social_triggers.join(', '));
       if (res.social_topics?.length) setRawTopics(res.social_topics.join(', '));
@@ -145,6 +158,9 @@ export default function Settings() {
       if (res.serper_queries?.length) setRawSerper(res.serper_queries.join('\n'));
       if (res.min_employees) setMinEmployees(res.min_employees);
       if (res.max_employees) setMaxEmployees(res.max_employees);
+      if (res.min_arr) setMinArr(res.min_arr);
+      if (res.max_arr) setMaxArr(res.max_arr);
+      if (res.target_industries?.length) setRawTargetIndustries(res.target_industries.join(', '));
 
       setAiSummary(res.summary_explanation || 'Successfully auto-populated settings from your ICP brief.');
 
@@ -173,7 +189,7 @@ export default function Settings() {
 
   return (
     <div className="flex-1 overflow-y-auto pr-2 pb-12 font-sans">
-      <div className="nexa-card p-8 space-y-8 max-w-5xl mx-auto">
+      <div className="nexa-card nexa-card-no-hover p-8 space-y-8 w-full max-w-7xl mx-auto">
         
         {/* Settings Page Header */}
         <div className="flex items-center justify-between border-b border-nexa-border pb-5">
@@ -298,52 +314,67 @@ export default function Settings() {
           )}
         </section>
 
-        {/* 3. API CONFIGURATION */}
-        <section className="space-y-3">
+        {/* 3. TARGET COMPANY HEADCOUNT & INDUSTRY NICHE (ICP FILTER) */}
+        <section className="space-y-4">
           <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-2">
-            <Key size={14} /> API Configuration
+            <Sliders size={14} /> Target Company Filters & Industry Niche
           </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="side-drawer-card flex items-center justify-between p-4 rounded-xl border border-nexa-border bg-nexa-surface">
+          <div className="side-drawer-card space-y-4 p-5 rounded-2xl border border-nexa-border bg-nexa-surface">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <div>
-                <div className="font-bold text-zinc-100 text-xs">Gemini LLM Key</div>
-                <div className="text-[11px] text-zinc-400 font-medium">Used for intent scoring and extraction</div>
+                <label className="block text-xs font-bold text-zinc-200 mb-1.5">Minimum Employee Headcount</label>
+                <input
+                  type="number"
+                  className="w-full glass-input rounded-xl p-3 text-xs text-zinc-100 border border-nexa-border bg-nexa-surface font-medium"
+                  value={minEmployees}
+                  onChange={e => setMinEmployees(Number(e.target.value))}
+                />
               </div>
-              <span className="px-2.5 py-1 text-[11px] font-bold rounded-md bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">Configured</span>
-            </div>
-            <div className="side-drawer-card flex items-center justify-between p-4 rounded-xl border border-nexa-border bg-nexa-surface">
               <div>
-                <div className="font-bold text-zinc-100 text-xs">Clearbit & Serper API Keys</div>
-                <div className="text-[11px] text-zinc-400 font-medium">Used for firmographics fallback and news discovery</div>
+                <label className="block text-xs font-bold text-zinc-200 mb-1.5">Maximum Employee Headcount</label>
+                <input
+                  type="number"
+                  className="w-full glass-input rounded-xl p-3 text-xs text-zinc-100 border border-nexa-border bg-nexa-surface font-medium"
+                  value={maxEmployees}
+                  onChange={e => setMaxEmployees(Number(e.target.value))}
+                />
               </div>
-              <span className="px-2.5 py-1 text-[11px] font-bold rounded-md bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">Configured</span>
+              <div>
+                <label className="block text-xs font-bold text-zinc-200 mb-1.5">Minimum Target ARR</label>
+                <input
+                  type="text"
+                  className="w-full glass-input rounded-xl p-3 text-xs text-zinc-100 border border-nexa-border bg-nexa-surface font-medium"
+                  placeholder="$5M"
+                  value={minArr}
+                  onChange={e => setMinArr(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-zinc-200 mb-1.5">Maximum Target ARR</label>
+                <input
+                  type="text"
+                  className="w-full glass-input rounded-xl p-3 text-xs text-zinc-100 border border-nexa-border bg-nexa-surface font-medium"
+                  placeholder="$50M"
+                  value={maxArr}
+                  onChange={e => setMaxArr(e.target.value)}
+                />
+              </div>
             </div>
-          </div>
-        </section>
 
-        {/* 4. TARGET COMPANY HEADCOUNT (ICP FILTER) */}
-        <section className="space-y-3">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-2">
-            <Sliders size={14} /> Target Company Headcount (ICP Filter)
-          </h3>
-          <div className="side-drawer-card grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 rounded-2xl border border-nexa-border bg-nexa-surface">
             <div>
-              <label className="block text-xs font-bold text-zinc-200 mb-1.5">Minimum Employee Headcount</label>
+              <label className="block text-xs font-bold text-zinc-200 mb-1.5">
+                Target Industries & Specific ICP Niche (Comma-separated)
+              </label>
               <input
-                type="number"
+                type="text"
                 className="w-full glass-input rounded-xl p-3 text-xs text-zinc-100 border border-nexa-border bg-nexa-surface font-medium"
-                value={minEmployees}
-                onChange={e => setMinEmployees(Number(e.target.value))}
+                placeholder="Fintech SaaS, B2B Software, Healthcare, Multi-Location Franchise, Home Services"
+                value={rawTargetIndustries}
+                onChange={e => setRawTargetIndustries(e.target.value)}
               />
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-zinc-200 mb-1.5">Maximum Employee Headcount</label>
-              <input
-                type="number"
-                className="w-full glass-input rounded-xl p-3 text-xs text-zinc-100 border border-nexa-border bg-nexa-surface font-medium"
-                value={maxEmployees}
-                onChange={e => setMaxEmployees(Number(e.target.value))}
-              />
+              <p className="text-[11px] text-zinc-400 mt-1.5 font-medium">
+                The pipeline prompts use these specific target industries (e.g. Fintech SaaS) to score candidates matching your target profile.
+              </p>
             </div>
           </div>
         </section>
@@ -386,84 +417,109 @@ export default function Settings() {
                 </div>
               ) : intents ? (
                 <>
+                  {/* EXA AI NEURAL SEARCH PROMPT */}
                   <div>
-                    <label className="block text-xs font-bold text-zinc-200 mb-1.5">
-                      Job Role Search Term (JobSpy) — <span className="text-[var(--nexa-accent)] font-semibold">Fully Editable</span>
-                    </label>
-                    <input
-                      type="text"
-                      className="w-full glass-input rounded-xl p-3 text-xs text-zinc-100 border border-nexa-border bg-nexa-surface focus:border-[var(--nexa-accent)] transition-all font-medium"
-                      value={rawJobspy}
-                      onChange={e => setRawJobspy(e.target.value)}
-                      placeholder="e.g. Chief Marketing Officer, VP of Marketing, Head of Growth"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-zinc-200 mb-1.5">
-                      Extraction Keywords (comma separated) — <span className="text-[var(--nexa-accent)] font-semibold">Fully Editable</span>
+                    <label className="block text-xs font-bold text-zinc-200 mb-1.5 flex items-center justify-between">
+                      <span>Exa AI Neural Search Prompt (Phase 1 Discovery) — <span className="text-[var(--nexa-accent)] font-semibold">Auto-Generated & Editable</span></span>
+                      <span className="text-[10px] text-zinc-400 font-mono font-normal">Used by Exa AI to fetch 100 high-intent leads</span>
                     </label>
                     <textarea
-                      className="w-full glass-input rounded-xl p-3 text-xs text-zinc-100 border border-nexa-border bg-nexa-surface focus:border-[var(--nexa-accent)] transition-all font-medium"
-                      rows={2}
-                      value={rawKeywords}
-                      onChange={e => setRawKeywords(e.target.value)}
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs font-bold text-zinc-200 mb-1.5">
-                        Social Triggers (comma separated) — <span className="text-[var(--nexa-accent)] font-semibold">Fully Editable</span>
-                      </label>
-                      <textarea
-                        className="w-full glass-input rounded-xl p-3 text-xs text-zinc-100 border border-nexa-border bg-nexa-surface focus:border-[var(--nexa-accent)] transition-all font-medium"
-                        rows={2}
-                        value={rawTriggers}
-                        onChange={e => setRawTriggers(e.target.value)}
-                      />
-                    </div>
-                    <div>
-                      <label className="block text-xs font-bold text-zinc-200 mb-1.5">
-                        Social Topics (comma separated) — <span className="text-[var(--nexa-accent)] font-semibold">Fully Editable</span>
-                      </label>
-                      <textarea
-                        className="w-full glass-input rounded-xl p-3 text-xs text-zinc-100 border border-nexa-border bg-nexa-surface focus:border-[var(--nexa-accent)] transition-all font-medium"
-                        rows={2}
-                        value={rawTopics}
-                        onChange={e => setRawTopics(e.target.value)}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Boolean Preview Box */}
-                  <div className="nexa-card rounded-xl p-3.5 text-xs font-mono border border-nexa-border bg-nexa-bg">
-                    <span className="font-sans block mb-1 font-bold text-zinc-300">Generated Boolean Query Preview (Reddit & X):</span>
-                    <span className="text-[var(--nexa-accent)]">{previewQuery}</span>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-zinc-200 mb-1.5">
-                      News Queries (one per line) — <span className="text-[var(--nexa-accent)] font-semibold">Fully Editable</span>
-                    </label>
-                    <textarea
-                      className="w-full glass-input rounded-xl p-3 text-xs text-zinc-100 border border-nexa-border bg-nexa-surface focus:border-[var(--nexa-accent)] transition-all font-medium"
+                      className="w-full glass-input rounded-xl p-3.5 text-xs text-zinc-100 border border-[var(--nexa-accent)]/40 bg-nexa-surface focus:border-[var(--nexa-accent)] transition-all font-medium leading-relaxed"
                       rows={3}
-                      value={rawNews}
-                      onChange={e => setRawNews(e.target.value)}
+                      value={rawExaQuery}
+                      onChange={e => setRawExaQuery(e.target.value)}
+                      placeholder="e.g. companies looking for a marketing agency, fractional CMO, PPC agency, or lead generation services, expanding operations or hiring growth leaders in the United States"
                     />
                   </div>
 
-                  <div>
-                    <label className="block text-xs font-bold text-zinc-200 mb-1.5">
-                      Serper Google Search Queries (one per line) — <span className="text-[var(--nexa-accent)] font-semibold">Fully Editable</span>
-                    </label>
-                    <textarea
-                      className="w-full glass-input rounded-xl p-3 text-xs text-zinc-100 border border-nexa-border bg-nexa-surface focus:border-[var(--nexa-accent)] transition-all font-medium"
-                      rows={2}
-                      value={rawSerper}
-                      onChange={e => setRawSerper(e.target.value)}
-                    />
+                  {/* SOCIAL SIGNALS PLATFORM QUERIES SECTION */}
+                  <div className="pt-3 border-t border-nexa-border space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-300 flex items-center gap-2">
+                        <MessageSquare size={14} className="text-amber-400" /> Social Signals Search Queries (Platform-by-Platform AI Generation)
+                      </h4>
+                      <span className="text-[11px] text-zinc-400 font-medium">Auto-compiled for each platform</span>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+                      {/* 1. Google */}
+                      <div className="p-3.5 rounded-xl border border-blue-500/20 bg-blue-500/5 space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold text-blue-600 dark:text-blue-400 flex items-center gap-1.5">
+                            <span className="w-2 h-2 rounded-full bg-blue-500" /> Google Search & Q&A
+                          </span>
+                          <span className="text-[10px] font-mono text-slate-500 dark:text-zinc-400">Serper API</span>
+                        </div>
+                        <code className="block text-[11px] font-mono text-slate-800 dark:text-zinc-200 bg-white/80 dark:bg-black/40 p-2.5 rounded-lg border border-slate-200/80 dark:border-white/5 break-all shadow-xs">
+                          site:linkedin.com/posts ("looking for web design agency" OR "website redesign RFP")
+                        </code>
+                      </div>
+
+                      {/* 2. Reddit */}
+                      <div className="p-3.5 rounded-xl border border-orange-500/20 bg-orange-500/5 space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold text-orange-600 dark:text-orange-400 flex items-center gap-1.5">
+                            <span className="w-2 h-2 rounded-full bg-orange-500" /> Reddit Intent Scanner
+                          </span>
+                          <span className="text-[10px] font-mono text-slate-500 dark:text-zinc-400">Reddit API</span>
+                        </div>
+                        <code className="block text-[11px] font-mono text-slate-800 dark:text-zinc-200 bg-white/80 dark:bg-black/40 p-2.5 rounded-lg border border-slate-200/80 dark:border-white/5 break-all shadow-xs">
+                          {previewQuery || '("looking for" OR "recommend") "web design" OR "website redesign"'}
+                        </code>
+                      </div>
+
+                      {/* 3. LinkedIn */}
+                      <div className="p-3.5 rounded-xl border border-sky-500/20 bg-sky-500/5 space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold text-sky-600 dark:text-sky-400 flex items-center gap-1.5">
+                            <span className="w-2 h-2 rounded-full bg-sky-500" /> LinkedIn Posts & RFPs
+                          </span>
+                          <span className="text-[10px] font-mono text-slate-500 dark:text-zinc-400">Apify LinkedIn</span>
+                        </div>
+                        <code className="block text-[11px] font-mono text-slate-800 dark:text-zinc-200 bg-white/80 dark:bg-black/40 p-2.5 rounded-lg border border-slate-200/80 dark:border-white/5 break-all shadow-xs">
+                          "looking for web design agency" OR "website redesign RFP"
+                        </code>
+                      </div>
+
+                      {/* 4. X (Twitter) */}
+                      <div className="p-3.5 rounded-xl border border-slate-300/40 dark:border-zinc-500/20 bg-slate-500/5 space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold text-slate-700 dark:text-zinc-300 flex items-center gap-1.5">
+                            <span className="w-2 h-2 rounded-full bg-slate-500 dark:bg-zinc-400" /> X (Twitter) Real-time
+                          </span>
+                          <span className="text-[10px] font-mono text-slate-500 dark:text-zinc-400">ScrapeBadger</span>
+                        </div>
+                        <code className="block text-[11px] font-mono text-slate-800 dark:text-zinc-200 bg-white/80 dark:bg-black/40 p-2.5 rounded-lg border border-slate-200/80 dark:border-white/5 break-all shadow-xs">
+                          {previewQuery ? `${previewQuery} -is:retweet` : '("looking for" OR "recommend") ("web design" OR "website redesign") -is:retweet'}
+                        </code>
+                      </div>
+
+                      {/* 5. Facebook */}
+                      <div className="p-3.5 rounded-xl border border-blue-600/20 bg-blue-600/5 space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold text-blue-600 dark:text-blue-300 flex items-center gap-1.5">
+                            <span className="w-2 h-2 rounded-full bg-blue-600" /> Facebook Groups & Public Posts
+                          </span>
+                          <span className="text-[10px] font-mono text-slate-500 dark:text-zinc-400">FB Scraper</span>
+                        </div>
+                        <code className="block text-[11px] font-mono text-slate-800 dark:text-zinc-200 bg-white/80 dark:bg-black/40 p-2.5 rounded-lg border border-slate-200/80 dark:border-white/5 break-all shadow-xs">
+                          "looking for website redesign agency" OR "recommend marketing agency"
+                        </code>
+                      </div>
+
+                      {/* 6. Threads */}
+                      <div className="p-3.5 rounded-xl border border-purple-500/20 bg-purple-500/5 space-y-1.5">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold text-purple-600 dark:text-purple-300 flex items-center gap-1.5">
+                            <span className="w-2 h-2 rounded-full bg-purple-500" /> Threads Micro-Posts
+                          </span>
+                          <span className="text-[10px] font-mono text-slate-500 dark:text-zinc-400">Threads API</span>
+                        </div>
+                        <code className="block text-[11px] font-mono text-slate-800 dark:text-zinc-200 bg-white/80 dark:bg-black/40 p-2.5 rounded-lg border border-slate-200/80 dark:border-white/5 break-all shadow-xs">
+                          "looking for web design agency" OR "need agency recommendation"
+                        </code>
+                      </div>
+                    </div>
                   </div>
 
                   <div className="flex justify-end pt-3">

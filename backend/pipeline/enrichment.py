@@ -190,22 +190,19 @@ async def scrapebadger_get(client: httpx.AsyncClient, url: str, params: dict = N
 async def fetch_twitter_posts(client: httpx.AsyncClient, company_name: str, domain: str) -> list:
     if not settings.SCRAPEBADGER_API_KEY: return []
     
-    clean_name = re.sub(r'\b(Inc|LLC|Corp|Corporation|Co|World)\b\.?', '', company_name, flags=re.IGNORECASE).strip()
-    c_name_no_spaces = clean_name.replace(" ", "")
-    
-    name_variants = [f'"{clean_name}"']
-    if c_name_no_spaces != clean_name:
-        name_variants.append(f'"{c_name_no_spaces}"')
-        
-    name_query = " OR ".join(name_variants)
+    clean_name = re.sub(r'\b(Inc|LLC|Corp|Corporation|Co|World|Inc\.|LLC\.)\b\.?', '', company_name, flags=re.IGNORECASE).strip()
     
     if domain:
-        query = f'"{domain}" OR ({name_query})'
+        query = f'"{domain}" OR ("{clean_name}")'
     else:
-        query = name_query
+        query = f'"{clean_name}"'
     
     try:
-        res = await scrapebadger_get(client, "https://scrapebadger.com/v1/twitter/tweets/advanced_search", params={"query": query, "count": 20})
+        res = await scrapebadger_get(
+            client,
+            "https://scrapebadger.com/v1/twitter/tweets/advanced_search",
+            params={"query": query, "count": 20}
+        )
         if res and res.status_code == 200:
             posts = []
             json_res = res.json()
@@ -222,7 +219,7 @@ async def fetch_twitter_posts(client: httpx.AsyncClient, company_name: str, doma
                 posts.append(t)
             return posts
     except Exception as e:
-        logger.warning(f"Failed to fetch Twitter posts: {e}")
+        logger.warning(f"Failed to fetch Twitter posts for {company_name}: {e}")
     return []
 
 async def fetch_reddit_posts(client: httpx.AsyncClient, company_name: str, domain: str = "") -> list:
@@ -430,53 +427,273 @@ EXCLUDED_DOMAINS = {
     "g2.com", "capterra.com", "glassdoor.com", "bloomberg.com", "ycombinator.com"
 }
 
-async def resolve_domain_via_serper(company_name: str, serper_api_key: str, phase1_estimated_domain: str = "") -> str:
+async def fetch_harvestapi_linkedin_company(linkedin_url: str, apify_api_key: str) -> dict:
     """
-    Resolves official company domain using Gemini Phase 1 output with Serper API fallback.
-    Prevents false positives like resolving 'Clay' -> 'clayton.k12.ga.us'.
+    Calls harvestapi~linkedin-company actor on Apify asynchronously to retrieve complete company infographics.
     """
-    # 1. Clean and check Phase 1 estimated domain first
-    if phase1_estimated_domain:
-        clean_est = phase1_estimated_domain.lower().replace("https://", "").replace("http://", "").replace("www.", "").strip("/")
-        if "." in clean_est and not any(ext in clean_est for ext in EXCLUDED_DOMAINS):
-            return clean_est
+    if not apify_api_key or apify_api_key == "mock_key_if_empty":
+        return {}
 
-    if not serper_api_key:
-        return f"{company_name.lower().replace(' ', '')}.com"
-
-    # 2. Query Serper for entity-disambiguated search
-    url = "https://google.serper.dev/search"
-    headers = {"X-API-KEY": serper_api_key, "Content-Type": "application/json"}
-    
-    # Adding context keywords forces Google to rank the B2B company above schools/places
-    query = f'"{company_name}" official website software company'
-    payload = {"q": query, "num": 5}
+    actor_id = "harvestapi~linkedin-company"
+    url = f"https://api.apify.com/v2/acts/{actor_id}/runs?token={apify_api_key}"
+    payload = {"companies": [linkedin_url]}
 
     try:
-        async with httpx.AsyncClient(timeout=5.0) as client:
+        async with httpx.AsyncClient(timeout=25.0) as client:
+            res = await client.post(url, json=payload)
+            if res.status_code not in (200, 201):
+                return {}
+            
+            run_data = res.json().get("data", {})
+            run_id = run_data.get("id")
+            dataset_id = run_data.get("defaultDatasetId")
+            if not run_id or not dataset_id:
+                return {}
+
+            status_url = f"https://api.apify.com/v2/actor-runs/{run_id}?token={apify_api_key}"
+            for _ in range(12):
+                await asyncio.sleep(2)
+                st_res = await client.get(status_url)
+                if st_res.status_code == 200:
+                    status = st_res.json().get("data", {}).get("status")
+                    if status == "SUCCEEDED":
+                        items_url = f"https://api.apify.com/v2/datasets/{dataset_id}/items?token={apify_api_key}"
+                        items_res = await client.get(items_url)
+                        if items_res.status_code == 200:
+                            items = items_res.json()
+                            if items and isinstance(items, list):
+                                return items[0]
+                        break
+                    elif status in ["FAILED", "ABORTED", "TIMED-OUT"]:
+                        break
+    except Exception as e:
+        logger.error(f"[HarvestAPI LinkedIn] Error fetching details for {linkedin_url}: {e}")
+
+    return {}
+
+
+async def fetch_harvestapi_linkedin_posts(linkedin_url: str, apify_api_key: str) -> list[dict]:
+    """
+    Calls harvestapi~linkedin-company-posts actor on Apify asynchronously to retrieve latest official company posts.
+    """
+    if not apify_api_key or apify_api_key == "mock_key_if_empty" or not linkedin_url:
+        return []
+
+    actor_id = "harvestapi~linkedin-company-posts"
+    url = f"https://api.apify.com/v2/acts/{actor_id}/runs?token={apify_api_key}"
+    payload = {
+        "includeQuotePosts": True,
+        "includeReposts": True,
+        "maxComments": 5,
+        "maxPosts": 5,
+        "maxReactions": 5,
+        "postNestedComments": False,
+        "postNestedReactions": False,
+        "scrapeComments": False,
+        "scrapeReactions": False,
+        "targetUrls": [linkedin_url]
+    }
+
+    try:
+        async with httpx.AsyncClient(timeout=25.0) as client:
+            res = await client.post(url, json=payload)
+            if res.status_code not in (200, 201):
+                return []
+            
+            run_data = res.json().get("data", {})
+            run_id = run_data.get("id")
+            dataset_id = run_data.get("defaultDatasetId")
+            if not run_id or not dataset_id:
+                return []
+
+            status_url = f"https://api.apify.com/v2/actor-runs/{run_id}?token={apify_api_key}"
+            for _ in range(12):
+                await asyncio.sleep(2)
+                st_res = await client.get(status_url)
+                if st_res.status_code == 200:
+                    status = st_res.json().get("data", {}).get("status")
+                    if status == "SUCCEEDED":
+                        items_url = f"https://api.apify.com/v2/datasets/{dataset_id}/items?token={apify_api_key}"
+                        items_res = await client.get(items_url)
+                        if items_res.status_code == 200:
+                            items = items_res.json()
+                            if isinstance(items, list):
+                                logger.info(f"[HarvestAPI LinkedIn Posts] Fetched {len(items)} posts for {linkedin_url}")
+                                return items
+                        break
+                    elif status in ["FAILED", "ABORTED", "TIMED-OUT"]:
+                        break
+    except Exception as e:
+        logger.error(f"[HarvestAPI LinkedIn Posts] Error fetching posts for {linkedin_url}: {e}")
+
+    return []
+
+
+async def fetch_serper_company_fallback(company_name: str, serper_api_key: str) -> tuple[str | None, dict]:
+    """
+    Fallback when Apify HarvestAPI actor fails or returns an error.
+    Queries Serper Google Search to extract domain, description, industry, and knowledge graph attributes.
+    """
+    if not serper_api_key or serper_api_key == "mock_key_if_empty":
+        return None, {}
+
+    url = "https://google.serper.dev/search"
+    headers = {"X-API-KEY": serper_api_key, "Content-Type": "application/json"}
+    payload = {"q": f'"{company_name}" official website software company', "num": 5}
+    
+    resolved_domain = None
+    firmographics = {}
+
+    try:
+        async with httpx.AsyncClient(timeout=8.0) as client:
             res = await client.post(url, headers=headers, json=payload)
             if res.status_code == 200:
                 data = res.json()
-                
-                # A. Check Google Knowledge Graph first (100% accurate if present)
                 kg = data.get("knowledgeGraph", {})
+                
+                # Domain extraction
                 kg_site = kg.get("website") or kg.get("attributes", {}).get("Website")
                 if kg_site:
                     import urllib.parse
-                    domain = urllib.parse.urlparse(kg_site if kg_site.startswith("http") else f"https://{kg_site}").netloc
-                    return domain.replace("www.", "").lower()
+                    resolved_domain = urllib.parse.urlparse(kg_site if kg_site.startswith("http") else f"https://{kg_site}").netloc.replace("www.", "").lower()
 
-                # B. Fallback to First Organic Result ignoring social/aggregator sites
-                for item in data.get("organic", []):
-                    link = item.get("link", "")
-                    import urllib.parse
-                    domain = urllib.parse.urlparse(link).netloc.replace("www.", "").lower()
+                if not resolved_domain:
+                    for item in data.get("organic", []):
+                        link = item.get("link", "")
+                        import urllib.parse
+                        dom = urllib.parse.urlparse(link).netloc.replace("www.", "").lower()
+                        if dom and not any(excluded in dom for excluded in EXCLUDED_DOMAINS):
+                            resolved_domain = dom
+                            break
 
-                    if domain and not any(excluded in domain for excluded in EXCLUDED_DOMAINS):
-                        return domain
-                        
+                # Extract rich fallback firmographics
+                snippet = kg.get("description") or (data.get("organic", [{}])[0].get("snippet") if data.get("organic") else None)
+                industry = kg.get("type") or kg.get("category") or "B2B Software & Services"
+                
+                firmographics = {
+                    "description": snippet,
+                    "industry": industry,
+                    "employee_count": None,
+                    "source": "serper_fallback"
+                }
+                logger.info(f"[Serper Fallback] Extracted domain & info for {company_name}: Domain={resolved_domain}, Industry={industry}")
     except Exception as e:
-        print(f"⚠️ Serper domain resolution fallback triggered for {company_name}: {e}")
+        logger.error(f"[Serper Fallback] Failed for {company_name}: {e}")
 
-    # Safety fallback
-    return f"{company_name.lower().replace(' ', '')}.com"
+    return resolved_domain, firmographics
+
+
+async def resolve_domain_via_serper(
+    company_name: str, serper_api_key: str, phase1_estimated_domain: str = ""
+) -> tuple[str, dict]:
+    """
+    Resolves official company domain & full infographics.
+    1. Uses Serper Google Search to find company's official LinkedIn page.
+    2. Feeds LinkedIn URL to HarvestAPI Apify actors ('harvestapi~linkedin-company' and 'harvestapi~linkedin-company-posts').
+    3. Extracts verified website domain, headcount, industry name, description, specialities, and latest official posts.
+    4. FALLBACK TO SERPER: If Apify actor encounters an error or returns empty data, falls back to Serper Knowledge Graph & Search.
+    """
+    from backend.config import settings
+    apify_key = getattr(settings, "APIFY_API_KEY", "")
+    
+    resolved_domain = None
+    firmographics = {}
+
+    # Step 1: Serper Google Search for Company's official LinkedIn Page
+    if serper_api_key and serper_api_key != "mock_key_if_empty":
+        try:
+            url = "https://google.serper.dev/search"
+            headers = {"X-API-KEY": serper_api_key, "Content-Type": "application/json"}
+            query = f'site:linkedin.com/company "{company_name}"'
+            payload = {"q": query, "num": 5}
+            
+            async with httpx.AsyncClient(timeout=8.0) as client:
+                res = await client.post(url, headers=headers, json=payload)
+                if res.status_code == 200:
+                    data = res.json()
+                    linkedin_url = None
+                    import re
+                    for item in data.get("organic", []):
+                        link = item.get("link", "")
+                        # Normalize to root company URL e.g. linkedin.com/company/triomics
+                        match = re.search(r"(https?://(?:www\.)?linkedin\.com/company/[^/\?\s]+)", link)
+                        if match:
+                            linkedin_url = match.group(1)
+                            break
+                            
+                    if linkedin_url and apify_key:
+                        logger.info(f"[Entity Resolution] Found LinkedIn URL for {company_name}: {linkedin_url}")
+                        # Step 2: Feed LinkedIn URL to HarvestAPI Apify actors concurrently
+                        details, posts = {}, []
+                        try:
+                            details, posts = await asyncio.gather(
+                                fetch_harvestapi_linkedin_company(linkedin_url, apify_key),
+                                fetch_harvestapi_linkedin_posts(linkedin_url, apify_key)
+                            )
+                        except Exception as actor_err:
+                            logger.error(f"[HarvestAPI Actor Error] {actor_err}. Falling back to Serper for {company_name}.")
+
+                        if details:
+                            # Extract domain from company website URL
+                            site = details.get("website") or details.get("callToActionUrl")
+                            if site:
+                                import urllib.parse
+                                resolved_domain = urllib.parse.urlparse(site if site.startswith("http") else f"https://{site}").netloc.replace("www.", "").lower()
+
+                            # Extract headcount
+                            emp_count = details.get("employeeCount")
+                            if not emp_count and details.get("employeeCountRange"):
+                                emp_count = details.get("employeeCountRange", {}).get("start")
+
+                            # Safely extract industry name
+                            industries = details.get("industries", [])
+                            industry_name = "B2B Software & Services"
+                            if isinstance(industries, list) and len(industries) > 0:
+                                first_ind = industries[0]
+                                if isinstance(first_ind, dict):
+                                    industry_name = first_ind.get("name") or first_ind.get("title") or industry_name
+                                elif isinstance(first_ind, str):
+                                    industry_name = first_ind
+
+                            firmographics = {
+                                "employee_count": emp_count,
+                                "industry": industry_name,
+                                "description": details.get("description"),
+                                "specialities": details.get("specialities", []),
+                                "company_type": details.get("companyType"),
+                                "logo": details.get("logo"),
+                                "linkedin_url": linkedin_url,
+                                "locations": details.get("locations", []),
+                                "linkedin_posts": posts
+                            }
+                            logger.info(f"[Entity Resolution] HarvestAPI infographics fetched for {company_name}: Domain={resolved_domain}, Headcount={emp_count}, Industry={industry_name}")
+                        else:
+                            logger.warning(f"[Entity Resolution] Apify HarvestAPI returned empty/error for {company_name}. Executing Serper fallback...")
+                            serper_dom, serper_firmos = await fetch_serper_company_fallback(company_name, serper_api_key)
+                            if serper_dom:
+                                resolved_domain = serper_dom
+                            if serper_firmos:
+                                firmographics = serper_firmos
+                                if linkedin_url:
+                                    firmographics["linkedin_url"] = linkedin_url
+        except Exception as e:
+            logger.error(f"[Entity Resolution] Serper/HarvestAPI resolution failed for {company_name}: {e}")
+
+    # Fallback to Phase 1 estimated domain if website still missing
+    if not resolved_domain and phase1_estimated_domain:
+        clean_est = phase1_estimated_domain.lower().replace("https://", "").replace("http://", "").replace("www.", "").strip("/")
+        if "." in clean_est and not any(ext in clean_est for ext in EXCLUDED_DOMAINS):
+            resolved_domain = clean_est
+
+    # Organic Serper fallback if still unresolved
+    if not resolved_domain and serper_api_key and serper_api_key != "mock_key_if_empty":
+        serper_dom, serper_firmos = await fetch_serper_company_fallback(company_name, serper_api_key)
+        if serper_dom:
+            resolved_domain = serper_dom
+        if serper_firmos and not firmographics:
+            firmographics = serper_firmos
+
+    if not resolved_domain:
+        resolved_domain = f"{company_name.lower().replace(' ', '')}.com"
+
+    return resolved_domain, firmographics

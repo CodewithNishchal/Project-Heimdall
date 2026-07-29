@@ -19,6 +19,45 @@ export default function App() {
   const [isDark, setIsDark] = useState(false);
   const [currentView, setCurrentView] = useState('dashboard');
   const [globalSearchTerm, setGlobalSearchTerm] = useState('');
+  const [scannedLeads, setScannedLeads] = useState<LeadDetailResponse[]>([]);
+  const [trackedLeadIds, setTrackedLeadIds] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('tracked_lead_ids');
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const handleToggleTrackLead = (leadId: string) => {
+    setTrackedLeadIds((prev) => {
+      const next = prev.includes(leadId)
+        ? prev.filter((id) => id !== leadId)
+        : [...prev, leadId];
+      localStorage.setItem('tracked_lead_ids', JSON.stringify(next));
+      return next;
+    });
+  };
+
+  const savedLeads = useMemo(() => {
+    if (trackedLeadIds.length === 0) {
+      return leads.filter((l) => l.badge === 'new_today' || l.icp_fit === 'Strong');
+    }
+    return leads.filter((l) => {
+      const key = String(l.id || l.domain || l.company_name);
+      return (
+        trackedLeadIds.includes(key) ||
+        trackedLeadIds.includes(l.id) ||
+        trackedLeadIds.includes(l.domain) ||
+        trackedLeadIds.includes(l.company_name)
+      );
+    });
+  }, [leads, trackedLeadIds]);
+
+  // Clear temporary pipeline results state when user switches tabs from sidebar
+  useEffect(() => {
+    setScannedLeads([]);
+  }, [currentView]);
 
   useEffect(() => {
     if (isDark) {
@@ -53,8 +92,8 @@ export default function App() {
 
     // Polling interval:
     // Fast polling (3s) when offline to reconnect instantly as soon as backend starts.
-    // Periodic health check (15s) when online to detect if server goes offline.
-    const pollInterval = status === 'error' ? 3000 : 15000;
+    // Periodic health check (10 seconds) when online.
+    const pollInterval = status === 'error' ? 3000 : 10 * 1000;
     const interval = setInterval(checkBackend, pollInterval);
 
     return () => {
@@ -84,15 +123,10 @@ export default function App() {
 
   const activeConfidence = selectedLead ? selectedLead.confidence.verified : globalAvgConfidence;
 
-  const pipelineRevenue = useMemo(() => {
-    const strong = leads.filter((l) => l.icp_fit === 'Strong').length;
-    const partial = leads.filter((l) => l.icp_fit === 'Partial').length;
-    const estimatedVal = (strong * 35000) + (partial * 12000);
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      maximumFractionDigits: 0
-    }).format(estimatedVal);
+  const avgIntentScore = useMemo(() => {
+    if (leads.length === 0) return 0;
+    const sum = leads.reduce((acc, l) => acc + (l.intent_score ?? l.icp_score ?? 0), 0);
+    return Math.round(sum / leads.length);
   }, [leads]);
 
   const newTodayCount = useMemo(() => {
@@ -126,7 +160,7 @@ export default function App() {
       <div className="nexa-flare" />
 
       {/* ===== Main Dashboard Layout ===== */}
-      <div className="relative z-10 flex flex-1 gap-2.5 sm:gap-4 px-4 py-3 lg:px-6 lg:py-4 overflow-hidden">
+      <div className="relative z-10 flex flex-1 gap-2.5 sm:gap-3 px-2 pt-2 pb-2 sm:px-2.5 lg:px-3 lg:pt-2.5 lg:pb-2.5 overflow-hidden">
         {/* Left Column: Sidebar Navigation only */}
         <Sidebar
           currentView={currentView}
@@ -137,7 +171,7 @@ export default function App() {
         />
 
         {/* Main Workspace */}
-        <main className="flex min-w-0 flex-1 flex-col gap-4 pl-1 pr-3 py-1 overflow-y-auto overflow-x-hidden">
+        <main className="flex min-w-0 flex-1 flex-col gap-2.5 pl-0.5 pr-1 pt-0.5 pb-0.5 overflow-y-auto overflow-x-hidden">
           {/* Top Header Bar */}
           <Header
             status={status}
@@ -155,6 +189,8 @@ export default function App() {
             <div className="flex flex-col flex-1 min-h-0">
               <LeadTable
                 leads={leads}
+                scannedLeads={scannedLeads}
+                setScannedLeads={setScannedLeads}
                 selectedLeadId={selectedLeadId}
                 onSelectLead={setSelectedLeadId}
                 onLeadIngested={(newLead) => setLeads([newLead, ...leads])}
@@ -165,12 +201,14 @@ export default function App() {
                 status={status}
                 externalSearchTerm={globalSearchTerm}
                 isPipelineTab={true}
+                trackedLeadIds={trackedLeadIds}
+                onToggleTrackLead={handleToggleTrackLead}
               />
             </div>
           ) : currentView === 'statistics' ? (
             <div className="flex flex-col flex-1 min-h-0">
               <LeadTable
-                leads={leads.filter((l) => l.badge === 'new_today' || l.icp_fit === 'Strong')}
+                leads={savedLeads}
                 selectedLeadId={selectedLeadId}
                 onSelectLead={setSelectedLeadId}
                 onLeadIngested={(newLead) => setLeads([newLead, ...leads])}
@@ -181,6 +219,8 @@ export default function App() {
                 status={status}
                 externalSearchTerm={globalSearchTerm}
                 isTrackRecordsTab={true}
+                trackedLeadIds={trackedLeadIds}
+                onToggleTrackLead={handleToggleTrackLead}
               />
             </div>
           ) : (
@@ -225,7 +265,7 @@ export default function App() {
                 {/* Card 2: Strong ICP matches found */}
                 <motion.div variants={itemVariants} className="nexa-card p-4 flex flex-col justify-between h-24 relative overflow-hidden">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">
-                    Strong & Partial Targets
+                    Qualified Leads
                   </span>
                   <div className="flex items-baseline gap-2 mt-1">
                     <span className="text-3xl font-extrabold text-zinc-100">
@@ -252,16 +292,21 @@ export default function App() {
                   </div>
                 </motion.div>
 
-                {/* Card 4: Untapped pipeline revenue estimation */}
+                {/* Card 4: Average Intent Score across companies in pipeline */}
                 <motion.div variants={itemVariants} className="nexa-card p-4 flex flex-col justify-between h-24 relative overflow-hidden">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">
-                    Pipeline Value
+                    Average Intent Score
                   </span>
-                  <span className="text-3xl font-extrabold text-[var(--nexa-accent)] mt-1">
-                    {pipelineRevenue}
-                  </span>
+                  <div className="flex items-baseline gap-2 mt-1">
+                    <span className="text-3xl font-extrabold text-[var(--nexa-accent)]">
+                      {avgIntentScore}
+                    </span>
+                    <span className="text-xs text-emerald-600 dark:text-emerald-400 font-mono font-bold">
+                      / 100
+                    </span>
+                  </div>
                   <span className="text-xs text-zinc-500 font-mono">
-                    Est. Contract value
+                    Avg score across companies
                   </span>
                 </motion.div>
               </motion.div>
@@ -284,6 +329,8 @@ export default function App() {
                   }}
                   status={status}
                   externalSearchTerm={globalSearchTerm}
+                  trackedLeadIds={trackedLeadIds}
+                  onToggleTrackLead={handleToggleTrackLead}
                 />
               </motion.div>
             </>

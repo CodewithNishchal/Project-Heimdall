@@ -31,10 +31,16 @@ export interface IntentConfig {
   news_queries: string[];
   serper_queries: string[];
   jobspy_search_term: string;
-  news_signals_query_template: string;
+  news_signals_query_template?: string;
+  exa_query?: string;
   extraction_keywords: string[];
   social_triggers: string[];
   social_topics: string[];
+  min_employees?: number;
+  max_employees?: number;
+  min_arr?: string;
+  max_arr?: string;
+  target_industries?: string[];
 }
 
 export interface SocialPost {
@@ -46,6 +52,7 @@ export interface SocialPost {
   post_url: string;
   keyword_matched: string;
   company_name?: string;
+  summary?: string | null;
   published_at: string;
 }
 
@@ -64,11 +71,18 @@ export interface ConfidenceEvaluation {
   total: number;
 }
 
+export interface SignalTagModel {
+  tag: string;
+  category: string;
+  color_theme: string;
+}
+
 export interface LeadDetailResponse {
   id: string;
   company_name: string;
   domain: string;
   industry: string;
+  company_segment?: string | null;
   employee_count: number | null;
   funding_stage: string | null;
   intent_score: number;
@@ -78,6 +92,7 @@ export interface LeadDetailResponse {
   icp_fit: ICPFit;
   confidence: ConfidenceEvaluation;
   why_now: string;
+  signal_tags?: SignalTagModel[];
   badge: LeadBadge | null;
   social_segment?: string | null;
   meta_ads_active?: boolean;

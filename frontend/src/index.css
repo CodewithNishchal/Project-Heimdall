@@ -385,6 +385,12 @@ html.light-theme aside .text-white {
 }
 
 /* Light Theme Social Posts Tab & Input Overrides */
+html.light-theme code {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+  color: #1e293b !important;
+  border-color: rgba(203, 213, 225, 0.8) !important;
+}
+
 html.light-theme input[placeholder="Search keywords or posts..."] {
   background-color: #ffffff !important;
   color: #0f172a !important;
@@ -926,4 +932,87 @@ html.light-theme .pitcher-mode-drawer button.bg-nexa-card {
 html.light-theme .pitcher-mode-drawer button.bg-nexa-card:hover {
   color: #0f172a !important;
   background-color: #ffffff !important;
+}
+
+/* ============================================================
+   Document Magnifier Scanning Animations
+   ============================================================ */
+@keyframes orbitMagnifier {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes scrollBlurredNames {
+  0% {
+    transform: translateY(0%);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+.animate-orbit-magnifier {
+  animation: orbitMagnifier 5s linear infinite;
+}
+
+.animate-scroll-blurred {
+  animation: scrollBlurredNames 10s linear infinite;
+}
+
+/* ============================================================
+   Light Theme Tag & Badge Contrast Overrides
+   ============================================================ */
+html.light-theme .bg-indigo-100 {
+  background-color: #e0e7ff !important;
+  color: #312e81 !important;
+  border-color: #a5b4fc !important;
+}
+
+html.light-theme .bg-emerald-100 {
+  background-color: #d1fae5 !important;
+  color: #064e3b !important;
+  border-color: #6ee7b7 !important;
+}
+
+html.light-theme .bg-amber-100 {
+  background-color: #fef3c7 !important;
+  color: #78350f !important;
+  border-color: #fcd34d !important;
+}
+
+html.light-theme .bg-purple-100 {
+  background-color: #f3e8ff !important;
+  color: #581c87 !important;
+  border-color: #d8b4fe !important;
+}
+
+html.light-theme .bg-teal-100 {
+  background-color: #ccfbf1 !important;
+  color: #134e4a !important;
+  border-color: #5eead4 !important;
+}
+
+html.light-theme .bg-rose-100 {
+  background-color: #ffe4e6 !important;
+  color: #881337 !important;
+  border-color: #fca5a5 !important;
+}
+
+/* Light Theme Delete Button Override */
+html.light-theme button.bg-rose-50,
+html.light-theme button[title="Delete Lead"] {
+  background-color: #fff1f2 !important;
+  color: #e11d48 !important;
+  border: 1px solid #fecdd3 !important;
+}
+
+html.light-theme button.bg-rose-50:hover,
+html.light-theme button[title="Delete Lead"]:hover {
+  background-color: #ffe4e6 !important;
+  color: #be123c !important;
+  border-color: #fda4af !important;
 }

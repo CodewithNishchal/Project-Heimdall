@@ -10,6 +10,7 @@ class LeadSnapshot(Base):
     id = Column(String, primary_key=True, index=True)
     domain = Column(String, index=True, nullable=False)
     company_name = Column(String, nullable=True)
+    company_segment = Column(String, nullable=True, default="Growth Scale-up")
     industry = Column(String, nullable=True)
     employee_count = Column(Integer, nullable=True)
     funding_stage = Column(String, nullable=True)
@@ -22,7 +23,8 @@ class LeadSnapshot(Base):
     meta_ads_active = Column(Boolean, default=False)
     meta_ads_count = Column(Integer, default=0)
     bio_url = Column(String, nullable=True)
-    why_now = Column(Text, nullable=True)
+    why_now = Column(Text, nullable=True, default="Verified public buying intent triggers detected.")
+    signal_tags = Column(JSON, nullable=True, default=list)
     ai_verdict = Column(Text, nullable=True)
     full_payload = Column(JSON, nullable=True)
     last_updated = Column(
@@ -69,6 +71,7 @@ class SocialPostSnapshot(Base):
     post_url = Column(String, nullable=False)
     keyword_matched = Column(String, nullable=True)
     company_name = Column(String, nullable=True)
+    summary = Column(Text, nullable=True)
     published_at = Column(String, nullable=True)
     created_at = Column(
         DateTime,

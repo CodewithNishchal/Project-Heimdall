@@ -1,19 +1,70 @@
 import { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ExternalLink, Building2, Users, DollarSign, Globe, Target, Mail, ShieldCheck, Sparkles, Copy, Check, Flame, Zap, ChevronUp, ChevronDown, Compass, FileText, Signal, Filter, MapPin, Calendar, Briefcase, Link as LinkIcon } from 'lucide-react';
+import { X, ExternalLink, Building2, Users, DollarSign, Globe, Target, Mail, Sparkles, Copy, Check, Flame, Zap, ChevronUp, ChevronDown, Compass, FileText, Signal, Filter, MapPin, Calendar, Briefcase, Link as LinkIcon } from 'lucide-react';
 import type { LeadDetailResponse } from '../types/lead';
 import PitcherMode from './PitcherMode';
 
 interface LeadDetailDrawerProps {
   lead: LeadDetailResponse | null;
   onClose: () => void;
+  isTracked?: boolean;
+  onToggleTrack?: () => void;
 }
 
-export default function LeadDetailDrawer({ lead, onClose }: LeadDetailDrawerProps) {
+function getSignalIconAndTheme(signalText: string) {
+  const lower = signalText.toLowerCase();
+
+  // 1. Funding / Series / Seed / Revenue -> DollarSign (Indigo)
+  if (lower.includes('fund') || lower.includes('series') || lower.includes('seed') || lower.includes('raised') || lower.includes('$')) {
+    return {
+      icon: <DollarSign size={13} className="text-indigo-600 dark:text-indigo-400" />,
+      style: 'bg-indigo-100 border-indigo-300 dark:bg-indigo-950/80 dark:border-indigo-500/40',
+    };
+  }
+
+  // 2. Headcount / Growth / Hiring / Roles -> Users (Emerald)
+  if (lower.includes('hire') || lower.includes('job') || lower.includes('sdr') || lower.includes('role') || lower.includes('headcount') || lower.includes('growth')) {
+    return {
+      icon: <Users size={13} className="text-emerald-600 dark:text-emerald-400" />,
+      style: 'bg-emerald-100 border-emerald-300 dark:bg-emerald-950/80 dark:border-emerald-500/40',
+    };
+  }
+
+  // 3. Executive Changes / Leadership / CMO / VP -> Sparkles (Purple)
+  if (lower.includes('cmo') || lower.includes('vp') || lower.includes('exec') || lower.includes('director') || lower.includes('leader')) {
+    return {
+      icon: <Sparkles size={13} className="text-purple-600 dark:text-purple-400" />,
+      style: 'bg-purple-100 border-purple-300 dark:bg-purple-950/80 dark:border-purple-500/40',
+    };
+  }
+
+  // 4. Agency / Intent / Seeking / Partnership / RFP -> Target (Rose)
+  if (lower.includes('agency') || lower.includes('partner') || lower.includes('seek') || lower.includes('rfp') || lower.includes('post')) {
+    return {
+      icon: <Target size={13} className="text-rose-600 dark:text-rose-400" />,
+      style: 'bg-rose-100 border-rose-300 dark:bg-rose-950/80 dark:border-rose-500/40',
+    };
+  }
+
+  // 5. Tech Stack / Tools / Infra / Migration -> Zap (Amber)
+  if (lower.includes('tech') || lower.includes('tool') || lower.includes('stack') || lower.includes('migrate')) {
+    return {
+      icon: <Zap size={13} className="text-amber-600 dark:text-amber-400" />,
+      style: 'bg-amber-100 border-amber-300 dark:bg-amber-950/80 dark:border-amber-500/40',
+    };
+  }
+
+  // Default Intent Signal -> Signal (Teal)
+  return {
+    icon: <Signal size={13} className="text-teal-600 dark:text-teal-400" />,
+    style: 'bg-teal-100 border-teal-300 dark:bg-teal-950/80 dark:border-teal-500/40',
+  };
+}
+
+export default function LeadDetailDrawer({ lead, onClose, isTracked = false, onToggleTrack }: LeadDetailDrawerProps) {
   const [activeTab, setActiveTab] = useState<'about' | 'people' | 'signals'>('signals');
   const [copiedEmail, setCopiedEmail] = useState<string | null>(null);
   const [showPitcher, setShowPitcher] = useState(false);
-  const [isTracked, setIsTracked] = useState(false);
 
   // Working Filters & View Controls
   const [behaviorFilter, setBehaviorFilter] = useState<'ALL' | 'FUNDING' | 'HIRING'>('ALL');
@@ -105,7 +156,7 @@ export default function LeadDetailDrawer({ lead, onClose }: LeadDetailDrawerProp
               {/* Action CTAs */}
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => setIsTracked(!isTracked)}
+                  onClick={onToggleTrack}
                   className={`px-3.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition shadow-xs ${
                     isTracked
                       ? 'bg-emerald-600 text-white'
@@ -291,15 +342,16 @@ export default function LeadDetailDrawer({ lead, onClose }: LeadDetailDrawerProp
                       viewMode === 'DETAILED' ? (
                         filteredAndSortedSignals.map((sig, idx) => {
                           const sigType = String(sig.signal_type || 'intent_signal').replace(/_/g, ' ');
+                          const { icon, style } = getSignalIconAndTheme(sigType + ' ' + (sig.verbatim_quote || ''));
                           return (
                             <div key={idx} className="side-drawer-card p-4 rounded-xl border border-nexa-border bg-nexa-surface space-y-2 text-xs shadow-2xs">
                               <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2 font-bold text-zinc-100 text-sm">
-                                  <div className="w-7 h-7 rounded-full bg-indigo-950/60 border border-indigo-500/40 text-indigo-300 flex items-center justify-center text-xs">
-                                    🎯
+                                <div className="flex items-center gap-2.5 font-bold text-zinc-100 text-sm">
+                                  <div className={`w-7 h-7 rounded-full border flex items-center justify-center shrink-0 shadow-xs ${style}`}>
+                                    {icon}
                                   </div>
-                                  <span>{sigType}</span>
-                                  <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-nexa-surface text-zinc-300 font-mono">1</span>
+                                  <span className="capitalize">{sigType}</span>
+                                  <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-nexa-surface text-zinc-300 font-mono border border-nexa-border">1</span>
                                 </div>
                                 <span className="text-xs text-zinc-400 font-mono">6 days ago</span>
                               </div>
@@ -330,11 +382,14 @@ export default function LeadDetailDrawer({ lead, onClose }: LeadDetailDrawerProp
                         <div className="space-y-2">
                           {filteredAndSortedSignals.map((sig, idx) => {
                             const sigType = String(sig.signal_type || 'intent_signal').replace(/_/g, ' ');
+                            const { icon, style } = getSignalIconAndTheme(sigType + ' ' + (sig.verbatim_quote || ''));
                             return (
                               <div key={idx} className="side-drawer-pill p-3 rounded-xl border border-nexa-border bg-nexa-surface flex items-center justify-between gap-3 text-xs shadow-2xs">
                                 <div className="flex items-center gap-2.5 truncate">
-                                  <div className="w-2 h-2 rounded-full bg-[var(--nexa-accent)] shrink-0" />
-                                  <span className="font-bold text-zinc-100 truncate">{sigType}</span>
+                                  <div className={`w-6 h-6 rounded-full border flex items-center justify-center shrink-0 shadow-xs ${style}`}>
+                                    {icon}
+                                  </div>
+                                  <span className="font-bold text-zinc-100 truncate capitalize">{sigType}</span>
                                   {sig.verbatim_quote && (
                                     <span className="text-zinc-400 truncate hidden sm:inline font-normal">"{sig.verbatim_quote}"</span>
                                   )}
@@ -362,12 +417,6 @@ export default function LeadDetailDrawer({ lead, onClose }: LeadDetailDrawerProp
                       <h3 className="text-sm font-bold uppercase tracking-wider flex items-center gap-2">
                         <Sparkles size={14} className="text-emerald-400" /> AI Verdict & Strategy
                       </h3>
-                      <button
-                        onClick={() => setShowPitcher(!showPitcher)}
-                        className="px-3 py-1 text-xs font-bold rounded-lg bg-[var(--nexa-accent)] text-zinc-950 hover:brightness-110 transition flex items-center gap-1.5 shadow-xs"
-                      >
-                        <Zap size={12} /> {showPitcher ? 'Hide Pitcher' : 'Draft Pitcher Outreach'}
-                      </button>
                     </div>
                     
                     <p className="side-drawer-verdict-text text-xs text-emerald-200/90 leading-relaxed font-medium">
@@ -406,7 +455,7 @@ export default function LeadDetailDrawer({ lead, onClose }: LeadDetailDrawerProp
                           </div>
                           <div>
                             <span className="font-bold text-zinc-100">Headcount: </span>
-                            <span className="text-zinc-300">{lead.employee_count ? `${lead.employee_count} (+25% YoY)` : '35 (+25% YoY)'}</span>
+                            <span className="text-zinc-300">{lead.employee_count ?? 35}</span>
                           </div>
                           <div>
                             <span className="font-bold text-zinc-100">Revenue: </span>
@@ -462,32 +511,6 @@ export default function LeadDetailDrawer({ lead, onClose }: LeadDetailDrawerProp
                             ✓ Direct buy signal — explicitly seeking agencies
                           </div>
                         </div>
-                      </div>
-
-                    </div>
-                  </div>
-
-                  {/* Mailbox Audit */}
-                  <div className="side-drawer-card p-5 rounded-2xl border border-nexa-border bg-nexa-card space-y-3 shadow-2xs">
-                    <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-2">
-                      <ShieldCheck size={14} className="text-indigo-400" /> Mailbox & Infrastructure Audit
-                    </h3>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                      <div className="side-drawer-pill p-3 rounded-xl border border-nexa-border bg-nexa-surface">
-                        <span className="text-[11px] text-zinc-400 block">Provider</span>
-                        <span className="font-semibold text-zinc-200">{(lead.dns_audit as any)?.provider || 'Google Workspace'}</span>
-                      </div>
-                      <div className="side-drawer-pill p-3 rounded-xl border border-nexa-border bg-nexa-surface">
-                        <span className="text-[11px] text-zinc-400 block">SPF Audit</span>
-                        <span className="font-semibold text-emerald-400">Pass</span>
-                      </div>
-                      <div className="side-drawer-pill p-3 rounded-xl border border-nexa-border bg-nexa-surface">
-                        <span className="text-[11px] text-zinc-400 block">DMARC Record</span>
-                        <span className="font-semibold text-emerald-400">Configured</span>
-                      </div>
-                      <div className="side-drawer-pill p-3 rounded-xl border border-nexa-border bg-nexa-surface">
-                        <span className="text-[11px] text-zinc-400 block">Deliverability</span>
-                        <span className="font-semibold text-emerald-400">High (98%)</span>
                       </div>
                     </div>
                   </div>

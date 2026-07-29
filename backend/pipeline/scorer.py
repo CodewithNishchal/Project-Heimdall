@@ -4,7 +4,6 @@ from google.genai import types
 from datetime import datetime, timezone
 from pydantic import BaseModel, Field
 from backend.pipeline.time_decay import calculate_time_decay
-from backend.pipeline.icp_filter import apply_icp_filters
 from backend.validation.quote_validator import validate_quote
 from backend.config import settings
 import logging
@@ -37,7 +36,8 @@ class GeminiScoringPayload(BaseModel):
 def process_hybrid_lead_scoring(
     raw_extracted_payload: dict,
     firmographics: dict,
-    raw_source_text: str = ""
+    raw_source_text: str = "",
+    icp_fit_label: str = "Strong"
 ) -> dict:
     """
     Combines LLM data extractions with mathematical operational
@@ -89,13 +89,8 @@ def process_hybrid_lead_scoring(
     if "Scrape Creators Ad & Social Audit" in raw_source_text:
         aggregated_base += 10.0  # Reward verified social intelligence data
 
-    # Apply transactional structural filter modifiers (Fix 3)
-    final_intent_score, icp_fit_label = apply_icp_filters(
-        base_score=aggregated_base,
-        employee_count=firmographics.get("employee_count"),
-        funding_stage=firmographics.get("funding_stage"),
-        industry=firmographics.get("industry", "Unknown")
-    )
+    # ICP fit label passed from orchestrator gatekeeper (single-pass, no double penalty)
+    final_intent_score = max(0, min(int(aggregated_base), 100))
 
     # Enforce algorithmic score categorization bands
     if final_intent_score >= 70:
@@ -115,24 +110,40 @@ def process_hybrid_lead_scoring(
         ai_verdict = " ".join([str(v) for v in ai_verdict])
 
     extracted_industry = raw_extracted_payload.get("industry") or firmographics.get("industry", "Technology & Services")
+    company_segment = raw_extracted_payload.get("company_segment") or firmographics.get("company_segment", "Growth Scale-up")
+    why_now = raw_extracted_payload.get("why_now") or "Verified public buying intent triggers detected. Recommend targeted outreach."
+    signal_tags = raw_extracted_payload.get("signal_tags", [])
 
     return {
         "company_name": raw_extracted_payload.get("company_name"),
         "industry": extracted_industry,
+        "company_segment": company_segment,
         "intent_score": final_intent_score,
         "signal_freshness": min(avg_freshness, 100),
         "tier": assigned_tier,
         "icp_fit": icp_fit_label,
         "signals": signals_processed,
-        "why_now": raw_extracted_payload.get("why_now", "Intent signals detected"),
+        "why_now": why_now,
+        "signal_tags": signal_tags,
         "ai_verdict": ai_verdict
     }
+
+
+COLOR_THEME_MAP = {
+    "funding": "indigo",
+    "hiring": "emerald",
+    "agency_intent": "rose",
+    "product": "amber",
+    "expansion": "teal",
+    "growth": "purple"
+}
 
 
 async def analyze_lead_intent_with_llm(
     company_name: str,
     cleaned_html: str,
-    firmographics: dict
+    firmographics: dict,
+    icp_fit_label: str = "Strong"
 ) -> dict:
     """
     Calls Groq API to extract signals and then applies hybrid scoring.
@@ -166,7 +177,7 @@ Analyze {company_name} using the provided text below.
 TARGET KEYWORDS: [{keywords_str}]
 
 TASK:
-Extract intent signals matching the TARGET KEYWORDS and calculate a composite intent score.
+Extract intent signals matching the TARGET KEYWORDS, generate a 2-sentence 'why_now' trigger statement, assign intent category tags, and calculate a composite intent score.
 
 STRICT EXTRACTION RULES:
 1. verbatim_quote: MUST be a 100% exact, contiguous word-for-word substring copied directly from the INPUT TEXT. Do NOT paraphrase, fix typos, reformat, or alter capitalization/punctuation, or validation will fail.
@@ -177,21 +188,37 @@ STRICT EXTRACTION RULES:
    - 1-40: Weak, indirect, or generic brand mentions.
    - 41-75: Moderate intent (general hiring, active feature discussions, growth chatter).
    - 76-100: High actionable intent (recent funding rounds, direct vendor/agency requests, C-level expansion announcements).
+5. Agency Guard: If the INPUT TEXT itself describes {company_name} as a marketing/advertising/staffing/consulting agency or service provider, set "intent_score": 0 and "signals": [] regardless of keyword matches.
+6. Deduplication: If multiple text blocks describe the same underlying event (e.g., the same funding round reported by two different sources), include only ONE signal entry for it.
+7. event_date: If no explicit date is stated in or immediately adjacent to the source text, return "event_date": null — do not estimate or infer a plausible date.
+8. Multi-Signal Bonus: If signals from 2 or more distinct categories are present for {company_name} (e.g. funding AND hiring), add +15 to the base intent score (capped at 100).
 
 OUTPUT JSON SCHEMA:
 {{
   "company_name": "{company_name}",
   "industry": "Specific Industry Name (e.g. EdTech, B2B SaaS, E-Commerce, Healthcare, FinTech, Retail)",
+  "company_segment": "High-level market segment (e.g. FinTech Scale-up, DTC Consumer Brand, AI Infra)",
   "intent_score": 85,
+  "why_now": "Sentence 1 (Catalyst): State the exact recent funding, hiring spree, or metric found in the text. Sentence 2 (Opportunity): State the immediate strategic hook or problem your services solve for them right now.",
+  "signal_tags": [
+    {{
+      "tag": "Series C Funding",
+      "category": "funding"
+    }},
+    {{
+      "tag": "Fractional CMO Request",
+      "category": "agency_intent"
+    }}
+  ],
   "signals": [
     {{
       "signal_type": "Exact keyword or topic matched",
       "verbatim_quote": "Exact word-for-word string copied directly from text",
       "source_url": "https://example.com/source-link",
-      "event_date": "YYYY-MM-DD"
+      "event_date": "YYYY-MM-DD or null"
     }}
   ],
-  "ai_verdict": "A highly specific 2-3 sentence summary. Sentence 1: explicitly state the verified intent triggers (e.g. funding amount, exact hiring roles, growth metrics) found in the text. Sentence 2-3: propose a specific, actionable sales outreach strategy tailored to the target keywords."
+  "ai_verdict": "A highly specific 2-3 sentence summary detailing verified intent triggers and proposed outreach strategy."
 }}
 """
 
@@ -219,23 +246,35 @@ OUTPUT JSON SCHEMA:
                 async with httpx.AsyncClient(timeout=45.0) as client:
                     response = await client.post(url, headers=headers, json=payload)
                     response.raise_for_status()
+                    resp_data = response.json()
+                    raw_text = resp_data["choices"][0]["message"].get("content", "")
+                    if raw_text.startswith("```json"):
+                        raw_text = raw_text.split("```json")[1].split("```")[0].strip()
+                    elif raw_text.startswith("```"):
+                        raw_text = raw_text.split("```")[1].split("```")[0].strip()
                     
-                resp_data = response.json()
-                raw_text = resp_data["choices"][0]["message"].get("content")
-                if not raw_text:
-                    raise ValueError("Groq returned empty content")
-                # Clean up potential markdown formatting from the response
-                if raw_text.startswith("```json"):
-                    raw_text = raw_text.split("```json")[1].split("```")[0].strip()
-                elif raw_text.startswith("```"):
-                    raw_text = raw_text.split("```")[1].split("```")[0].strip()
+                    token_usage = resp_data.get("usage", {}).get("total_tokens", "Unknown")
+                    logger.info(f"Groq Token Usage for {company_name}: {token_usage}")
                     
-                token_usage = resp_data.get("usage", {}).get("total_tokens", "Unknown")
-                logger.info(f"Groq Token Usage for {company_name}: {token_usage}")
-                
-                raw_payload = json.loads(raw_text)
-                raw_payload["company_name"] = company_name
-                return process_hybrid_lead_scoring(raw_payload, firmographics, cleaned_html)
+                    raw_payload = json.loads(raw_text)
+                    raw_payload["company_name"] = company_name
+
+                    # Deterministically attach color_theme to signal_tags
+                    if raw_payload.get("signal_tags"):
+                        for st in raw_payload["signal_tags"]:
+                            cat = str(st.get("category", "")).lower()
+                            st["color_theme"] = COLOR_THEME_MAP.get(cat, "indigo")
+
+                    # Python verbatim quote verification guard
+                    if raw_payload.get("signals"):
+                        valid_signals = []
+                        for sig in raw_payload["signals"]:
+                            quote = sig.get("verbatim_quote", "")
+                            if quote and quote.lower() in cleaned_html.lower():
+                                valid_signals.append(sig)
+                        raw_payload["signals"] = valid_signals
+
+                    return process_hybrid_lead_scoring(raw_payload, firmographics, cleaned_html, icp_fit_label=icp_fit_label)
 
             except Exception as e:
                 logger.warning(f"[Scorer] Groq API attempt {attempt + 1} failed: {e}.")
@@ -265,4 +304,4 @@ OUTPUT JSON SCHEMA:
         "ai_verdict": f"[Groq API limit exhausted] Public intent signals detected for {company_name} (including {', '.join(found_matches[:2]) if found_matches else 'general growth'}). Recommend targeted outreach highlighting how your services can support their recent growth."
     }
 
-    return process_hybrid_lead_scoring(fallback_payload, firmographics, cleaned_html)
+    return process_hybrid_lead_scoring(fallback_payload, firmographics, cleaned_html, icp_fit_label=icp_fit_label)

@@ -397,45 +397,29 @@ async def fetch_social_micro_intent(triggers: list[str], topics: list[str]) -> l
     if not clean_trigs or not clean_tops:
         return []
         
-    # Format triggers: if multiple, combine with OR into ("looking for" OR "need" OR "recommend" OR "hiring")
-    formatted_trigs = [f'"{t}"' for t in clean_trigs]
-    trig_clause = f"({' OR '.join(formatted_trigs)})" if len(formatted_trigs) > 1 else formatted_trigs[0]
-    
-    # Format topics: if multiple, combine with OR into ("marketing agency" OR "fractional CMO")
-    formatted_tops = [f'"{tp}"' for tp in clean_tops]
-    topic_clause = f"({' OR '.join(formatted_tops)})" if len(formatted_tops) > 1 else formatted_tops[0]
-    
-    base_query = f"{trig_clause} {topic_clause}"
-    
-    # Platform-specific combined queries
-    # Reddit supports extended negative exclusions
-    reddit_negative = '-"I run a" -"video editor" -"we are hiring"'
-    # Twitter (X) API requires leaner negative queries to prevent returning 0 items
-    twitter_negative = ''
-    
-    reddit_query = f'{base_query} {reddit_negative}'
-    twitter_query = f'{base_query} {twitter_negative}'
+    # Format triggers & topics for platform-specific queries
+    trig1 = clean_trigs[0] if clean_trigs else "looking for"
+    trig2 = clean_trigs[1] if len(clean_trigs) > 1 else "recommend"
+    top1 = clean_tops[0] if clean_tops else "web design"
+    top2 = clean_tops[1] if len(clean_tops) > 1 else "redesign"
 
-    # Threads plain string queries (2 iterations for optimal relevance)
-    threads_q1 = f"{clean_trigs[0]} {clean_tops[0]}"
-    if len(clean_tops) > 1:
-        threads_q2 = f"{clean_trigs[0]} {clean_tops[1]}"
-    elif len(clean_trigs) > 1:
-        threads_q2 = f"{clean_trigs[1]} {clean_tops[0]}"
-    else:
-        threads_q2 = f"recommend {clean_tops[0]}"
-        
-    # LinkedIn queries (with blacklists)
-    clean_trigs_linkedin = [t for t in clean_trigs if "looking for a" not in t.lower() and "hiring agency" not in t.lower()]
-    if not clean_trigs_linkedin:
-        clean_trigs_linkedin = ["RFP", "recommend"]
-    
-    formatted_trigs_li = [f'"{t}"' for t in clean_trigs_linkedin]
-    trig_clause_li = f"({' OR '.join(formatted_trigs_li)})" if len(formatted_trigs_li) > 1 else formatted_trigs_li[0]
-    linkedin_query = f"{trig_clause_li} {topic_clause}"
-    
-    # Google query (force RFP intent to bypass SEO directories)
-    google_query = f"RFP {clean_tops[0]}"
+    # 1. ScrapeBadger Reddit: ("looking for" OR "recommend") ("web design" OR "redesign") -"I run a"
+    trig_clause_reddit = f'("{trig1}" OR "{trig2}")'
+    top_clause_reddit = f'("{top1}" OR "{top2}")'
+    reddit_query = f'{trig_clause_reddit} {top_clause_reddit} -"I run a" -"video editor" -"we are hiring"'
+
+    # 2. ScrapeBadger Twitter (X): "looking for web design agency" OR "recommend web designer"
+    twitter_query = f'"{trig1} {top1} agency" OR "{trig2} {top1} designer"'
+
+    # 3. Apify LinkedIn: "looking for web agency" OR "website redesign RFP"
+    linkedin_query = f'"{trig1} {top1} agency" OR "{top2} RFP"'
+
+    # 4. ScrapeCreators Threads: Query 1: "looking for web design", Query 2: "recommend website redesign"
+    threads_q1 = f"{trig1} {top1}"
+    threads_q2 = f"{trig2} {top2}"
+
+    # 5. ScrapeCreators Google: RFP query
+    google_query = f"RFP {top1}"
             
     results = []
     
