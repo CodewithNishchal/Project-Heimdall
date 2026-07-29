@@ -188,39 +188,39 @@ export default function Settings() {
   const previewQuery = `(${ (parsedTriggers.map(t => `"${t}"`).join(' OR ')) || '"looking for"' }) ${ (parsedTopics.map(t => `"${t}"`).join(' OR ')) || '"marketing agency"' }`;
 
   return (
-    <div className="flex-1 overflow-y-auto pr-2 pb-12 font-sans">
-      <div className="nexa-card nexa-card-no-hover p-8 space-y-8 w-full max-w-7xl mx-auto">
+    <div className="flex-1 overflow-y-auto px-1 sm:px-4 pb-28 lg:pb-12 font-sans">
+      <div className="nexa-card nexa-card-no-hover p-3.5 sm:p-6 lg:p-8 space-y-4 sm:space-y-8 w-full max-w-7xl mx-auto">
         
         {/* Settings Page Header */}
-        <div className="flex items-center justify-between border-b border-nexa-border pb-5">
+        <div className="flex items-center justify-between border-b border-nexa-border pb-4 sm:pb-5">
           <div className="space-y-1">
-            <h2 className="text-2xl font-bold text-zinc-100 tracking-tight">Pipeline Settings</h2>
-            <p className="text-xs text-zinc-400 font-medium">
+            <h2 className="text-lg sm:text-2xl font-bold text-zinc-100 tracking-tight">Pipeline Settings</h2>
+            <p className="text-[11px] sm:text-xs text-zinc-400 font-medium leading-normal">
               Configure autonomous search queries, ICP headcount thresholds, and AI co-pilot preferences.
             </p>
           </div>
         </div>
 
         {/* 1. AI ICP ASSISTANT CARD (UNCONGESTED, SPACIOUS CHAT BOX) */}
-        <section className="side-drawer-card p-6 border border-[var(--nexa-accent)]/30 bg-[var(--nexa-accent-dim)] rounded-2xl space-y-5 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 rounded-xl bg-[var(--nexa-accent)] text-zinc-950 shadow-xs">
-              <Cpu size={20} className="stroke-[2.5]" />
+        <section className="side-drawer-card p-3.5 sm:p-6 border border-[var(--nexa-accent)]/30 bg-[var(--nexa-accent-dim)] rounded-2xl space-y-3 sm:space-y-5 shadow-sm">
+          <div className="flex items-start sm:items-center gap-2.5 sm:gap-3">
+            <div className="p-2 sm:p-2.5 rounded-xl bg-[var(--nexa-accent)] text-zinc-950 shadow-xs shrink-0 mt-0.5 sm:mt-0">
+              <Cpu size={18} className="stroke-[2.5] sm:w-5 sm:h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-zinc-100 tracking-tight">
+              <h3 className="text-sm sm:text-base font-bold text-zinc-100 tracking-tight">
                 AI ICP Assistant
               </h3>
-              <p className="text-xs text-zinc-300 font-medium">
+              <p className="text-[11px] sm:text-xs text-zinc-300 font-medium leading-normal">
                 Describe your Ideal Customer Profile in natural language. The AI will parse headcount, job terms, and intent queries automatically.
               </p>
             </div>
           </div>
 
           {/* Chat Input Box & Action */}
-          <div className="flex flex-col sm:flex-row gap-3 pt-2">
+          <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 pt-1">
             <textarea
-              className="flex-1 glass-input rounded-xl p-3.5 text-xs text-zinc-100 placeholder-zinc-500 border border-white/10 bg-nexa-surface focus:border-[var(--nexa-accent)] transition-all resize-none font-medium leading-relaxed"
+              className="flex-1 glass-input rounded-xl p-3 sm:p-3.5 text-xs text-zinc-100 placeholder-zinc-500 border border-white/10 bg-nexa-surface focus:border-[var(--nexa-accent)] transition-all resize-none font-medium leading-relaxed"
               rows={3}
               placeholder="e.g. Target recruitment agencies in USA hiring for DevOps, Cybersecurity, ML roles, company headcount 50-2000, 6-8 years experience..."
               value={aiPrompt}
@@ -235,7 +235,7 @@ export default function Settings() {
             <button
               onClick={() => handleGenerateAIICP()}
               disabled={aiGenerating || !aiPrompt.trim()}
-              className="px-6 py-4 rounded-xl font-bold text-xs bg-[var(--nexa-accent)] text-zinc-950 hover:brightness-110 transition-all flex items-center justify-center gap-2.5 whitespace-nowrap disabled:opacity-50 shadow-md self-end sm:self-stretch"
+              className="w-full sm:w-auto px-5 py-3 sm:py-4 rounded-xl font-bold text-xs bg-[var(--nexa-accent)] text-zinc-950 hover:brightness-110 transition-all flex items-center justify-center gap-2 sm:gap-2.5 whitespace-nowrap disabled:opacity-50 shadow-md shrink-0"
             >
               {aiGenerating ? <Loader2 size={16} className="animate-spin" /> : <Wand2 size={16} />}
               Generate & Populate
@@ -244,15 +244,15 @@ export default function Settings() {
 
           {/* AI Response Summary */}
           {aiSummary && (
-            <div className="p-3.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 text-xs font-medium flex items-center gap-2.5 animate-fade-in">
-              <Check size={16} className="text-emerald-400 shrink-0" />
+            <div className="p-3 sm:p-3.5 rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-300 text-[11px] sm:text-xs font-medium flex items-center gap-2 sm:gap-2.5 animate-fade-in">
+              <Check size={15} className="text-emerald-400 shrink-0" />
               <span>{aiSummary} Intent Configuration has expanded below for your review & editing.</span>
             </div>
           )}
         </section>
 
         {/* 2. ICP TEMPLATES & SAVED HISTORY BOX */}
-        <section className="side-drawer-card p-6 rounded-2xl border border-nexa-border bg-nexa-surface space-y-4 shadow-2xs">
+        <section className="side-drawer-card p-3.5 sm:p-6 rounded-2xl border border-nexa-border bg-nexa-surface space-y-3 sm:space-y-4 shadow-2xs">
           <div className="flex items-center justify-between">
             <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-2">
               <History size={14} className="text-[var(--nexa-accent)]" /> ICP Templates & Prompt History
@@ -271,7 +271,7 @@ export default function Settings() {
           {/* Pre-configured Templates Row */}
           <div className="space-y-2">
             <span className="text-[11px] font-bold text-zinc-400 block uppercase tracking-wider">Quick Enterprise Templates:</span>
-            <div className="flex flex-wrap gap-2.5">
+            <div className="flex flex-wrap gap-2">
               {DEFAULT_TEMPLATES.map((tmpl, idx) => (
                 <button
                   key={idx}
@@ -279,11 +279,11 @@ export default function Settings() {
                     setAiPrompt(tmpl.prompt);
                     handleGenerateAIICP(tmpl.prompt);
                   }}
-                  className="side-drawer-pill px-4 py-2 rounded-xl border border-[var(--nexa-accent)]/30 bg-[var(--nexa-accent-dim)] text-[var(--nexa-accent)] hover:bg-[var(--nexa-accent-glow)] transition-all text-xs font-semibold flex items-center gap-2 shadow-2xs"
+                  className="side-drawer-pill px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl border border-[var(--nexa-accent)]/30 bg-[var(--nexa-accent-dim)] text-[var(--nexa-accent)] hover:bg-[var(--nexa-accent-glow)] transition-all text-xs font-semibold flex items-center gap-1.5 sm:gap-2 shadow-2xs text-left"
                 >
-                  <Sparkles size={12} />
+                  <Sparkles size={12} className="shrink-0" />
                   <span>{tmpl.title}</span>
-                  <span className="text-[10px] opacity-75 font-normal">({tmpl.desc})</span>
+                  <span className="text-[10px] opacity-75 font-normal hidden sm:inline">({tmpl.desc})</span>
                 </button>
               ))}
             </div>
@@ -303,7 +303,7 @@ export default function Settings() {
                       setAiPrompt(hist.prompt);
                       handleGenerateAIICP(hist.prompt);
                     }}
-                    className="side-drawer-pill px-3.5 py-1.5 rounded-xl border border-nexa-border bg-nexa-surface text-zinc-200 hover:border-[var(--nexa-accent)]/60 transition-all text-xs font-medium flex items-center gap-2 shadow-2xs"
+                    className="side-drawer-pill px-3 py-1.5 sm:px-3.5 sm:py-1.5 rounded-xl border border-nexa-border bg-nexa-surface text-zinc-200 hover:border-[var(--nexa-accent)]/60 transition-all text-xs font-medium flex items-center gap-2 shadow-2xs"
                   >
                     <span>{hist.title}</span>
                     <span className="text-[10px] text-zinc-500 font-mono">{hist.date}</span>
@@ -315,17 +315,17 @@ export default function Settings() {
         </section>
 
         {/* 3. TARGET COMPANY HEADCOUNT & INDUSTRY NICHE (ICP FILTER) */}
-        <section className="space-y-4">
+        <section className="space-y-3 sm:space-y-4">
           <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-2">
             <Sliders size={14} /> Target Company Filters & Industry Niche
           </h3>
-          <div className="side-drawer-card space-y-4 p-5 rounded-2xl border border-nexa-border bg-nexa-surface">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="side-drawer-card space-y-3.5 sm:space-y-4 p-3.5 sm:p-5 rounded-2xl border border-nexa-border bg-nexa-surface">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               <div>
                 <label className="block text-xs font-bold text-zinc-200 mb-1.5">Minimum Employee Headcount</label>
                 <input
                   type="number"
-                  className="w-full glass-input rounded-xl p-3 text-xs text-zinc-100 border border-nexa-border bg-nexa-surface font-medium"
+                  className="w-full glass-input rounded-xl p-2.5 sm:p-3 text-xs text-zinc-100 border border-nexa-border bg-nexa-surface font-medium"
                   value={minEmployees}
                   onChange={e => setMinEmployees(Number(e.target.value))}
                 />
@@ -334,7 +334,7 @@ export default function Settings() {
                 <label className="block text-xs font-bold text-zinc-200 mb-1.5">Maximum Employee Headcount</label>
                 <input
                   type="number"
-                  className="w-full glass-input rounded-xl p-3 text-xs text-zinc-100 border border-nexa-border bg-nexa-surface font-medium"
+                  className="w-full glass-input rounded-xl p-2.5 sm:p-3 text-xs text-zinc-100 border border-nexa-border bg-nexa-surface font-medium"
                   value={maxEmployees}
                   onChange={e => setMaxEmployees(Number(e.target.value))}
                 />
@@ -343,7 +343,7 @@ export default function Settings() {
                 <label className="block text-xs font-bold text-zinc-200 mb-1.5">Minimum Target ARR</label>
                 <input
                   type="text"
-                  className="w-full glass-input rounded-xl p-3 text-xs text-zinc-100 border border-nexa-border bg-nexa-surface font-medium"
+                  className="w-full glass-input rounded-xl p-2.5 sm:p-3 text-xs text-zinc-100 border border-nexa-border bg-nexa-surface font-medium"
                   placeholder="$5M"
                   value={minArr}
                   onChange={e => setMinArr(e.target.value)}
@@ -353,7 +353,7 @@ export default function Settings() {
                 <label className="block text-xs font-bold text-zinc-200 mb-1.5">Maximum Target ARR</label>
                 <input
                   type="text"
-                  className="w-full glass-input rounded-xl p-3 text-xs text-zinc-100 border border-nexa-border bg-nexa-surface font-medium"
+                  className="w-full glass-input rounded-xl p-2.5 sm:p-3 text-xs text-zinc-100 border border-nexa-border bg-nexa-surface font-medium"
                   placeholder="$50M"
                   value={maxArr}
                   onChange={e => setMaxArr(e.target.value)}
@@ -367,12 +367,12 @@ export default function Settings() {
               </label>
               <input
                 type="text"
-                className="w-full glass-input rounded-xl p-3 text-xs text-zinc-100 border border-nexa-border bg-nexa-surface font-medium"
+                className="w-full glass-input rounded-xl p-2.5 sm:p-3 text-xs text-zinc-100 border border-nexa-border bg-nexa-surface font-medium"
                 placeholder="Fintech SaaS, B2B Software, Healthcare, Multi-Location Franchise, Home Services"
                 value={rawTargetIndustries}
                 onChange={e => setRawTargetIndustries(e.target.value)}
               />
-              <p className="text-[11px] text-zinc-400 mt-1.5 font-medium">
+              <p className="text-[11px] text-zinc-400 mt-1.5 font-medium leading-normal">
                 The pipeline prompts use these specific target industries (e.g. Fintech SaaS) to score candidates matching your target profile.
               </p>
             </div>
@@ -380,37 +380,37 @@ export default function Settings() {
         </section>
 
         {/* 5. COLLAPSIBLE INTENT SIGNALS CONFIGURATION BOX (SCROLL TARGET) */}
-        <section ref={configSectionRef} className="space-y-4 pt-2">
+        <section ref={configSectionRef} className="space-y-3 sm:space-y-4 pt-2">
           {/* Expandable Accordion Header */}
           <div
             onClick={() => setConfigOpen(!configOpen)}
-            className="side-drawer-card p-5 rounded-2xl border border-nexa-border bg-nexa-surface flex items-center justify-between cursor-pointer hover:border-[var(--nexa-accent)]/40 transition-all shadow-xs"
+            className="side-drawer-card p-3.5 sm:p-5 rounded-2xl border border-nexa-border bg-nexa-surface flex items-center justify-between cursor-pointer hover:border-[var(--nexa-accent)]/40 transition-all shadow-xs gap-2"
           >
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-indigo-950/80 text-indigo-300 border border-indigo-500/30">
+            <div className="flex items-center gap-2.5 sm:gap-3 min-w-0">
+              <div className="p-2 rounded-xl bg-indigo-950/80 text-indigo-300 border border-indigo-500/30 shrink-0">
                 <Target size={16} />
               </div>
-              <div>
-                <h3 className="text-sm font-bold text-zinc-100 tracking-tight flex items-center gap-2">
-                  Intent Signals & Search Queries Configuration
-                  <span className="px-2 py-0.5 rounded-full text-[10px] bg-nexa-surface border border-nexa-border text-zinc-400 font-mono font-normal">
-                    {configOpen ? 'Open / Editable' : 'Collapsed (Click to Expand)'}
+              <div className="min-w-0">
+                <h3 className="text-xs sm:text-sm font-bold text-zinc-100 tracking-tight flex flex-wrap items-center gap-1.5 sm:gap-2">
+                  <span>Intent Signals & Search Queries Configuration</span>
+                  <span className="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] bg-nexa-surface border border-nexa-border text-zinc-400 font-mono font-normal shrink-0">
+                    {configOpen ? 'Open / Editable' : 'Collapsed'}
                   </span>
                 </h3>
-                <p className="text-xs text-zinc-400 font-medium">
+                <p className="text-[11px] sm:text-xs text-zinc-400 font-medium leading-normal truncate sm:whitespace-normal">
                   Review and manually edit job roles, extraction keywords, social triggers, and search queries.
                 </p>
               </div>
             </div>
 
-            <button className="p-2 rounded-xl border border-nexa-border bg-nexa-surface text-zinc-400 hover:text-zinc-100 transition">
+            <button className="p-1.5 sm:p-2 rounded-xl border border-nexa-border bg-nexa-surface text-zinc-400 hover:text-zinc-100 transition shrink-0">
               {configOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
             </button>
           </div>
 
           {/* Collapsible Form Body */}
           {configOpen && (
-            <div className="side-drawer-card p-6 rounded-2xl border border-nexa-border bg-nexa-surface space-y-5 animate-fade-in shadow-sm">
+            <div className="side-drawer-card p-3.5 sm:p-6 rounded-2xl border border-nexa-border bg-nexa-surface space-y-4 sm:space-y-5 animate-fade-in shadow-sm">
               {loading ? (
                 <div className="flex items-center gap-2 text-zinc-400 text-xs py-4">
                   <Loader2 className="animate-spin" size={14} /> Loading intent configuration...
@@ -443,81 +443,93 @@ export default function Settings() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
                       {/* 1. Google */}
-                      <div className="p-3.5 rounded-xl border border-blue-500/20 bg-blue-500/5 space-y-1.5">
-                        <div className="flex items-center justify-between">
+                      <div className="p-3.5 rounded-xl border border-blue-500/20 bg-blue-500/5 space-y-1.5 flex flex-col">
+                        <div className="flex items-center justify-between mb-1">
                           <span className="text-xs font-bold text-blue-600 dark:text-blue-400 flex items-center gap-1.5">
                             <span className="w-2 h-2 rounded-full bg-blue-500" /> Google Search & Q&A
                           </span>
                           <span className="text-[10px] font-mono text-slate-500 dark:text-zinc-400">Serper API</span>
                         </div>
-                        <code className="block text-[11px] font-mono text-slate-800 dark:text-zinc-200 bg-white/80 dark:bg-black/40 p-2.5 rounded-lg border border-slate-200/80 dark:border-white/5 break-all shadow-xs">
-                          site:linkedin.com/posts ("looking for web design agency" OR "website redesign RFP")
-                        </code>
+                        <textarea 
+                          className="flex-1 w-full text-[11px] font-mono text-slate-800 dark:text-zinc-200 bg-white/80 dark:bg-black/40 p-2.5 rounded-lg border border-slate-200/80 dark:border-white/5 shadow-xs focus:outline-none focus:border-blue-500/50 resize-none"
+                          rows={2}
+                          defaultValue={'site:linkedin.com/posts ("looking for web design agency" OR "website redesign RFP")'}
+                        />
                       </div>
 
                       {/* 2. Reddit */}
-                      <div className="p-3.5 rounded-xl border border-orange-500/20 bg-orange-500/5 space-y-1.5">
-                        <div className="flex items-center justify-between">
+                      <div className="p-3.5 rounded-xl border border-orange-500/20 bg-orange-500/5 space-y-1.5 flex flex-col">
+                        <div className="flex items-center justify-between mb-1">
                           <span className="text-xs font-bold text-orange-600 dark:text-orange-400 flex items-center gap-1.5">
                             <span className="w-2 h-2 rounded-full bg-orange-500" /> Reddit Intent Scanner
                           </span>
                           <span className="text-[10px] font-mono text-slate-500 dark:text-zinc-400">Reddit API</span>
                         </div>
-                        <code className="block text-[11px] font-mono text-slate-800 dark:text-zinc-200 bg-white/80 dark:bg-black/40 p-2.5 rounded-lg border border-slate-200/80 dark:border-white/5 break-all shadow-xs">
-                          {previewQuery || '("looking for" OR "recommend") "web design" OR "website redesign"'}
-                        </code>
+                        <textarea 
+                          className="flex-1 w-full text-[11px] font-mono text-slate-800 dark:text-zinc-200 bg-white/80 dark:bg-black/40 p-2.5 rounded-lg border border-slate-200/80 dark:border-white/5 shadow-xs focus:outline-none focus:border-orange-500/50 resize-none"
+                          rows={2}
+                          defaultValue={previewQuery || '("looking for" OR "recommend") "web design" OR "website redesign"'}
+                        />
                       </div>
 
                       {/* 3. LinkedIn */}
-                      <div className="p-3.5 rounded-xl border border-sky-500/20 bg-sky-500/5 space-y-1.5">
-                        <div className="flex items-center justify-between">
+                      <div className="p-3.5 rounded-xl border border-sky-500/20 bg-sky-500/5 space-y-1.5 flex flex-col">
+                        <div className="flex items-center justify-between mb-1">
                           <span className="text-xs font-bold text-sky-600 dark:text-sky-400 flex items-center gap-1.5">
                             <span className="w-2 h-2 rounded-full bg-sky-500" /> LinkedIn Posts & RFPs
                           </span>
                           <span className="text-[10px] font-mono text-slate-500 dark:text-zinc-400">Apify LinkedIn</span>
                         </div>
-                        <code className="block text-[11px] font-mono text-slate-800 dark:text-zinc-200 bg-white/80 dark:bg-black/40 p-2.5 rounded-lg border border-slate-200/80 dark:border-white/5 break-all shadow-xs">
-                          "looking for web design agency" OR "website redesign RFP"
-                        </code>
+                        <textarea 
+                          className="flex-1 w-full text-[11px] font-mono text-slate-800 dark:text-zinc-200 bg-white/80 dark:bg-black/40 p-2.5 rounded-lg border border-slate-200/80 dark:border-white/5 shadow-xs focus:outline-none focus:border-sky-500/50 resize-none"
+                          rows={2}
+                          defaultValue={'"looking for web design agency" OR "website redesign RFP"'}
+                        />
                       </div>
 
                       {/* 4. X (Twitter) */}
-                      <div className="p-3.5 rounded-xl border border-slate-300/40 dark:border-zinc-500/20 bg-slate-500/5 space-y-1.5">
-                        <div className="flex items-center justify-between">
+                      <div className="p-3.5 rounded-xl border border-slate-300/40 dark:border-zinc-500/20 bg-slate-500/5 space-y-1.5 flex flex-col">
+                        <div className="flex items-center justify-between mb-1">
                           <span className="text-xs font-bold text-slate-700 dark:text-zinc-300 flex items-center gap-1.5">
                             <span className="w-2 h-2 rounded-full bg-slate-500 dark:bg-zinc-400" /> X (Twitter) Real-time
                           </span>
                           <span className="text-[10px] font-mono text-slate-500 dark:text-zinc-400">ScrapeBadger</span>
                         </div>
-                        <code className="block text-[11px] font-mono text-slate-800 dark:text-zinc-200 bg-white/80 dark:bg-black/40 p-2.5 rounded-lg border border-slate-200/80 dark:border-white/5 break-all shadow-xs">
-                          {previewQuery ? `${previewQuery} -is:retweet` : '("looking for" OR "recommend") ("web design" OR "website redesign") -is:retweet'}
-                        </code>
+                        <textarea 
+                          className="flex-1 w-full text-[11px] font-mono text-slate-800 dark:text-zinc-200 bg-white/80 dark:bg-black/40 p-2.5 rounded-lg border border-slate-200/80 dark:border-white/5 shadow-xs focus:outline-none focus:border-slate-500/50 resize-none"
+                          rows={2}
+                          defaultValue={previewQuery ? `${previewQuery} -is:retweet` : '("looking for" OR "recommend") ("web design" OR "website redesign") -is:retweet'}
+                        />
                       </div>
 
                       {/* 5. Facebook */}
-                      <div className="p-3.5 rounded-xl border border-blue-600/20 bg-blue-600/5 space-y-1.5">
-                        <div className="flex items-center justify-between">
+                      <div className="p-3.5 rounded-xl border border-blue-600/20 bg-blue-600/5 space-y-1.5 flex flex-col">
+                        <div className="flex items-center justify-between mb-1">
                           <span className="text-xs font-bold text-blue-600 dark:text-blue-300 flex items-center gap-1.5">
                             <span className="w-2 h-2 rounded-full bg-blue-600" /> Facebook Groups & Public Posts
                           </span>
                           <span className="text-[10px] font-mono text-slate-500 dark:text-zinc-400">FB Scraper</span>
                         </div>
-                        <code className="block text-[11px] font-mono text-slate-800 dark:text-zinc-200 bg-white/80 dark:bg-black/40 p-2.5 rounded-lg border border-slate-200/80 dark:border-white/5 break-all shadow-xs">
-                          "looking for website redesign agency" OR "recommend marketing agency"
-                        </code>
+                        <textarea 
+                          className="flex-1 w-full text-[11px] font-mono text-slate-800 dark:text-zinc-200 bg-white/80 dark:bg-black/40 p-2.5 rounded-lg border border-slate-200/80 dark:border-white/5 shadow-xs focus:outline-none focus:border-blue-600/50 resize-none"
+                          rows={2}
+                          defaultValue={'"looking for website redesign agency" OR "recommend marketing agency"'}
+                        />
                       </div>
 
                       {/* 6. Threads */}
-                      <div className="p-3.5 rounded-xl border border-purple-500/20 bg-purple-500/5 space-y-1.5">
-                        <div className="flex items-center justify-between">
+                      <div className="p-3.5 rounded-xl border border-purple-500/20 bg-purple-500/5 space-y-1.5 flex flex-col">
+                        <div className="flex items-center justify-between mb-1">
                           <span className="text-xs font-bold text-purple-600 dark:text-purple-300 flex items-center gap-1.5">
                             <span className="w-2 h-2 rounded-full bg-purple-500" /> Threads Micro-Posts
                           </span>
                           <span className="text-[10px] font-mono text-slate-500 dark:text-zinc-400">Threads API</span>
                         </div>
-                        <code className="block text-[11px] font-mono text-slate-800 dark:text-zinc-200 bg-white/80 dark:bg-black/40 p-2.5 rounded-lg border border-slate-200/80 dark:border-white/5 break-all shadow-xs">
-                          "looking for web design agency" OR "need agency recommendation"
-                        </code>
+                        <textarea 
+                          className="flex-1 w-full text-[11px] font-mono text-slate-800 dark:text-zinc-200 bg-white/80 dark:bg-black/40 p-2.5 rounded-lg border border-slate-200/80 dark:border-white/5 shadow-xs focus:outline-none focus:border-purple-500/50 resize-none"
+                          rows={2}
+                          defaultValue={'"looking for web design agency" OR "need agency recommendation"'}
+                        />
                       </div>
                     </div>
                   </div>
@@ -526,7 +538,7 @@ export default function Settings() {
                     <button
                       onClick={handleSaveIntents}
                       disabled={saving}
-                      className="flex items-center gap-2 px-6 py-3 text-xs font-bold rounded-xl bg-[var(--nexa-accent)] text-zinc-950 hover:brightness-110 transition-all disabled:opacity-50 shadow-md"
+                      className="flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3 text-xs font-bold rounded-xl bg-[var(--nexa-accent)] text-zinc-950 hover:brightness-110 transition-all disabled:opacity-50 shadow-md"
                     >
                       {saving ? <Loader2 className="animate-spin" size={14} /> : <Save size={14} />}
                       Save Intent Configuration

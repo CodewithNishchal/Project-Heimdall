@@ -1,36 +1,34 @@
 {
   "news_queries": [
-    "funding AND (Seed OR 'Series A') AND (B2B SaaS OR Fintech OR 'professional services')",
-    "website AND (redesign OR update) AND (B2B SaaS OR Fintech OR 'professional services')"
+    "FinTech AND (hiring OR expansion)",
+    "B2B SaaS AND (growth OR marketing strategy)"
   ],
   "serper_queries": [
-    "site:linkedin.com/posts ('funding' OR 'new product launch') -clutch -portfolio",
-    "site:linkedin.com/posts ('website redesign')"
+    "site:linkedin.com/posts (\"Fractional CMO\" OR \"Growth Marketing\") -clutch -portfolio",
+    "site:linkedin.com/posts (\"B2B SaaS FinTech\")"
   ],
-  "jobspy_search_term": "CEO, Founder, Head of Marketing, VP of Product, CMO",
+  "jobspy_search_term": "Chief Marketing Officer, Fractional CMO, Growth Marketing Manager",
   "news_signals_query_template": "\"{company_name}\" AND (startup OR funding OR expansion OR hiring)",
-  "exa_query": "US-based B2B SaaS scale-ups, Fintech platforms, and professional service firms with 20 to 150 employees and $3M to $25M ARR that have an outdated website, recently raised a Seed or Series A funding round, or are launching a new product rebrand.",
+  "exa_query": "B2B SaaS companies in the FinTech sector with 20-500 employees seeking to enhance their marketing strategies through fractional leadership or growth partnerships.",
   "extraction_keywords": [
-    "website redesign",
-    "CRO",
-    "funding round",
-    "product launch",
-    "rebranding"
+    "B2B SaaS",
+    "FinTech",
+    "Fractional CMO",
+    "Growth Marketing",
+    "Marketing Strategy"
   ],
   "social_triggers": [
     "looking for",
-    "recommend",
-    "need an agency"
+    "need an agency",
+    "recommend"
   ],
   "social_topics": [
-    "web design",
-    "website redesign"
+    "Fractional CMO",
+    "Growth Marketing"
   ],
   "min_employees": 20,
-  "max_employees": 150,
+  "max_employees": 500,
   "target_industries": [
-    "B2B SaaS",
-    "Fintech",
-    "Professional Services"
+    "FinTech"
   ]
 }

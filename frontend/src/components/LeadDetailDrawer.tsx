@@ -142,98 +142,98 @@ export default function LeadDetailDrawer({ lead, onClose, isTracked = false, onT
           >
             
             {/* 1. Top Header Controls Bar */}
-            <div className="side-drawer-header px-6 py-3 border-b border-nexa-border bg-nexa-surface flex items-center justify-between gap-4 sticky top-0 z-20">
+            <div className="side-drawer-header px-2.5 sm:px-6 py-2 sm:py-3 border-b border-nexa-border bg-nexa-surface flex items-center justify-between gap-1 sm:gap-4 sticky top-0 z-20 overflow-hidden">
               {/* Navigation Arrows */}
-              <div className="flex items-center gap-1">
-                <button className="side-drawer-pill p-1.5 rounded-lg border border-nexa-border bg-nexa-surface text-zinc-400 hover:text-zinc-100 transition">
+              <div className="flex items-center gap-1 shrink-0">
+                <button className="side-drawer-pill p-1 sm:p-1.5 rounded-lg border border-nexa-border bg-nexa-surface text-zinc-400 hover:text-zinc-100 transition">
                   <ChevronUp size={14} />
                 </button>
-                <button className="side-drawer-pill p-1.5 rounded-lg border border-nexa-border bg-nexa-surface text-zinc-400 hover:text-zinc-100 transition">
+                <button className="side-drawer-pill p-1 sm:p-1.5 rounded-lg border border-nexa-border bg-nexa-surface text-zinc-400 hover:text-zinc-100 transition">
                   <ChevronDown size={14} />
                 </button>
               </div>
 
               {/* Action CTAs */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 sm:gap-2 shrink-0">
                 <button
                   onClick={onToggleTrack}
-                  className={`px-3.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition shadow-xs ${
+                  className={`px-2 sm:px-3.5 py-1 sm:py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 sm:gap-1.5 transition shadow-xs ${
                     isTracked
                       ? 'bg-emerald-600 text-white'
                       : 'bg-[var(--nexa-accent)] text-zinc-950 hover:brightness-110'
                   }`}
                 >
-                  <Target size={14} /> {isTracked ? 'Tracked' : 'Track'}
+                  <Target size={13} /> <span>{isTracked ? 'Tracked' : 'Track'}</span>
                 </button>
 
                 <button
                   onClick={() => setShowPitcher(!showPitcher)}
-                  className="side-drawer-pill px-3.5 py-1.5 rounded-lg text-xs font-semibold border border-nexa-border bg-nexa-surface text-zinc-200 hover:bg-white/10 transition flex items-center gap-1.5 shadow-xs"
+                  className="side-drawer-pill px-2 sm:px-3.5 py-1 sm:py-1.5 rounded-lg text-xs font-semibold border border-nexa-border bg-nexa-surface text-zinc-200 hover:bg-white/10 transition flex items-center gap-1 sm:gap-1.5 shadow-xs"
                 >
-                  <Compass size={14} /> {showPitcher ? 'Hide Research' : 'Research'}
+                  <Compass size={13} /> <span>{showPitcher ? 'Hide' : 'Research'}</span>
                 </button>
 
                 <button
                   onClick={onClose}
-                  className="side-drawer-pill p-1.5 rounded-lg border border-nexa-border bg-nexa-surface text-zinc-400 hover:text-zinc-100 transition"
+                  className="side-drawer-pill p-1.5 sm:p-1.5 rounded-lg border border-nexa-border bg-nexa-surface text-zinc-400 hover:text-zinc-100 transition shrink-0 ml-1"
                   title="Close Panel"
                 >
-                  <X size={16} />
+                  <X size={15} />
                 </button>
               </div>
             </div>
 
             {/* 2. Hero Header Card Section */}
-            <div className="side-drawer-hero p-6 border-b border-indigo-900/40 bg-indigo-950/30 space-y-4">
-              <div className="flex items-center gap-3.5">
+            <div className="side-drawer-hero p-4 sm:p-6 border-b border-indigo-900/40 bg-indigo-950/30 space-y-3 sm:space-y-4">
+              <div className="flex items-center gap-3 sm:gap-3.5">
                 {/* Logo Circle */}
-                <div className="w-12 h-12 rounded-full border border-indigo-500/40 bg-indigo-950/80 flex items-center justify-center font-extrabold text-indigo-300 shadow-sm text-base shrink-0">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-indigo-500/40 bg-indigo-950/80 flex items-center justify-center font-extrabold text-indigo-300 shadow-sm text-sm sm:text-base shrink-0">
                   {companyName.slice(0, 2).toUpperCase()}
                 </div>
 
-                <div className="space-y-1 min-w-0">
+                <div className="space-y-1 min-w-0 flex-1">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <h2 className="text-xl font-bold text-zinc-100 tracking-tight">
+                    <h2 className="text-base sm:text-xl font-bold text-zinc-100 tracking-tight leading-snug">
                       {companyName}
                     </h2>
-                    <span className="px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-indigo-950 text-indigo-300 border border-indigo-500/40">
+                    <span className="px-2 py-0.5 rounded-md text-[10px] sm:text-[11px] font-semibold bg-indigo-950 text-indigo-300 border border-indigo-500/40 shrink-0">
                       New lead
                     </span>
                     <a
                       href={websiteUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-zinc-400 hover:text-[var(--nexa-accent)] transition inline-flex items-center gap-1 text-xs font-mono"
+                      className="text-zinc-400 hover:text-[var(--nexa-accent)] transition inline-flex items-center gap-1 text-[11px] sm:text-xs font-mono truncate"
                       title="Visit Website"
                     >
-                      <LinkIcon size={14} className="text-[var(--nexa-accent)]" /> {companyDomain} <ExternalLink size={12} />
+                      <LinkIcon size={13} className="text-[var(--nexa-accent)] shrink-0" /> <span className="truncate">{companyDomain}</span> <ExternalLink size={11} className="shrink-0" />
                     </a>
                   </div>
                 </div>
               </div>
 
               {/* Pill Metadata Row */}
-              <div className="flex flex-wrap gap-2 text-xs">
-                <div className="side-drawer-pill px-3 py-1.5 rounded-xl border border-nexa-border bg-nexa-surface text-zinc-200 font-medium flex items-center gap-1.5 shadow-2xs">
-                  <MapPin size={13} className="text-zinc-400" /> USA / North America
+              <div className="flex flex-wrap gap-1.5 sm:gap-2 text-[11px] sm:text-xs">
+                <div className="side-drawer-pill px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl border border-nexa-border bg-nexa-surface text-zinc-200 font-medium flex items-center gap-1.5 shadow-2xs">
+                  <MapPin size={12} className="text-zinc-400 shrink-0" /> USA / North America
                 </div>
-                <div className="side-drawer-pill px-3 py-1.5 rounded-xl border border-nexa-border bg-nexa-surface text-zinc-200 font-medium flex items-center gap-1.5 shadow-2xs">
-                  <Briefcase size={13} className="text-zinc-400" /> {lead.industry || 'Staffing and Recruiting'}
+                <div className="side-drawer-pill px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl border border-nexa-border bg-nexa-surface text-zinc-200 font-medium flex items-center gap-1.5 shadow-2xs">
+                  <Briefcase size={12} className="text-zinc-400 shrink-0" /> {lead.industry || 'Staffing and Recruiting'}
                 </div>
-                <div className="side-drawer-pill px-3 py-1.5 rounded-xl border border-nexa-border bg-nexa-surface text-zinc-200 font-medium flex items-center gap-1.5 shadow-2xs">
-                  <Users size={13} className="text-zinc-400" /> {lead.employee_count ? `${lead.employee_count} emp` : '501-1000'}
+                <div className="side-drawer-pill px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl border border-nexa-border bg-nexa-surface text-zinc-200 font-medium flex items-center gap-1.5 shadow-2xs">
+                  <Users size={12} className="text-zinc-400 shrink-0" /> {lead.employee_count ? `${lead.employee_count} emp` : '501-1000'}
                 </div>
-                <div className="side-drawer-pill px-3 py-1.5 rounded-xl border border-nexa-border bg-nexa-surface text-zinc-200 font-medium flex items-center gap-1.5 shadow-2xs">
-                  <Calendar size={13} className="text-zinc-400" /> {lead.funding_stage || 'Series B'}
+                <div className="side-drawer-pill px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl border border-nexa-border bg-nexa-surface text-zinc-200 font-medium flex items-center gap-1.5 shadow-2xs">
+                  <Calendar size={12} className="text-zinc-400 shrink-0" /> {lead.funding_stage || 'Series B'}
                 </div>
               </div>
             </div>
 
-            {/* 3. Sub-Tab Navigation Bar */}
-            <div className="side-drawer-tabs px-6 py-2.5 border-b border-nexa-border bg-nexa-surface flex items-center gap-2 text-xs font-semibold">
+            {/* 3. Sub-Tab Navigation Bar (Horizontal Scrollable on Mobile) */}
+            <div className="side-drawer-tabs px-3 sm:px-6 py-2 border-b border-nexa-border bg-nexa-surface flex items-center gap-1.5 sm:gap-2 text-xs font-semibold overflow-x-auto no-scrollbar scroll-smooth whitespace-nowrap">
               <button
                 onClick={() => setActiveTab('about')}
-                className={`px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 transition ${
+                className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition shrink-0 ${
                   activeTab === 'about'
                     ? 'side-drawer-tab-active bg-nexa-card text-zinc-100 shadow-xs font-bold border border-nexa-border'
                     : 'side-drawer-tab-inactive text-zinc-400 hover:text-zinc-100'
@@ -243,7 +243,7 @@ export default function LeadDetailDrawer({ lead, onClose, isTracked = false, onT
               </button>
               <button
                 onClick={() => setActiveTab('people')}
-                className={`px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 transition ${
+                className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition shrink-0 ${
                   activeTab === 'people'
                     ? 'side-drawer-tab-active bg-nexa-card text-zinc-100 shadow-xs font-bold border border-nexa-border'
                     : 'side-drawer-tab-inactive text-zinc-400 hover:text-zinc-100'
@@ -253,7 +253,7 @@ export default function LeadDetailDrawer({ lead, onClose, isTracked = false, onT
               </button>
               <button
                 onClick={() => setActiveTab('signals')}
-                className={`px-3.5 py-1.5 rounded-lg flex items-center gap-1.5 transition ${
+                className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition shrink-0 ${
                   activeTab === 'signals'
                     ? 'side-drawer-tab-active bg-nexa-card text-zinc-100 shadow-xs font-bold border border-nexa-border'
                     : 'side-drawer-tab-inactive text-zinc-400 hover:text-zinc-100'
@@ -263,8 +263,8 @@ export default function LeadDetailDrawer({ lead, onClose, isTracked = false, onT
               </button>
             </div>
 
-            {/* 4. Tab Content Body */}
-            <div className="flex-1 overflow-y-auto p-6 space-y-6">
+            {/* 4. Tab Content Body (With pb-28 for Mobile Bottom Nav bar clearance) */}
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 pb-28 lg:pb-6 space-y-4 sm:space-y-6">
 
               {/* In-Line AI Outreach Research Panel */}
               {showPitcher && (
@@ -484,27 +484,27 @@ export default function LeadDetailDrawer({ lead, onClose, isTracked = false, onT
                   {Array.isArray(lead.contacts) && lead.contacts.length > 0 ? (
                     <div className="space-y-3">
                       {lead.contacts.map((contact, idx) => (
-                        <div key={idx} className="side-drawer-card p-4 rounded-xl border border-nexa-border bg-nexa-surface flex items-center justify-between gap-4 shadow-2xs">
-                          <div className="space-y-1 text-xs">
-                            <div className="font-bold text-zinc-100 text-sm flex items-center gap-2">
-                              {contact.name || 'Executive Contact'}
-                              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-100 dark:text-emerald-400 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-300 dark:border-emerald-500/30">
+                        <div key={idx} className="side-drawer-card p-3.5 sm:p-4 rounded-xl border border-nexa-border bg-nexa-surface flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs min-w-0">
+                          <div className="space-y-1 text-xs min-w-0 flex-1">
+                            <div className="font-bold text-zinc-100 text-sm flex items-center gap-2 flex-wrap">
+                              <span>{contact.name || 'Executive Contact'}</span>
+                              <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-100 dark:text-emerald-400 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-300 dark:border-emerald-500/30 shrink-0">
                                 <Check size={10} /> Verified
                               </span>
                             </div>
                             <div className="text-zinc-400 font-medium">{contact.title || 'Decision Maker'}</div>
-                            <div className="font-mono text-zinc-300 flex items-center gap-1.5 pt-1">
-                              <Mail size={12} className="text-zinc-400" />
-                              {contact.email || 'executive@company.com'}
+                            <div className="font-mono text-zinc-300 flex items-center gap-1.5 pt-1 min-w-0 break-all text-[11px] sm:text-xs">
+                              <Mail size={12} className="text-zinc-400 shrink-0" />
+                              <span className="truncate">{contact.email || 'executive@company.com'}</span>
                             </div>
                           </div>
 
                           <button
                             onClick={() => handleCopy(contact.email)}
-                            className="px-3 py-1.5 rounded-lg border border-nexa-border bg-nexa-surface text-xs text-zinc-300 hover:bg-white/10 transition flex items-center gap-1.5 shrink-0 shadow-2xs font-semibold"
+                            className="px-3 py-1.5 rounded-lg border border-nexa-border bg-nexa-surface text-xs text-zinc-300 hover:bg-white/10 transition flex items-center justify-center gap-1.5 shrink-0 shadow-2xs font-semibold self-start sm:self-center"
                           >
                             {copiedEmail === contact.email ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
-                            {copiedEmail === contact.email ? 'Copied!' : 'Copy Email'}
+                            <span>{copiedEmail === contact.email ? 'Copied!' : 'Copy Email'}</span>
                           </button>
                         </div>
                       ))}

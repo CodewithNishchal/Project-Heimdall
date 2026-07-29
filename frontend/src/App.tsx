@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { motion, Variants } from 'framer-motion';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, LayoutGrid, Workflow, MessageSquare, Target, Settings as SettingsIcon } from 'lucide-react';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import LeadTable from './components/LeadTable';
@@ -20,6 +20,7 @@ export default function App() {
   const [currentView, setCurrentView] = useState('dashboard');
   const [globalSearchTerm, setGlobalSearchTerm] = useState('');
   const [scannedLeads, setScannedLeads] = useState<LeadDetailResponse[]>([]);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [trackedLeadIds, setTrackedLeadIds] = useState<string[]>(() => {
     try {
       const saved = localStorage.getItem('tracked_lead_ids');
@@ -28,6 +29,14 @@ export default function App() {
       return [];
     }
   });
+
+  const mobileNavItems = [
+    { label: 'Dashboard', key: 'dashboard', icon: LayoutGrid },
+    { label: 'Find Leads', key: 'pipeline', icon: Workflow },
+    { label: 'Social Signals', key: 'social media posts', icon: MessageSquare },
+    { label: 'Saved Leads', key: 'statistics', icon: Target },
+    { label: 'Settings', key: 'settings', icon: SettingsIcon },
+  ];
 
   const handleToggleTrackLead = (leadId: string) => {
     setTrackedLeadIds((prev) => {
@@ -90,9 +99,6 @@ export default function App() {
     // Initial fetch on mount
     checkBackend();
 
-    // Polling interval:
-    // Fast polling (3s) when offline to reconnect instantly as soon as backend starts.
-    // Periodic health check (10 seconds) when online.
     const pollInterval = status === 'error' ? 3000 : 10 * 1000;
     const interval = setInterval(checkBackend, pollInterval);
 
@@ -120,8 +126,6 @@ export default function App() {
   const selectedLead = useMemo(() => {
     return leads.find((l) => l.id === selectedLeadId) || null;
   }, [leads, selectedLeadId]);
-
-  const activeConfidence = selectedLead ? selectedLead.confidence.verified : globalAvgConfidence;
 
   const avgIntentScore = useMemo(() => {
     if (leads.length === 0) return 0;
@@ -155,23 +159,26 @@ export default function App() {
   };
 
   return (
-    <div className="relative flex flex-col h-screen bg-nexa-bg">
+    <>
+      <div className="relative flex flex-col h-screen h-[100dvh] bg-nexa-bg overflow-hidden">
       {/* Golden Light Flare */}
       <div className="nexa-flare" />
 
       {/* ===== Main Dashboard Layout ===== */}
-      <div className="relative z-10 flex flex-1 gap-2.5 sm:gap-3 px-2 pt-2 pb-2 sm:px-2.5 lg:px-3 lg:pt-2.5 lg:pb-2.5 overflow-hidden">
-        {/* Left Column: Sidebar Navigation only */}
+      <div className="relative z-10 flex flex-1 h-full gap-2.5 sm:gap-3 lg:gap-0 pl-1 pr-0.5 sm:pr-2.5 pt-1 pb-1 sm:px-2.5 lg:px-3 lg:pt-2.5 lg:pb-2.5 overflow-hidden">
+        {/* Left Column: Sidebar Navigation (Desktop + Mobile Drawer) */}
         <Sidebar
           currentView={currentView}
           setCurrentView={setCurrentView}
           isDark={isDark}
           setIsDark={setIsDark}
           status={status}
+          isMobileOpen={isMobileSidebarOpen}
+          setIsMobileOpen={setIsMobileSidebarOpen}
         />
 
         {/* Main Workspace */}
-        <main className="flex min-w-0 flex-1 flex-col gap-2.5 pl-0.5 pr-1 pt-0.5 pb-0.5 overflow-y-auto overflow-x-hidden">
+        <main className="flex min-w-0 flex-1 flex-col gap-2.5 pl-1 pr-1 sm:pr-3 lg:pl-2.5 pt-0.5 pb-11 lg:pb-0.5 overflow-y-auto overflow-x-hidden">
           {/* Top Header Bar */}
           <Header
             status={status}
@@ -179,6 +186,7 @@ export default function App() {
             setSearchTerm={setGlobalSearchTerm}
             isDark={isDark}
             setIsDark={setIsDark}
+            onToggleMobileSidebar={() => setIsMobileSidebarOpen((prev) => !prev)}
           />
 
           {currentView === 'settings' ? (
@@ -226,15 +234,15 @@ export default function App() {
           ) : (
             <>
               {/* Default Main Dashboard Hero Banner */}
-              <div className="flex items-center gap-3 px-1 pb-1">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#dfa32b] text-zinc-950 shadow-xs">
-                  <Sparkles size={17} className="stroke-[2.5px]" />
+              <div className="flex items-center gap-2.5 sm:gap-3 px-1 pb-1">
+                <div className="flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-full bg-[#dfa32b] text-zinc-950 shadow-xs">
+                  <Sparkles size={16} className="stroke-[2.5px]" />
                 </div>
                 <div>
-                  <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-zinc-100 tracking-tight">
+                  <h2 className="text-sm sm:text-lg font-bold text-slate-900 dark:text-zinc-100 tracking-tight">
                     Lead Intelligence Signals
                   </h2>
-                  <p className="text-xs text-slate-600 dark:text-zinc-400 mt-0.5 font-medium">
+                  <p className="text-[11px] sm:text-xs text-slate-600 dark:text-zinc-400 mt-0.5 font-medium">
                     Discover active intent signals and monitor target companies
                   </p>
                 </div>
@@ -242,101 +250,125 @@ export default function App() {
 
               {/* ===== KPI Ribbon row ===== */}
               <motion.div
-                className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4 w-full flex-shrink-0"
+                className="grid grid-cols-2 gap-1.5 sm:gap-4 lg:grid-cols-4 w-full flex-shrink-0"
                 variants={containerVariants}
                 initial="hidden"
                 animate="show"
               >
-                {/* Card 1: Total automated sweeps/scans processed */}
-                <motion.div variants={itemVariants} className="nexa-card p-4 flex flex-col justify-between h-24 relative overflow-hidden">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">
-                    Automated Sweeps
-                  </span>
-                  <div className="flex items-baseline gap-2 mt-1">
-                    <span className="text-3xl font-extrabold text-zinc-100">
-                      {totalScans}
+                  {/* Card 1: Total automated sweeps/scans processed */}
+                  <motion.div variants={itemVariants} className="nexa-card px-2.5 py-1.5 sm:p-4 flex flex-col justify-between min-h-[3.1rem] sm:h-24 relative overflow-hidden">
+                    <span className="text-[8px] sm:text-[11px] font-bold uppercase tracking-wider text-zinc-500">
+                      Automated Sweeps
                     </span>
-                    <span className="text-xs text-emerald-400 font-mono">
-                      ● Active checks
+                    <div className="flex items-baseline gap-1 sm:gap-2 mt-0.5 sm:mt-1">
+                      <span className="text-sm sm:text-3xl font-extrabold text-zinc-100">
+                        {totalScans}
+                      </span>
+                      <span className="text-[7.5px] sm:text-xs text-emerald-400 font-mono truncate">
+                        ● Active
+                      </span>
+                    </div>
+                  </motion.div>
+
+                  {/* Card 2: Strong ICP matches found */}
+                  <motion.div variants={itemVariants} className="nexa-card px-2.5 py-1.5 sm:p-4 flex flex-col justify-between min-h-[3.1rem] sm:h-24 relative overflow-hidden">
+                    <span className="text-[8px] sm:text-[11px] font-bold uppercase tracking-wider text-zinc-500">
+                      Qualified Leads
                     </span>
-                  </div>
+                    <div className="flex items-baseline gap-1 sm:gap-2 mt-0.5 sm:mt-1">
+                      <span className="text-sm sm:text-3xl font-extrabold text-zinc-100">
+                        {strongICPCount}
+                      </span>
+                      <span className="text-[7.5px] sm:text-xs text-zinc-500 font-mono truncate">
+                        Match verified
+                      </span>
+                    </div>
+                  </motion.div>
+
+                  {/* Card 3: NEW TODAY */}
+                  <motion.div variants={itemVariants} className="nexa-card px-2.5 py-1.5 sm:p-4 flex flex-col justify-between min-h-[3.1rem] sm:h-24 relative overflow-hidden">
+                    <span className="text-[8px] sm:text-[11px] font-bold uppercase tracking-wider text-zinc-500">
+                      NEW TODAY
+                    </span>
+                    <div className="flex items-baseline gap-1 sm:gap-2 mt-0.5 sm:mt-1">
+                      <span className="text-sm sm:text-3xl font-extrabold text-zinc-100">
+                        {newTodayCount}
+                      </span>
+                      <span className="text-[7.5px] sm:text-xs text-zinc-500 font-mono truncate">
+                        5 platforms
+                      </span>
+                    </div>
+                  </motion.div>
+
+                  {/* Card 4: Average Intent Score across companies in pipeline */}
+                  <motion.div variants={itemVariants} className="nexa-card px-2.5 py-1.5 sm:p-4 flex flex-col justify-between min-h-[3.1rem] sm:h-24 relative overflow-hidden">
+                    <span className="text-[8px] sm:text-[11px] font-bold uppercase tracking-wider text-zinc-500">
+                      Avg Intent Score
+                    </span>
+                    <div className="flex items-baseline gap-1 sm:gap-2 mt-0.5 sm:mt-1">
+                      <span className="text-sm sm:text-3xl font-extrabold text-[var(--nexa-accent)]">
+                        {avgIntentScore}
+                      </span>
+                      <span className="text-[7.5px] sm:text-xs text-emerald-600 dark:text-emerald-400 font-mono font-bold">
+                        / 100
+                      </span>
+                    </div>
+                  </motion.div>
                 </motion.div>
 
-                {/* Card 2: Strong ICP matches found */}
-                <motion.div variants={itemVariants} className="nexa-card p-4 flex flex-col justify-between h-24 relative overflow-hidden">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">
-                    Qualified Leads
-                  </span>
-                  <div className="flex items-baseline gap-2 mt-1">
-                    <span className="text-3xl font-extrabold text-zinc-100">
-                      {strongICPCount}
-                    </span>
-                    <span className="text-xs text-zinc-500 font-mono">
-                      Match verified
-                    </span>
-                  </div>
+                {/* Lead Intelligence Grid */}
+                <motion.div
+                  className="flex flex-col flex-1 min-h-0"
+                  variants={containerVariants}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4, duration: 0.5 }}
+                >
+                  <LeadTable
+                    leads={leads}
+                    selectedLeadId={selectedLeadId}
+                    onSelectLead={setSelectedLeadId}
+                    onLeadIngested={(newLead) => setLeads([newLead, ...leads])}
+                    onLeadDeleted={(id) => {
+                      if (selectedLeadId === id) setSelectedLeadId(null);
+                      setLeads(leads.filter((l) => l.id !== id));
+                    }}
+                    status={status}
+                    externalSearchTerm={globalSearchTerm}
+                    trackedLeadIds={trackedLeadIds}
+                    onToggleTrackLead={handleToggleTrackLead}
+                  />
                 </motion.div>
-
-                {/* Card 3: NEW TODAY */}
-                <motion.div variants={itemVariants} className="nexa-card p-4 flex flex-col justify-between h-24 relative overflow-hidden">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">
-                    NEW TODAY
-                  </span>
-                  <div className="flex items-baseline gap-2 mt-1">
-                    <span className="text-3xl font-extrabold text-zinc-100">
-                      {newTodayCount}
-                    </span>
-                    <span className="text-xs text-zinc-500 font-mono">
-                      Across 5 platforms
-                    </span>
-                  </div>
-                </motion.div>
-
-                {/* Card 4: Average Intent Score across companies in pipeline */}
-                <motion.div variants={itemVariants} className="nexa-card p-4 flex flex-col justify-between h-24 relative overflow-hidden">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">
-                    Average Intent Score
-                  </span>
-                  <div className="flex items-baseline gap-2 mt-1">
-                    <span className="text-3xl font-extrabold text-[var(--nexa-accent)]">
-                      {avgIntentScore}
-                    </span>
-                    <span className="text-xs text-emerald-600 dark:text-emerald-400 font-mono font-bold">
-                      / 100
-                    </span>
-                  </div>
-                  <span className="text-xs text-zinc-500 font-mono">
-                    Avg score across companies
-                  </span>
-                </motion.div>
-              </motion.div>
-
-              {/* Lead Intelligence Grid */}
-              <motion.div
-                className="flex flex-col flex-1 min-h-0"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4, duration: 0.5 }}
-              >
-                <LeadTable
-                  leads={leads}
-                  selectedLeadId={selectedLeadId}
-                  onSelectLead={setSelectedLeadId}
-                  onLeadIngested={(newLead) => setLeads([newLead, ...leads])}
-                  onLeadDeleted={(id) => {
-                    if (selectedLeadId === id) setSelectedLeadId(null);
-                    setLeads(leads.filter((l) => l.id !== id));
-                  }}
-                  status={status}
-                  externalSearchTerm={globalSearchTerm}
-                  trackedLeadIds={trackedLeadIds}
-                  onToggleTrackLead={handleToggleTrackLead}
-                />
-              </motion.div>
-            </>
-          )}
-        </main>
+              </>
+            )}
+          </main>
+        </div>
       </div>
-    </div>
+
+      {/* ===== GLASSMORPHIC FLOATING MOBILE BOTTOM NAVIGATION DOCK (Visible on screens < lg) ===== */}
+      <nav className="mobile-bottom-dock">
+        {mobileNavItems.map((item) => {
+          const Icon = item.icon;
+          const isActive = currentView === item.key;
+          return (
+            <button
+              key={item.key}
+              type="button"
+              onClick={() => setCurrentView(item.key)}
+              className={`flex flex-col items-center justify-center flex-1 w-1/4 py-1 px-1 rounded-full transition-all duration-300 ${
+                isActive
+                  ? 'bg-slate-900 text-white dark:bg-emerald-500 dark:text-slate-950 font-black shadow-md shadow-slate-900/30 dark:shadow-emerald-500/30'
+                  : 'text-slate-600 dark:text-zinc-400 hover:text-slate-900 dark:hover:text-white font-semibold'
+              }`}
+            >
+              <Icon size={16} className={isActive ? 'stroke-[2.5]' : 'stroke-[1.8]'} />
+              <span className="text-[8.5px] mt-0.5 tracking-tighter whitespace-nowrap text-center">
+                {item.label}
+              </span>
+            </button>
+          );
+        })}
+      </nav>
+    </>
   );
 }

@@ -314,20 +314,20 @@ export default function LeadTable({
     <div className="flex flex-col gap-4 flex-1 min-h-0">
       {/* Pipeline Tab Hero Banner */}
       {isPipelineTab && (
-        <div className="nexa-card nexa-card-no-hover p-6 sm:p-7 rounded-3xl border border-emerald-500/30 bg-gradient-to-r from-emerald-950/40 via-slate-900/80 to-teal-950/40 flex flex-col sm:flex-row items-center justify-between gap-5 shadow-lg">
-          <div className="flex items-center gap-4 text-left">
-            <div className="flex h-13 w-13 shrink-0 items-center justify-center rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-md">
-              <Workflow size={28} />
+        <div className="nexa-card nexa-card-no-hover p-4 sm:p-7 rounded-2xl sm:rounded-3xl border border-emerald-500/30 bg-gradient-to-r from-emerald-950/40 via-slate-900/80 to-teal-950/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-5 shadow-lg">
+          <div className="flex items-center gap-3 sm:gap-4 text-left">
+            <div className="flex h-10 w-10 sm:h-13 sm:w-13 shrink-0 items-center justify-center rounded-2xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-md">
+              <Workflow size={22} className="sm:w-7 sm:h-7" />
             </div>
             <div>
-              <h2 className="text-lg font-black text-slate-900 dark:text-zinc-100 flex items-center gap-2">
+              <h2 className="text-sm sm:text-lg font-black text-slate-900 dark:text-zinc-100 flex flex-wrap items-center gap-2">
                 Automated Intent Discovery Pipeline
-                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/60 px-2.5 py-0.5 rounded-full border border-emerald-500/30">
+                <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full border border-emerald-500/30">
                   Ready to Run
                 </span>
               </h2>
-              <p className="text-xs text-slate-500 dark:text-zinc-400 mt-1 font-medium max-w-xl">
-                Execute multi-source intent crawling across Google SERPs, Reddit, X, LinkedIn & Apollo APIs. Click the button to launch the live 4-minute discovery sweep.
+              <p className="text-[11px] sm:text-xs text-slate-500 dark:text-zinc-400 mt-1 font-medium max-w-xl">
+                Execute multi-source intent crawling across Google SERPs, Reddit, X, LinkedIn & Apollo APIs.
               </p>
             </div>
           </div>
@@ -336,37 +336,35 @@ export default function LeadTable({
             type="button"
             onClick={handleRunPipeline}
             disabled={isPipelineRunning}
-            className="flex items-center gap-2.5 px-6 py-3.5 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs shadow-xl transition-all hover:scale-105 active:scale-95 disabled:opacity-50 shrink-0"
+            className="flex items-center justify-center gap-2.5 w-full sm:w-auto px-5 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black text-xs shadow-xl transition-all hover:scale-105 active:scale-95 disabled:opacity-50 shrink-0"
           >
-            {isPipelineRunning ? <Loader2 size={18} className="animate-spin" /> : <Workflow size={18} />}
+            {isPipelineRunning ? <Loader2 size={16} className="animate-spin" /> : <Workflow size={16} />}
             <span>Run Pipeline</span>
           </button>
         </div>
       )}
-      
+
       {/* Track Records Tab Hero Banner */}
       {isTrackRecordsTab && (
-        <div className="nexa-card nexa-card-no-hover p-6 sm:p-7 rounded-3xl border border-amber-500/30 bg-gradient-to-r from-amber-950/40 via-slate-900/80 to-amber-950/40 flex flex-col sm:flex-row items-center justify-between gap-5 shadow-lg">
-          <div className="flex items-center gap-4 text-left">
-            <div className="flex h-13 w-13 shrink-0 items-center justify-center rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/40 shadow-md">
-              <Target size={28} />
+        <div className="nexa-card nexa-card-no-hover p-4 sm:p-7 rounded-2xl sm:rounded-3xl border border-amber-500/30 bg-gradient-to-r from-amber-950/40 via-slate-900/80 to-amber-950/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-5 shadow-lg">
+          <div className="flex items-center gap-3 sm:gap-4 text-left">
+            <div className="flex h-10 w-10 sm:h-13 sm:w-13 shrink-0 items-center justify-center rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/40 shadow-md">
+              <Target size={22} className="sm:w-7 sm:h-7" />
             </div>
             <div>
-              <h2 className="text-lg font-black text-slate-900 dark:text-zinc-100 flex items-center gap-2">
+              <h2 className="text-sm sm:text-lg font-black text-slate-900 dark:text-zinc-100 flex flex-wrap items-center gap-2">
                 Saved Leads & Active Watchlist
-                <span className="text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-950/60 px-2.5 py-0.5 rounded-full border border-amber-500/30">
+                <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-950/60 px-2 py-0.5 rounded-full border border-amber-500/30">
                   {leads.length} Tracked
                 </span>
               </h2>
-              <p className="text-xs text-slate-500 dark:text-zinc-400 mt-1 font-medium max-w-xl">
-                High-intent prospects and target companies currently saved on your active tracking list for continuous signal monitoring.
+              <p className="text-[11px] sm:text-xs text-slate-500 dark:text-zinc-400 mt-1 font-medium max-w-xl">
+                High-intent prospects and target companies saved on your active watchlist.
               </p>
             </div>
           </div>
         </div>
       )}
-
-
 
       {/* Table Section Header */}
       {!isPipelineTab && !isTrackRecordsTab && (
@@ -377,7 +375,7 @@ export default function LeadTable({
               Live Target Leads & Signal Grid
             </h3>
             <span className="text-[10px] font-semibold text-slate-500 dark:text-zinc-500">
-              ({filteredLeads.length} companies detected)
+              ({filteredLeads.length} companies)
             </span>
           </div>
           <span className="text-[11px] font-medium text-slate-500 dark:text-zinc-400 hidden sm:inline">
@@ -390,8 +388,14 @@ export default function LeadTable({
       <div className="nexa-card nexa-card-no-hover overflow-hidden flex-1 flex flex-col min-h-0 relative">
         {isScanning && <HackerScanAnimation targetDomain={searchTerm} />}
 
+        {/* Mobile Horizontal Scroll Hint */}
+        <div className="text-[10px] font-bold text-slate-500 dark:text-zinc-400 px-3 py-1 flex items-center justify-between sm:hidden bg-slate-100/60 dark:bg-white/5 border-b border-nexa-border">
+          <span>Swipe grid sideways to view details</span>
+          <span>→</span>
+        </div>
+
         <div className="overflow-x-auto flex-1">
-          <table className="w-full min-w-[980px] border-collapse text-left">
+          <table className="w-full min-w-[920px] border-collapse text-left">
             <thead>
               <tr className="border-b border-slate-200/80 dark:border-white/10 bg-slate-50/70 dark:bg-white/5 text-[11px] font-black uppercase tracking-wider text-slate-700 dark:text-zinc-300">
                 <th className="p-4 text-left min-w-[200px]">COMPANY</th>
@@ -404,8 +408,8 @@ export default function LeadTable({
                       type="button"
                       onClick={() => setIsFilterOpen(!isFilterOpen)}
                       className={`flex h-[28px] items-center gap-1.5 rounded-lg border px-2.5 text-[11px] font-bold transition shadow-xs ${activeFilterCount > 0
-                          ? 'border-emerald-500/50 bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-400'
-                          : 'border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 text-slate-800 dark:text-zinc-300 hover:bg-slate-200/80 dark:hover:bg-white/10 hover:text-slate-950 dark:hover:text-white'
+                        ? 'border-emerald-500/50 bg-emerald-50 dark:bg-emerald-500/15 text-emerald-700 dark:text-emerald-400'
+                        : 'border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 text-slate-800 dark:text-zinc-300 hover:bg-slate-200/80 dark:hover:bg-white/10 hover:text-slate-950 dark:hover:text-white'
                         }`}
                       title="Filter Companies"
                     >
@@ -420,7 +424,7 @@ export default function LeadTable({
 
                     {/* Filter Popover Modal */}
                     {isFilterOpen && (
-                      <div className="filter-popover absolute right-0 top-full mt-1 w-80 rounded-2xl border border-slate-200 dark:border-nexa-border bg-white dark:bg-[#181824] p-4 shadow-2xl z-50 text-left normal-case tracking-normal animate-in fade-in slide-in-from-top-2">
+                      <div className="filter-popover absolute right-0 top-full mt-1 w-72 sm:w-80 max-w-[calc(100vw-2rem)] rounded-2xl border border-slate-200 dark:border-nexa-border bg-white dark:bg-[#181824] p-4 shadow-2xl z-50 text-left normal-case tracking-normal animate-in fade-in slide-in-from-top-2">
                         <div className="flex items-center justify-between border-b border-slate-100 dark:border-white/10 pb-2.5 mb-3">
                           <div className="flex items-center gap-2">
                             <Filter size={15} className="text-emerald-500" />
@@ -459,8 +463,8 @@ export default function LeadTable({
                                 type="button"
                                 onClick={() => setDateFilter(opt.id as any)}
                                 className={`rounded-xl px-2.5 py-1.5 text-[11px] font-medium transition ${dateFilter === opt.id
-                                    ? 'filter-btn-active bg-emerald-600 text-white font-extrabold shadow-xs'
-                                    : 'filter-btn-inactive border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-white/10'
+                                  ? 'filter-btn-active bg-emerald-600 text-white font-extrabold shadow-xs'
+                                  : 'filter-btn-inactive border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-white/10'
                                   }`}
                               >
                                 {opt.label}
@@ -486,8 +490,8 @@ export default function LeadTable({
                                 type="button"
                                 onClick={() => setScoreFilter(opt.id as any)}
                                 className={`rounded-xl px-2.5 py-1.5 text-[11px] font-medium transition ${scoreFilter === opt.id
-                                    ? 'filter-btn-active bg-emerald-600 text-white font-extrabold shadow-xs'
-                                    : 'filter-btn-inactive border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-white/10'
+                                  ? 'filter-btn-active bg-emerald-600 text-white font-extrabold shadow-xs'
+                                  : 'filter-btn-inactive border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-white/10'
                                   }`}
                               >
                                 {opt.label}
@@ -513,8 +517,8 @@ export default function LeadTable({
                                 type="button"
                                 onClick={() => setSignalFilter(opt.id as any)}
                                 className={`rounded-xl px-2.5 py-1.5 text-[11px] font-medium transition ${signalFilter === opt.id
-                                    ? 'filter-btn-active bg-emerald-600 text-white font-extrabold shadow-xs'
-                                    : 'filter-btn-inactive border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-white/10'
+                                  ? 'filter-btn-active bg-emerald-600 text-white font-extrabold shadow-xs'
+                                  : 'filter-btn-inactive border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-white/10'
                                   }`}
                               >
                                 {opt.label}
@@ -556,11 +560,10 @@ export default function LeadTable({
                                   e.stopPropagation();
                                   onToggleTrackLead?.(leadKey);
                                 }}
-                                className={`p-1.5 rounded-lg transition shrink-0 border ${
-                                  trackedLeadIds.includes(leadKey) || trackedLeadIds.includes(lead.domain) || trackedLeadIds.includes(lead.company_name)
+                                className={`p-1.5 rounded-lg transition shrink-0 border ${trackedLeadIds.includes(leadKey) || trackedLeadIds.includes(lead.domain) || trackedLeadIds.includes(lead.company_name)
                                     ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400 font-bold'
                                     : 'border-transparent text-slate-400 dark:text-zinc-500 hover:text-slate-700 dark:hover:text-zinc-200 hover:bg-slate-100 dark:hover:bg-white/10'
-                                }`}
+                                  }`}
                                 title={
                                   trackedLeadIds.includes(leadKey) || trackedLeadIds.includes(lead.domain) || trackedLeadIds.includes(lead.company_name)
                                     ? 'Tracked in Saved Leads (Click to untrack)'
@@ -795,8 +798,8 @@ export default function LeadTable({
         isTracked={
           selectedLead
             ? trackedLeadIds.includes(String(selectedLead.id || selectedLead.domain || selectedLead.company_name)) ||
-              trackedLeadIds.includes(selectedLead.domain) ||
-              trackedLeadIds.includes(selectedLead.company_name)
+            trackedLeadIds.includes(selectedLead.domain) ||
+            trackedLeadIds.includes(selectedLead.company_name)
             : false
         }
         onToggleTrack={() => {

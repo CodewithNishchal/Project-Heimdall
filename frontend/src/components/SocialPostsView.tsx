@@ -196,7 +196,7 @@ export default function SocialPostsView() {
   };
 
   return (
-    <div className="flex flex-col flex-1 min-h-0 h-[calc(100vh-6rem)] space-y-3.5 overflow-hidden">
+    <div className="flex flex-col flex-1 min-h-0 sm:h-[calc(100vh-6rem)] space-y-3.5 sm:overflow-hidden">
       {/* Header Bar */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shrink-0">
         <div className="flex items-center">
@@ -226,11 +226,23 @@ export default function SocialPostsView() {
           </div>
         </div>
 
-        <div className="flex items-center gap-2.5 w-full sm:w-auto">
-          <div className="relative flex-1 sm:w-64">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto">
+          {/* 1. Fetch Intent Posts Button (Appears First on Mobile, Full Width) */}
+          <button
+            onClick={handleFetch}
+            disabled={fetching}
+            style={{ backgroundColor: 'var(--nexa-accent)', color: '#000000' }}
+            className="flex items-center justify-center gap-2 px-3.5 py-2.5 sm:py-2 text-xs font-bold rounded-xl hover:opacity-90 transition-all shadow-md disabled:opacity-50 whitespace-nowrap shrink-0 w-full sm:w-auto order-1 sm:order-2"
+          >
+            {fetching ? <RefreshCw className="animate-spin" size={14} /> : <RefreshCw size={14} />}
+            Fetch Intent Posts
+          </button>
+
+          {/* 2. Search Bar Input (Appears Below Fetch Intent Posts on Mobile, Full Width) */}
+          <div className="relative w-full sm:w-64 order-2 sm:order-1">
             <Search
               style={{ left: '0.875rem' }}
-              className="absolute top-1/2 -translate-y-1/2 text-slate-400 dark:text-zinc-400 pointer-events-none"
+              className="absolute top-1/2 -translate-y-1/2 text-slate-400 dark:text-zinc-400 pointer-events-none hidden sm:block"
               size={14}
             />
             <input
@@ -238,48 +250,48 @@ export default function SocialPostsView() {
               placeholder="Search keywords or posts..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-white/5 py-2 pl-9 pr-4 text-xs font-medium text-slate-900 dark:text-zinc-100 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-400 focus:border-amber-500/50 focus:bg-white dark:focus:bg-white/10 shadow-inner backdrop-blur-md"
+              className="w-full rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-white/5 py-2 px-3 sm:pl-9 sm:pr-4 text-xs font-medium text-slate-900 dark:text-zinc-100 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-zinc-400 text-center placeholder:text-center sm:text-left sm:placeholder:text-left focus:border-amber-500/50 focus:bg-white dark:focus:bg-white/10 shadow-inner backdrop-blur-md"
             />
           </div>
-
-          <button
-            onClick={handleFetch}
-            disabled={fetching}
-            style={{ backgroundColor: 'var(--nexa-accent)', color: '#000000' }}
-            className="flex items-center gap-2 px-3.5 py-2 text-xs font-bold rounded-xl hover:opacity-90 transition-all shadow-md disabled:opacity-50 whitespace-nowrap shrink-0"
-          >
-            {fetching ? <RefreshCw className="animate-spin" size={14} /> : <RefreshCw size={14} />}
-            Fetch Intent Posts
-          </button>
         </div>
       </div>
 
-      {/* Summary KPI Pills Bar */}
-      <div className="flex items-center gap-2.5 overflow-x-auto pb-1 text-xs shrink-0">
-        <span className="bg-white dark:bg-white/5 text-slate-700 dark:text-zinc-300 px-3.5 py-1 rounded-full font-medium border border-slate-200 dark:border-white/10 shadow-xs flex items-center gap-1.5">
-          <strong className="font-extrabold text-slate-900 dark:text-zinc-100">{filteredPosts.length}</strong> threads found
-        </span>
-        <span className="bg-white dark:bg-white/5 text-slate-700 dark:text-zinc-300 px-3.5 py-1 rounded-full font-medium border border-slate-200 dark:border-white/10 shadow-xs flex items-center gap-1.5">
-          <strong className="font-extrabold text-slate-900 dark:text-zinc-100">{filteredPosts.filter(isPostHot).length}</strong> hot leads
-        </span>
-        <span className="bg-white dark:bg-white/5 text-slate-700 dark:text-zinc-300 px-3.5 py-1 rounded-full font-medium border border-slate-200 dark:border-white/10 shadow-xs flex items-center gap-1.5">
-          <strong className="font-extrabold text-slate-900 dark:text-zinc-100">{Math.max(0, filteredPosts.length - filteredPosts.filter(isPostHot).length)}</strong> warm
-        </span>
-        <span className="bg-white dark:bg-white/5 text-slate-500 dark:text-zinc-400 px-3.5 py-1 rounded-full font-medium border border-slate-200 dark:border-white/10 shadow-xs flex items-center gap-1.5">
-          <span>Last fetched:</span>
-          <strong className="font-extrabold text-slate-900 dark:text-zinc-100">{timeAgoText}</strong>
-        </span>
+      {/* Summary KPI 4-Box Bar (2x2 Grid on Mobile, Flex Row on Desktop) */}
+      <div className="grid grid-cols-2 gap-2 sm:flex sm:items-center sm:gap-2.5 text-xs shrink-0 w-full">
+        {/* Box 1: Threads Found */}
+        <div className="bg-white dark:bg-white/5 text-slate-700 dark:text-zinc-300 p-2.5 sm:px-3.5 sm:py-1.5 rounded-2xl sm:rounded-full font-medium border border-slate-200 dark:border-white/10 shadow-xs flex items-center justify-between sm:justify-start gap-1.5">
+          <span className="text-[11px] sm:text-xs text-slate-500 dark:text-zinc-400 font-semibold">Threads Found:</span>
+          <strong className="font-extrabold text-sm sm:text-xs text-slate-900 dark:text-zinc-100">{filteredPosts.length}</strong>
+        </div>
+
+        {/* Box 2: Hot Leads */}
+        <div className="bg-white dark:bg-white/5 text-slate-700 dark:text-zinc-300 p-2.5 sm:px-3.5 sm:py-1.5 rounded-2xl sm:rounded-full font-medium border border-slate-200 dark:border-white/10 shadow-xs flex items-center justify-between sm:justify-start gap-1.5">
+          <span className="text-[11px] sm:text-xs text-slate-500 dark:text-zinc-400 font-semibold">Hot Leads:</span>
+          <strong className="font-extrabold text-sm sm:text-xs text-emerald-600 dark:text-emerald-400">{filteredPosts.filter(isPostHot).length}</strong>
+        </div>
+
+        {/* Box 3: Warm */}
+        <div className="bg-white dark:bg-white/5 text-slate-700 dark:text-zinc-300 p-2.5 sm:px-3.5 sm:py-1.5 rounded-2xl sm:rounded-full font-medium border border-slate-200 dark:border-white/10 shadow-xs flex items-center justify-between sm:justify-start gap-1.5">
+          <span className="text-[11px] sm:text-xs text-slate-500 dark:text-zinc-400 font-semibold">Warm Leads:</span>
+          <strong className="font-extrabold text-sm sm:text-xs text-amber-600 dark:text-amber-400">{Math.max(0, filteredPosts.length - filteredPosts.filter(isPostHot).length)}</strong>
+        </div>
+
+        {/* Box 4: Last Fetched */}
+        <div className="bg-white dark:bg-white/5 text-slate-700 dark:text-zinc-300 p-2.5 sm:px-3.5 sm:py-1.5 rounded-2xl sm:rounded-full font-medium border border-slate-200 dark:border-white/10 shadow-xs flex items-center justify-between sm:justify-start gap-1.5">
+          <span className="text-[11px] sm:text-xs text-slate-500 dark:text-zinc-400 font-semibold">Last Fetched:</span>
+          <strong className="font-extrabold text-xs text-slate-900 dark:text-zinc-100 truncate">{timeAgoText}</strong>
+        </div>
       </div>
 
-      {/* Tabs Row */}
-      <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide shrink-0">
+      {/* Platform Filter Tabs (Grid Structure on Mobile, Compact Flex Row on Desktop) */}
+      <div className="grid grid-cols-4 gap-1.5 sm:flex sm:items-center sm:gap-2 pb-1 shrink-0 w-full sm:w-auto">
         {TABS.map((tab) => {
           const isActive = activeTab === tab;
           return (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-3.5 py-1 rounded-full text-xs font-semibold border transition-all whitespace-nowrap shadow-xs ${
+              className={`w-full sm:w-auto text-center justify-center px-2 py-1.5 sm:px-4 sm:py-1 rounded-full text-[11px] sm:text-xs font-semibold border transition-all whitespace-nowrap shadow-xs shrink-0 ${
                 isActive
                   ? 'bg-amber-500 text-black border-amber-500 font-extrabold shadow-xs'
                   : 'border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-white/10 hover:text-slate-950 dark:hover:text-white'
@@ -291,8 +303,8 @@ export default function SocialPostsView() {
         })}
       </div>
 
-      {/* Content Feed — Fitted strictly to vertical height */}
-      <div className="flex-1 min-h-0 overflow-y-auto pr-1 pb-4">
+      {/* Content Feed — Fitted strictly to vertical height on desktop */}
+      <div className="flex-1 min-h-0 sm:overflow-y-auto pr-1 pb-16 sm:pb-4">
         {loading ? (
           <div className="flex justify-center items-center h-48">
             <RefreshCw className="animate-spin text-[var(--nexa-accent)]" size={28} />
