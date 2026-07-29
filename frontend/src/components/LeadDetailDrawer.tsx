@@ -287,50 +287,7 @@ export default function LeadDetailDrawer({ lead, onClose, isTracked = false, onT
                     </div>
                   </div>
 
-                  {/* View Filters & Controls Bar */}
-                  <div className="flex items-center gap-2 flex-wrap text-xs font-medium border-b border-nexa-border pb-3">
-                    <select
-                      value={behaviorFilter}
-                      onChange={(e) => setBehaviorFilter(e.target.value as any)}
-                      className="side-drawer-pill px-3 py-1.5 rounded-lg border border-nexa-border bg-nexa-surface text-zinc-200 shadow-2xs cursor-pointer font-medium outline-hidden"
-                    >
-                      <option value="ALL">Group by behavior: All</option>
-                      <option value="FUNDING">Funding Signals</option>
-                      <option value="HIRING">Hiring Signals</option>
-                    </select>
 
-                    <select
-                      value={sortOrder}
-                      onChange={(e) => setSortOrder(e.target.value as any)}
-                      className="side-drawer-pill px-3 py-1.5 rounded-lg border border-nexa-border bg-nexa-surface text-zinc-200 shadow-2xs cursor-pointer font-medium outline-hidden"
-                    >
-                      <option value="NEWEST">Signal date: Newest First</option>
-                      <option value="OLDEST">Signal date: Oldest First</option>
-                    </select>
-
-                    <div className="flex items-center border border-nexa-border rounded-lg p-0.5 bg-nexa-surface ml-auto">
-                      <button
-                        onClick={() => setViewMode('DETAILED')}
-                        className={`px-2.5 py-1 rounded-md text-xs font-bold transition ${
-                          viewMode === 'DETAILED'
-                            ? 'side-drawer-tab-active bg-nexa-card text-zinc-100 shadow-2xs'
-                            : 'text-zinc-400 hover:text-zinc-100'
-                        }`}
-                      >
-                        Detailed
-                      </button>
-                      <button
-                        onClick={() => setViewMode('COMPACT')}
-                        className={`px-2.5 py-1 rounded-md text-xs font-bold transition ${
-                          viewMode === 'COMPACT'
-                            ? 'side-drawer-tab-active bg-nexa-card text-zinc-100 shadow-2xs'
-                            : 'text-zinc-400 hover:text-zinc-100'
-                        }`}
-                      >
-                        Compact
-                      </button>
-                    </div>
-                  </div>
 
                   {/* Signal List Group */}
                   <div className="space-y-3">
