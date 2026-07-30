@@ -2,15 +2,17 @@ import os
 import sys
 import json
 import httpx
+from dotenv import dotenv_values
 
-API_KEY = "8d28ba2bd3ce2cc0d8f4c1f51bfd90646b257847"
+env_vars = dotenv_values("backend/.env")
+API_KEY = env_vars.get("SERPER_API_KEY") or os.getenv("SERPER_API_KEY", "")
 QUERY = "who is Nischal Verma the great"
 
 def test_serper():
     print("=" * 60)
     print("🚀 SERPER API KEY VALIDATION TEST")
     print("=" * 60)
-    print(f"API Key: {API_KEY[:8]}...{API_KEY[-4:]}")
+    print(f"API Key: {API_KEY[:8]}...{API_KEY[-4:] if len(API_KEY) > 4 else ''}")
     print(f"Query  : '{QUERY}'\n")
 
     url = "https://google.serper.dev/search"

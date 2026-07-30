@@ -1,12 +1,15 @@
+import os
 import httpx
 import asyncio
+from dotenv import dotenv_values
 
-GROQ_TEST_KEY = "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"
+env_vars = dotenv_values("backend/.env")
+GROQ_TEST_KEY = env_vars.get("GROQ_API_KEY") or os.getenv("GROQ_API_KEY", "")
 
 async def test_groq_api_key():
     print("=" * 80)
     print("🧪 TESTING GROQ API KEY VALIDITY")
-    print(f"Key: {GROQ_TEST_KEY[:10]}...{GROQ_TEST_KEY[-5:]}")
+    print(f"Key: {GROQ_TEST_KEY[:10]}...{GROQ_TEST_KEY[-5:] if len(GROQ_TEST_KEY) > 5 else ''}")
     print("=" * 80)
 
     url = "https://api.groq.com/openai/v1/chat/completions"
