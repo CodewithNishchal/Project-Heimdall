@@ -172,15 +172,17 @@ async def fetch_apify_twitter(client: httpx.AsyncClient, search_terms: list[str]
 async def fetch_scrapecreators_threads(client: httpx.AsyncClient, query: str) -> list:
     """
     Fetches Threads posts via ScrapeCreators API for a plain keyword query.
-    Endpoint: GET https://api.scrapecreators.com/v1/threads/search?query={query}&start_date=YYYY-DD-MM&end_date=YYYY-DD-MM
+    Endpoint: GET https://api.scrapecreators.com/v1/threads/search?query={query}&start_date=YYYY-MM-DD&end_date=YYYY-MM-DD
     Header: x-api-key: {settings.SCRAPE_CREATORS_API_KEY}
     """
-    url = "https://api.scrapecreators.com/v1/threads/search"
-    api_key = settings.SCRAPE_CREATORS_API_KEY
+    from dotenv import dotenv_values
+    env_vars = dotenv_values("backend/.env")
+    api_key = env_vars.get("SCRAPE_CREATORS_API_KEY") or settings.SCRAPE_CREATORS_API_KEY or os.getenv("SCRAPE_CREATORS_API_KEY")
     if not api_key:
         logger.warning("[ScrapeCreators Threads] SCRAPE_CREATORS_API_KEY is missing. Skipping Threads sweep.")
         return []
 
+    url = "https://api.scrapecreators.com/v1/threads/search"
     headers = {
         "x-api-key": api_key
     }
@@ -296,7 +298,8 @@ async def fetch_apify_linkedin(client: httpx.AsyncClient, query: str) -> list:
                 continue
             else:
                 log_msg = resp.text[:150].replace('\n', ' ') if resp.text else ""
-                logger.error(f"[Apify LinkedIn] {resp.status_code} Error: {log_msg}")
+                logger.error(f"[Apify LinkedIn] Unexpected HTTP {resp.status_code}: {log_msg}")
+                break
         except Exception as e:
             logger.error(f"[Apify LinkedIn] Error: {e}")
             break
@@ -374,51 +377,96 @@ async def fetch_scrapebadger_twitter(client: httpx.AsyncClient, query: str) -> l
                 if isinstance(data, list):
                     items = data
                 logger.info(f"[ScrapeBadger Twitter] Received {len(items)} items for query '{query}'")
-                return items
+                return items if isinstance(items, list) else []
             elif resp.status_code in (502, 503, 504) and attempt == 0:
                 logger.warning(f"[ScrapeBadger Twitter] Got {resp.status_code} Bad Gateway. Retrying in 1.5s...")
                 await asyncio.sleep(1.5)
                 continue
             else:
                 log_msg = resp.text[:150].replace('\n', ' ') if resp.text else ""
-                logger.error(f"[ScrapeBadger Twitter] {resp.status_code} Error: {log_msg}")
+                logger.error(f"[ScrapeBadger Twitter] Unexpected HTTP {resp.status_code}: {log_msg}")
+                break
         except Exception as e:
             logger.error(f"[ScrapeBadger Twitter] Error: {e}")
             break
     return []
 
+SUBTYPE_QUERIES_MATRIX = {
+    "startup_tech": {
+        "linkedin": ["excited to announce our seed round", "growing our founding team", "hiring our first engineers"],
+        "twitter": '("seed round" OR "pre-seed" OR "series a") (hiring OR "we\'re hiring" OR "join our team") -"venture capital firm" -"our accelerator program" -"our incubator cohort"',
+        "reddit": ["just raised our seed round hiring", "startup hiring after funding"],
+        "google": '("raised our seed round" OR "closed our pre-seed" OR "growing our founding team") hiring -"venture capital firm" -"accelerator program" -"incubator cohort"',
+        "threads": ["raised seed round hiring engineers", "growing founding team startup hiring"]
+    },
+    "tech_recruitment": {
+        "linkedin": ["hiring DevOps engineers", "growing our ML engineering team", "SOC2 compliance hiring"],
+        "twitter": '("hiring DevOps" OR "hiring ML engineers" OR "SOC2 compliance" OR "scaling our engineering team") -"our staffing firm" -"our RPO services" -"leading headhunter firm"',
+        "reddit": ["engineering hiring spike SOC2", "scaling DevOps team hiring"],
+        "google": '("hiring DevOps engineers" OR "growing our ML team" OR "SOC2 compliance hiring") -"our staffing firm" -"leading RPO provider"',
+        "threads": ["hiring DevOps engineers", "scaling engineering SOC2 compliance"]
+    },
+    "executive_search": {
+        "linkedin": ["hiring our next VP of Engineering", "board announces leadership transition", "searching for our next CEO"],
+        "twitter": '("VP of Engineering search" OR "VP of Sales search" OR "searching for our next CEO" OR "leadership transition") -"executive coaching" -"leadership training program" -"our HR consultancy"',
+        "reddit": ["company searching for new CEO", "VP level hiring announcement"],
+        "google": '("searching for our next CEO" OR "VP Engineering search" OR "board announces leadership transition") -"executive coaching" -"leadership training program"',
+        "threads": ["hiring VP Engineering", "searching for new CEO"]
+    },
+    "volume_rpo": {
+        "linkedin": ["opening our new warehouse hiring", "seasonal hiring announcement", "hiring 100 new positions"],
+        "twitter": '("new warehouse" OR "new distribution center" OR "seasonal hiring event") ("100 positions" OR "mass hiring") -"our staffing agency" -"our temp agency" -"PEO services"',
+        "reddit": ["new warehouse opening jobs", "seasonal hiring event retail"],
+        "google": '("opening a new warehouse" OR "new distribution center" OR "seasonal hiring event") hiring -"our staffing agency" -"PEO services"',
+        "threads": ["opening new warehouse hiring", "seasonal hiring event"]
+    },
+    "healthcare_recruitment": {
+        "linkedin": ["opening our new clinic hiring", "clinical staff shortage", "expanding our hospital network"],
+        "twitter": '("new clinic" OR "new healthcare facility" OR "clinical staff shortage" OR "hospital expansion") hiring -"our staffing agency" -"locum tenens firm" -"medical device sales agency"',
+        "reddit": ["clinical staff shortage hiring", "new hospital facility opening"],
+        "google": '("clinical staff shortage" OR "new healthcare facility" OR "hospital expansion") hiring -"our staffing agency" -"locum tenens firm"',
+        "threads": ["opening new clinic hiring", "clinical staff shortage"]
+    },
+    "sales_recruitment": {
+        "linkedin": ["hiring SDRs and AEs", "welcomes our new VP of Sales", "building our GTM team from scratch"],
+        "twitter": '("hiring SDRs" OR "hiring AEs" OR "new VP of Sales" OR "building our GTM team") -"sales training company" -"sales enablement agency" -"outbound agency services"',
+        "reddit": ["hiring SDR AE cluster", "new VP sales building team"],
+        "google": '("hiring SDRs and AEs" OR "new VP of Sales" OR "building our GTM team") -"sales training company" -"sales enablement agency"',
+        "threads": ["hiring SDRs AEs", "new VP of Sales"]
+    }
+}
+
 async def fetch_social_micro_intent(triggers: list[str], topics: list[str]) -> list[dict]:
-    if not triggers or not topics:
-        return []
-        
-    clean_trigs = [t.strip('\'"') for t in triggers if t.strip()]
-    clean_tops = [tp.strip('\'"') for tp in topics if tp.strip()]
-    
-    if not clean_trigs or not clean_tops:
-        return []
-        
-    # Format triggers & topics for platform-specific queries
-    trig1 = clean_trigs[0] if clean_trigs else "looking for"
-    trig2 = clean_trigs[1] if len(clean_trigs) > 1 else "recommend"
-    top1 = clean_tops[0] if clean_tops else "Marketing Agency"
-    top2 = clean_tops[1] if len(clean_tops) > 1 else "Growth Marketing Agency"
+    from backend.config_manager import load_intent_config
+    config = load_intent_config()
+    active_subtype = config.get("active_subtype", "startup_tech")
 
-    # Build natural, high-yield search queries for social engines
-    # 1. ScrapeBadger Reddit: Growth Marketing agency OR looking for Growth Marketing
-    reddit_query = f'{top1} agency OR looking for {top1}'
+    clean_trigs = [t.strip('\'"') for t in triggers if t.strip()] if triggers else []
+    clean_tops = [tp.strip('\'"') for tp in topics if tp.strip()] if topics else []
 
-    # 2. ScrapeBadger Twitter (X): Growth Marketing agency OR looking for Growth Marketing
-    twitter_query = f'{top1} agency OR looking for {top1}'
+    if active_subtype in SUBTYPE_QUERIES_MATRIX:
+        sub_info = SUBTYPE_QUERIES_MATRIX[active_subtype]
+        linkedin_query = sub_info["linkedin"][0]
+        twitter_query = sub_info["twitter"]
+        reddit_query = sub_info["reddit"][0]
+        google_query = sub_info["google"]
+        threads_q1 = sub_info["threads"][0]
+        threads_q2 = sub_info["threads"][1]
+    else:
+        # Fallback to dynamic phrase builder
+        trig1 = clean_trigs[0] if clean_trigs else "looking for"
+        trig2 = clean_trigs[1] if len(clean_trigs) > 1 else (clean_trigs[0] if clean_trigs else "recommend")
+        top1 = clean_tops[0] if clean_tops else "Marketing Agency"
+        top2 = clean_tops[1] if len(clean_tops) > 1 else top1
 
-    # 3. Apify LinkedIn: Growth Marketing agency OR Growth Marketing RFP
-    linkedin_query = f'{top1} agency OR {top1} RFP'
+        reddit_query = f'{top1} agency OR {trig1} {top1}'
+        threads_q1 = f"{trig1} {top1}"
+        google_query = f"RFP {top1}"
+        twitter_query = f'{top2} agency OR {trig2} {top2}'
+        linkedin_query = f'{top2} agency OR {trig2} RFP'
+        threads_q2 = f"{trig2} {top2}"
 
-    # 4. ScrapeCreators Threads: Query 1: top1 (Fractional CMO), Query 2: top2 (Growth Marketing)
-    threads_q1 = f"{top1}"
-    threads_q2 = f"{top2}"
-
-    # 5. ScrapeCreators Google: RFP + topic query
-    google_query = f"RFP {top1}"
+    logger.info(f"[SocialDiscovery] Executing balanced platform queries: Reddit='{reddit_query}', Twitter='{twitter_query}', LinkedIn='{linkedin_query}', Threads Q1='{threads_q1}', Threads Q2='{threads_q2}', Google='{google_query}'")
             
     results = []
     
@@ -445,7 +493,10 @@ async def fetch_social_micro_intent(triggers: list[str], topics: list[str]) -> l
         thirty_days_ago = datetime.now(timezone.utc) - timedelta(days=30)
         
         for idx, response_items in enumerate(responses):
-            if isinstance(response_items, Exception) or not isinstance(response_items, list):
+            if isinstance(response_items, Exception):
+                logger.error(f"[SocialDiscovery] Platform task index {idx} failed: {response_items}")
+                continue
+            if not isinstance(response_items, list):
                 continue
                 
             if idx == 0:

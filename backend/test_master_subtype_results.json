@@ -1,0 +1,1094 @@
+{
+  "object_1_fetched_raw_posts": {
+    "subtype_tested": "executive_search",
+    "total_raw_count": 73,
+    "platform_breakdown": {
+      "linkedin": 20,
+      "x": 18,
+      "reddit": 25,
+      "google": 10
+    },
+    "raw_posts": [
+      {
+        "company_name": "Startup Founder",
+        "author_handle": "linkedin_user",
+        "author_name": "LinkedIn User",
+        "platform": "linkedin",
+        "content": "",
+        "post_url": "https://x.com/search?q=hiring%20our%20next%20VP%20of%20Engineering",
+        "keyword_matched": "hiring our next VP of Engineering",
+        "published_at": {
+          "timestamp": 1783444111929,
+          "date": "2026-07-07T17:08:31.929Z",
+          "postedAgoShort": "3w",
+          "postedAgoText": "3 weeks ago \u2022 Visible to anyone on or off LinkedIn"
+        }
+      },
+      {
+        "company_name": "Startup Founder",
+        "author_handle": "linkedin_user",
+        "author_name": "LinkedIn User",
+        "platform": "linkedin",
+        "content": "",
+        "post_url": "https://x.com/search?q=hiring%20our%20next%20VP%20of%20Engineering",
+        "keyword_matched": "hiring our next VP of Engineering",
+        "published_at": {
+          "timestamp": 1783615059269,
+          "date": "2026-07-09T16:37:39.269Z",
+          "postedAgoShort": "3w",
+          "postedAgoText": "3 weeks ago \u2022 Edited \u2022 Visible to anyone on or off LinkedIn"
+        }
+      },
+      {
+        "company_name": "Startup Founder",
+        "author_handle": "linkedin_user",
+        "author_name": "LinkedIn User",
+        "platform": "linkedin",
+        "content": "",
+        "post_url": "https://x.com/search?q=hiring%20our%20next%20VP%20of%20Engineering",
+        "keyword_matched": "hiring our next VP of Engineering",
+        "published_at": {
+          "timestamp": 1785166822916,
+          "date": "2026-07-27T15:40:22.916Z",
+          "postedAgoShort": "3d",
+          "postedAgoText": "3 days ago \u2022 Visible to anyone on or off LinkedIn"
+        }
+      },
+      {
+        "company_name": "Startup Founder",
+        "author_handle": "linkedin_user",
+        "author_name": "LinkedIn User",
+        "platform": "linkedin",
+        "content": "",
+        "post_url": "https://x.com/search?q=hiring%20our%20next%20VP%20of%20Engineering",
+        "keyword_matched": "hiring our next VP of Engineering",
+        "published_at": {
+          "timestamp": 1782988013673,
+          "date": "2026-07-02T10:26:53.673Z",
+          "postedAgoShort": "4w",
+          "postedAgoText": "0 months ago \u2022 Visible to anyone on or off LinkedIn"
+        }
+      },
+      {
+        "company_name": "Startup Founder",
+        "author_handle": "linkedin_user",
+        "author_name": "LinkedIn User",
+        "platform": "linkedin",
+        "content": "",
+        "post_url": "https://x.com/search?q=hiring%20our%20next%20VP%20of%20Engineering",
+        "keyword_matched": "hiring our next VP of Engineering",
+        "published_at": {
+          "timestamp": 1785410784676,
+          "date": "2026-07-30T11:26:24.676Z",
+          "postedAgoShort": "7h",
+          "postedAgoText": "7 hours ago \u2022 Visible to anyone on or off LinkedIn"
+        }
+      },
+      {
+        "company_name": "Startup Founder",
+        "author_handle": "linkedin_user",
+        "author_name": "LinkedIn User",
+        "platform": "linkedin",
+        "content": "",
+        "post_url": "https://x.com/search?q=hiring%20our%20next%20VP%20of%20Engineering",
+        "keyword_matched": "hiring our next VP of Engineering",
+        "published_at": {
+          "timestamp": 1785102956861,
+          "date": "2026-07-26T21:55:56.861Z",
+          "postedAgoShort": "3d",
+          "postedAgoText": "3 days ago \u2022 Visible to anyone on or off LinkedIn"
+        }
+      },
+      {
+        "company_name": "Startup Founder",
+        "author_handle": "linkedin_user",
+        "author_name": "LinkedIn User",
+        "platform": "linkedin",
+        "content": "",
+        "post_url": "https://x.com/search?q=hiring%20our%20next%20VP%20of%20Engineering",
+        "keyword_matched": "hiring our next VP of Engineering",
+        "published_at": {
+          "timestamp": 1784927309302,
+          "date": "2026-07-24T21:08:29.302Z",
+          "postedAgoShort": "5d",
+          "postedAgoText": "5 days ago \u2022 Edited \u2022 Visible to anyone on or off LinkedIn"
+        }
+      },
+      {
+        "company_name": "Startup Founder",
+        "author_handle": "linkedin_user",
+        "author_name": "LinkedIn User",
+        "platform": "linkedin",
+        "content": "",
+        "post_url": "https://x.com/search?q=hiring%20our%20next%20VP%20of%20Engineering",
+        "keyword_matched": "hiring our next VP of Engineering",
+        "published_at": {
+          "timestamp": 1785113874145,
+          "date": "2026-07-27T00:57:54.145Z",
+          "postedAgoShort": "3d",
+          "postedAgoText": "3 days ago \u2022 Visible to anyone on or off LinkedIn"
+        }
+      },
+      {
+        "company_name": "Startup Founder",
+        "author_handle": "linkedin_user",
+        "author_name": "LinkedIn User",
+        "platform": "linkedin",
+        "content": "",
+        "post_url": "https://x.com/search?q=hiring%20our%20next%20VP%20of%20Engineering",
+        "keyword_matched": "hiring our next VP of Engineering",
+        "published_at": {
+          "timestamp": 1785050661875,
+          "date": "2026-07-26T07:24:21.875Z",
+          "postedAgoShort": "4d",
+          "postedAgoText": "4 days ago \u2022 Edited \u2022 Visible to anyone on or off LinkedIn"
+        }
+      },
+      {
+        "company_name": "Startup Founder",
+        "author_handle": "linkedin_user",
+        "author_name": "LinkedIn User",
+        "platform": "linkedin",
+        "content": "",
+        "post_url": "https://x.com/search?q=hiring%20our%20next%20VP%20of%20Engineering",
+        "keyword_matched": "hiring our next VP of Engineering",
+        "published_at": {
+          "timestamp": 1784645471261,
+          "date": "2026-07-21T14:51:11.261Z",
+          "postedAgoShort": "1w",
+          "postedAgoText": "1 week ago \u2022 Visible to anyone on or off LinkedIn"
+        }
+      },
+      {
+        "company_name": "Startup Founder",
+        "author_handle": "linkedin_user",
+        "author_name": "LinkedIn User",
+        "platform": "linkedin",
+        "content": "",
+        "post_url": "https://x.com/search?q=hiring%20our%20next%20VP%20of%20Engineering",
+        "keyword_matched": "hiring our next VP of Engineering",
+        "published_at": {
+          "timestamp": 1783367187810,
+          "date": "2026-07-06T19:46:27.810Z",
+          "postedAgoShort": "3w",
+          "postedAgoText": "3 weeks ago \u2022 Visible to anyone on or off LinkedIn"
+        }
+      },
+      {
+        "company_name": "Startup Founder",
+        "author_handle": "linkedin_user",
+        "author_name": "LinkedIn User",
+        "platform": "linkedin",
+        "content": "",
+        "post_url": "https://x.com/search?q=hiring%20our%20next%20VP%20of%20Engineering",
+        "keyword_matched": "hiring our next VP of Engineering",
+        "published_at": {
+          "timestamp": 1785258867553,
+          "date": "2026-07-28T17:14:27.553Z",
+          "postedAgoShort": "2d",
+          "postedAgoText": "2 days ago \u2022 Visible to anyone on or off LinkedIn"
+        }
+      },
+      {
+        "company_name": "Startup Founder",
+        "author_handle": "linkedin_user",
+        "author_name": "LinkedIn User",
+        "platform": "linkedin",
+        "content": "",
+        "post_url": "https://x.com/search?q=hiring%20our%20next%20VP%20of%20Engineering",
+        "keyword_matched": "hiring our next VP of Engineering",
+        "published_at": {
+          "timestamp": 1784654798031,
+          "date": "2026-07-21T17:26:38.031Z",
+          "postedAgoShort": "1w",
+          "postedAgoText": "1 week ago \u2022 Visible to anyone on or off LinkedIn"
+        }
+      },
+      {
+        "company_name": "Startup Founder",
+        "author_handle": "linkedin_user",
+        "author_name": "LinkedIn User",
+        "platform": "linkedin",
+        "content": "",
+        "post_url": "https://x.com/search?q=hiring%20our%20next%20VP%20of%20Engineering",
+        "keyword_matched": "hiring our next VP of Engineering",
+        "published_at": {
+          "timestamp": 1785086865759,
+          "date": "2026-07-26T17:27:45.759Z",
+          "postedAgoShort": "4d",
+          "postedAgoText": "4 days ago \u2022 Edited \u2022 Visible to anyone on or off LinkedIn"
+        }
+      },
+      {
+        "company_name": "Startup Founder",
+        "author_handle": "linkedin_user",
+        "author_name": "LinkedIn User",
+        "platform": "linkedin",
+        "content": "",
+        "post_url": "https://x.com/search?q=hiring%20our%20next%20VP%20of%20Engineering",
+        "keyword_matched": "hiring our next VP of Engineering",
+        "published_at": {
+          "timestamp": 1785248273228,
+          "date": "2026-07-28T14:17:53.228Z",
+          "postedAgoShort": "2d",
+          "postedAgoText": "2 days ago \u2022 Visible to anyone on or off LinkedIn"
+        }
+      },
+      {
+        "company_name": "Startup Founder",
+        "author_handle": "linkedin_user",
+        "author_name": "LinkedIn User",
+        "platform": "linkedin",
+        "content": "",
+        "post_url": "https://x.com/search?q=hiring%20our%20next%20VP%20of%20Engineering",
+        "keyword_matched": "hiring our next VP of Engineering",
+        "published_at": {
+          "timestamp": 1784907205223,
+          "date": "2026-07-24T15:33:25.223Z",
+          "postedAgoShort": "6d",
+          "postedAgoText": "6 days ago \u2022 Visible to anyone on or off LinkedIn"
+        }
+      },
+      {
+        "company_name": "Startup Founder",
+        "author_handle": "linkedin_user",
+        "author_name": "LinkedIn User",
+        "platform": "linkedin",
+        "content": "",
+        "post_url": "https://x.com/search?q=hiring%20our%20next%20VP%20of%20Engineering",
+        "keyword_matched": "hiring our next VP of Engineering",
+        "published_at": {
+          "timestamp": 1784205458187,
+          "date": "2026-07-16T12:37:38.187Z",
+          "postedAgoShort": "2w",
+          "postedAgoText": "2 weeks ago \u2022 Visible to anyone on or off LinkedIn"
+        }
+      },
+      {
+        "company_name": "Startup Founder",
+        "author_handle": "linkedin_user",
+        "author_name": "LinkedIn User",
+        "platform": "linkedin",
+        "content": "",
+        "post_url": "https://x.com/search?q=hiring%20our%20next%20VP%20of%20Engineering",
+        "keyword_matched": "hiring our next VP of Engineering",
+        "published_at": {
+          "timestamp": 1785246958707,
+          "date": "2026-07-28T13:55:58.707Z",
+          "postedAgoShort": "2d",
+          "postedAgoText": "2 days ago \u2022 Visible to anyone on or off LinkedIn"
+        }
+      },
+      {
+        "company_name": "Startup Founder",
+        "author_handle": "linkedin_user",
+        "author_name": "LinkedIn User",
+        "platform": "linkedin",
+        "content": "",
+        "post_url": "https://x.com/search?q=hiring%20our%20next%20VP%20of%20Engineering",
+        "keyword_matched": "hiring our next VP of Engineering",
+        "published_at": {
+          "timestamp": 1785324823693,
+          "date": "2026-07-29T11:33:43.693Z",
+          "postedAgoShort": "1d",
+          "postedAgoText": "1 day ago \u2022 Visible to anyone on or off LinkedIn"
+        }
+      },
+      {
+        "company_name": "Startup Founder",
+        "author_handle": "linkedin_user",
+        "author_name": "LinkedIn User",
+        "platform": "linkedin",
+        "content": "",
+        "post_url": "https://x.com/search?q=hiring%20our%20next%20VP%20of%20Engineering",
+        "keyword_matched": "hiring our next VP of Engineering",
+        "published_at": {
+          "timestamp": 1783696236603,
+          "date": "2026-07-10T15:10:36.603Z",
+          "postedAgoShort": "2w",
+          "postedAgoText": "2 weeks ago \u2022 Visible to anyone on or off LinkedIn"
+        }
+      },
+      {
+        "company_name": "Founder",
+        "author_handle": "x_user",
+        "author_name": "X User",
+        "platform": "x",
+        "content": "Many longtime customers blasted the changes online, saying the company was abandoning the look and feel that made Cracker Barrel unique. The criticism was so widespread that the chain quickly reversed its logo redesign.\n\nhttps://t.co/9NhzGZvmdV",
+        "post_url": "https://x.com/kfdmnews/status/2081811569906696483",
+        "keyword_matched": "(\"VP of Engineering search\" OR \"VP of Sales search\" OR \"searching for our next CEO\" OR \"leadership transition\") -\"executive coaching\" -\"leadership training program\" -\"our HR consultancy\"",
+        "published_at": "Mon Jul 27 18:38:51 +0000 2026"
+      },
+      {
+        "company_name": "Founder",
+        "author_handle": "x_user",
+        "author_name": "X User",
+        "platform": "x",
+        "content": "\ud83d\udea8 #Swiggy Announces Leadership Change at Instamart \ud83d\uded2\n\n\ud83d\udfe2 Management Update\n\n\ud83d\udccc Amitesh Kumar Jha has resigned as CEO of Instamart to pursue other opportunities.\n\n\ud83d\udc69\u200d\ud83d\udcbc Nandita Sinha has been appointed as the new CEO of Instamart.\n\n\ud83c\udf1f Nandita Sinha brings extensive leadership",
+        "post_url": "https://x.com/CapitalInsight3/status/2082009776008081520",
+        "keyword_matched": "(\"VP of Engineering search\" OR \"VP of Sales search\" OR \"searching for our next CEO\" OR \"leadership transition\") -\"executive coaching\" -\"leadership training program\" -\"our HR consultancy\"",
+        "published_at": "Tue Jul 28 07:46:27 +0000 2026"
+      },
+      {
+        "company_name": "Founder",
+        "author_handle": "x_user",
+        "author_name": "X User",
+        "platform": "x",
+        "content": "As CEO of LNTO and founder of Airtopia, I want to give shareholders a clear view of the work underway.\n\nCompleting the transaction was a milestone, not the finish line. It positioned us to build the public company infrastructure Airtopia\u2019s long-term growth requires.\n\nOur Q3 2026 https://t.co/xOjbF8lk93",
+        "post_url": "https://x.com/FelixWallerCEO/status/2081927687912693911",
+        "keyword_matched": "(\"VP of Engineering search\" OR \"VP of Sales search\" OR \"searching for our next CEO\" OR \"leadership transition\") -\"executive coaching\" -\"leadership training program\" -\"our HR consultancy\"",
+        "published_at": "Tue Jul 28 02:20:15 +0000 2026"
+      },
+      {
+        "company_name": "Founder",
+        "author_handle": "x_user",
+        "author_name": "X User",
+        "platform": "x",
+        "content": "\ud83c\udfaf Six candidates will enter the public UN secretary-general selection event on July 23 as Ant\u00f3nio Guterres nears the end of a decade in office.\n\n\ud83d\udcca The 5 p.m. EDT town hall at UN headquarters opens a consequential leadership transition amid escalating Iran tensions and active https://t.co/IK0w9AbjWJ",
+        "post_url": "https://x.com/kautiousCo/status/2080349615065374899",
+        "keyword_matched": "(\"VP of Engineering search\" OR \"VP of Sales search\" OR \"searching for our next CEO\" OR \"leadership transition\") -\"executive coaching\" -\"leadership training program\" -\"our HR consultancy\"",
+        "published_at": "Thu Jul 23 17:49:33 +0000 2026"
+      },
+      {
+        "company_name": "Founder",
+        "author_handle": "x_user",
+        "author_name": "X User",
+        "platform": "x",
+        "content": "\ud83d\udea8 #INFY RELEASED ITS QUARTERLY RESULTS TODAY AND IT'S ADR $INFY IS DOWN BY 2.5%.\n\nInfosys Q1 FY27: \nQuiet Demand, AI Surge &amp; a Planned Leadership Pivot\n\nWhile the top-line constant currency numbers point to persistent macro caution in discretionary tech spending, Infosys paired https://t.co/erHd2jGCfc",
+        "post_url": "https://x.com/UNSPOKEN_TRENDS/status/2080344065120641379",
+        "keyword_matched": "(\"VP of Engineering search\" OR \"VP of Sales search\" OR \"searching for our next CEO\" OR \"leadership transition\") -\"executive coaching\" -\"leadership training program\" -\"our HR consultancy\"",
+        "published_at": "Thu Jul 23 17:27:30 +0000 2026"
+      },
+      {
+        "company_name": "Founder",
+        "author_handle": "x_user",
+        "author_name": "X User",
+        "platform": "x",
+        "content": "Cracker Barrel announced that its president and CEO, Julie Masino, will step down next month, nearly a year after the restaurant chain's attempted rebrand sparked fierce backlash from customers. https://t.co/I0LztoOBj6",
+        "post_url": "https://x.com/fox11reno/status/2081809373869838504",
+        "keyword_matched": "(\"VP of Engineering search\" OR \"VP of Sales search\" OR \"searching for our next CEO\" OR \"leadership transition\") -\"executive coaching\" -\"leadership training program\" -\"our HR consultancy\"",
+        "published_at": "Mon Jul 27 18:30:07 +0000 2026"
+      },
+      {
+        "company_name": "Founder",
+        "author_handle": "x_user",
+        "author_name": "X User",
+        "platform": "x",
+        "content": "International Tower Hill Mines Announces Executive Leadership Transition to Advance Livengood Gold Project $ITH.TO https://t.co/0aaZZo38D2",
+        "post_url": "https://x.com/JrMiningNetwork/status/2081698370003828995",
+        "keyword_matched": "(\"VP of Engineering search\" OR \"VP of Sales search\" OR \"searching for our next CEO\" OR \"leadership transition\") -\"executive coaching\" -\"leadership training program\" -\"our HR consultancy\"",
+        "published_at": "Mon Jul 27 11:09:02 +0000 2026"
+      },
+      {
+        "company_name": "Founder",
+        "author_handle": "x_user",
+        "author_name": "X User",
+        "platform": "x",
+        "content": "Leadership transition underway at the Macomb County Department of Roads - https://t.co/jsDxlIiTw8",
+        "post_url": "https://x.com/MacombNewsNow/status/2081786522961916146",
+        "keyword_matched": "(\"VP of Engineering search\" OR \"VP of Sales search\" OR \"searching for our next CEO\" OR \"leadership transition\") -\"executive coaching\" -\"leadership training program\" -\"our HR consultancy\"",
+        "published_at": "Mon Jul 27 16:59:19 +0000 2026"
+      },
+      {
+        "company_name": "Founder",
+        "author_handle": "x_user",
+        "author_name": "X User",
+        "platform": "x",
+        "content": "Infosys Announces Leadership Transition: Ashiss Kumar Dash to Become CEO from April 2027\n\nInfosys has announced a planned leadership transition, naming Ashiss Kumar Dash as its next Chief Executive Officer (CEO) and Managing Director.\n\n#Infosys #AshissKumarDash #SalilParekh #CEO https://t.co/Pss4iHTuMF",
+        "post_url": "https://x.com/BusinessConne16/status/2080553863736861013",
+        "keyword_matched": "(\"VP of Engineering search\" OR \"VP of Sales search\" OR \"searching for our next CEO\" OR \"leadership transition\") -\"executive coaching\" -\"leadership training program\" -\"our HR consultancy\"",
+        "published_at": "Fri Jul 24 07:21:10 +0000 2026"
+      },
+      {
+        "company_name": "Founder",
+        "author_handle": "x_user",
+        "author_name": "X User",
+        "platform": "x",
+        "content": "The most valuable thing Penske Automotive Group could buy for $3.8 billion is patience.\n\nPenske and Mitsui have offered $210 per share for the 28% of Penske Automotive Group they do not already own, potentially taking the nation\u2019s second-largest dealer group private.\n\nThe https://t.co/BPYqWfrJ1N",
+        "post_url": "https://x.com/asotu_/status/2080341045951234515",
+        "keyword_matched": "(\"VP of Engineering search\" OR \"VP of Sales search\" OR \"searching for our next CEO\" OR \"leadership transition\") -\"executive coaching\" -\"leadership training program\" -\"our HR consultancy\"",
+        "published_at": "Thu Jul 23 17:15:30 +0000 2026"
+      },
+      {
+        "company_name": "Founder",
+        "author_handle": "x_user",
+        "author_name": "X User",
+        "platform": "x",
+        "content": "https://t.co/uPsvuvGZ6Q",
+        "post_url": "https://x.com/rayfortraders/status/2080611571366277478",
+        "keyword_matched": "(\"VP of Engineering search\" OR \"VP of Sales search\" OR \"searching for our next CEO\" OR \"leadership transition\") -\"executive coaching\" -\"leadership training program\" -\"our HR consultancy\"",
+        "published_at": "Fri Jul 24 11:10:29 +0000 2026"
+      },
+      {
+        "company_name": "Founder",
+        "author_handle": "x_user",
+        "author_name": "X User",
+        "platform": "x",
+        "content": "A busy week for Albertsons: a new operating model, leadership transition, reduced financial outlook, and a sharp stock decline. These changes could have meaningful implications for supplier partnerships and execution. #albertsons #retailnews #cpg https://t.co/c9t543UhPx",
+        "post_url": "https://x.com/CSARecruiters/status/2080730679298458089",
+        "keyword_matched": "(\"VP of Engineering search\" OR \"VP of Sales search\" OR \"searching for our next CEO\" OR \"leadership transition\") -\"executive coaching\" -\"leadership training program\" -\"our HR consultancy\"",
+        "published_at": "Fri Jul 24 19:03:46 +0000 2026"
+      },
+      {
+        "company_name": "Founder",
+        "author_handle": "x_user",
+        "author_name": "X User",
+        "platform": "x",
+        "content": "IATA Board Appoints Saadia Zahidi As Director General: The International Air Transport Association (IATA) Board has appointed Saadia Zahidi as Director General, a leadership transition that may affect airline industry policies and, by extension, travel\u2026 https://t.co/FWNPKNtDwq https://t.co/M3IuUVRx9k",
+        "post_url": "https://x.com/1TravelNews/status/2080670017553940560",
+        "keyword_matched": "(\"VP of Engineering search\" OR \"VP of Sales search\" OR \"searching for our next CEO\" OR \"leadership transition\") -\"executive coaching\" -\"leadership training program\" -\"our HR consultancy\"",
+        "published_at": "Fri Jul 24 15:02:43 +0000 2026"
+      },
+      {
+        "company_name": "Founder",
+        "author_handle": "x_user",
+        "author_name": "X User",
+        "platform": "x",
+        "content": "Lux Metals Corp. Announces Leadership Transition; Kim Quyen Nguyen Appointed President and Chief Executive Officer $LXM.V https://t.co/4ux4XeaPoB",
+        "post_url": "https://x.com/JrMiningNetwork/status/2081710450362798327",
+        "keyword_matched": "(\"VP of Engineering search\" OR \"VP of Sales search\" OR \"searching for our next CEO\" OR \"leadership transition\") -\"executive coaching\" -\"leadership training program\" -\"our HR consultancy\"",
+        "published_at": "Mon Jul 27 11:57:02 +0000 2026"
+      },
+      {
+        "company_name": "Founder",
+        "author_handle": "x_user",
+        "author_name": "X User",
+        "platform": "x",
+        "content": "Lead change.\nGrow impact.\nShape the future.\n\nACA is searching for our next CEO \u2013 read more, apply, and share here\ud83d\udc47\ud83c\udffc\n\nhttps://t.co/k7OAhiNdF5 https://t.co/EVbijE6jr8",
+        "post_url": "https://x.com/AlignedOfAus/status/1955872491941060854",
+        "keyword_matched": "(\"VP of Engineering search\" OR \"VP of Sales search\" OR \"searching for our next CEO\" OR \"leadership transition\") -\"executive coaching\" -\"leadership training program\" -\"our HR consultancy\"",
+        "published_at": "Thu Aug 14 06:01:55 +0000 2025"
+      },
+      {
+        "company_name": "Founder",
+        "author_handle": "x_user",
+        "author_name": "X User",
+        "platform": "x",
+        "content": "We are searching for our next CEO who will provide clear leadership and deliver both existing and new strategic priorities. Someone with exceptional leadership &amp; communication skills, drive and commitment. Find out more https://t.co/kktuuvX5O7 https://t.co/wh2RazYWB1",
+        "post_url": "https://x.com/BiscuitNews/status/1354064296863436800",
+        "keyword_matched": "(\"VP of Engineering search\" OR \"VP of Sales search\" OR \"searching for our next CEO\" OR \"leadership transition\") -\"executive coaching\" -\"leadership training program\" -\"our HR consultancy\"",
+        "published_at": "Tue Jan 26 13:51:00 +0000 2021"
+      },
+      {
+        "company_name": "Founder",
+        "author_handle": "x_user",
+        "author_name": "X User",
+        "platform": "x",
+        "content": "\ud83d\udc54 One Infosys headline that got buried under the numbers:\n\nAlongside Q1, Infosys named company veteran Ashiss Kumar Dash as CEO-designate. Current CEO Salil Parekh's second term ends, with the handover set for 1 April 2027.\n\nSo the 2nd straight guidance cut (FY27 top end 3.5% \u27a1\ufe0f",
+        "post_url": "https://x.com/Factsovergyan/status/2080543657355284982",
+        "keyword_matched": "(\"VP of Engineering search\" OR \"VP of Sales search\" OR \"searching for our next CEO\" OR \"leadership transition\") -\"executive coaching\" -\"leadership training program\" -\"our HR consultancy\"",
+        "published_at": "Fri Jul 24 06:40:37 +0000 2026"
+      },
+      {
+        "company_name": "Founder",
+        "author_handle": "x_user",
+        "author_name": "X User",
+        "platform": "x",
+        "content": "\u201cI\u2019d love to see a CEO with rural roots \u2013 someone who truly understands life in rural communities,\u201d RCAP's Search Committee says. We are searching for our next CEO! If you or someone you know would be a great fit, see the position profile here: https://t.co/B3DNwGRSrS",
+        "post_url": "https://x.com/RCAPInc/status/1521119882049470467",
+        "keyword_matched": "(\"VP of Engineering search\" OR \"VP of Sales search\" OR \"searching for our next CEO\" OR \"leadership transition\") -\"executive coaching\" -\"leadership training program\" -\"our HR consultancy\"",
+        "published_at": "Mon May 02 13:30:15 +0000 2022"
+      },
+      {
+        "company_name": "dangitman1970",
+        "author_handle": "dangitman1970",
+        "author_name": "dangitman1970",
+        "platform": "reddit",
+        "content": "Sudden disturbing moves for IT in very large companies, mandated by CEOs. Is something happening? What would cause this?\nOver the last week, I have seen a lot of requests coming across about testing if my company can assist in some very large corporations (Fortune 500 level, incomes on the level of billions of US dollars) moving large numbers of VMs (100,000-500,000) over to Linux based virtualization in very short time frames.  Obviously, I can't give details, not what company I work for or whi",
+        "post_url": "https://www.reddit.com/r/sysadmin/comments/xda3jr/sudden_disturbing_moves_for_it_in_very_large/",
+        "keyword_matched": "company searching for new CEO",
+        "published_at": 1663081794.0
+      },
+      {
+        "company_name": "beary_neutral",
+        "author_handle": "beary_neutral",
+        "author_name": "beary_neutral",
+        "platform": "reddit",
+        "content": "Ain't no rest for r/NoRestForTheWicked, when the CEO of a game studio lies to fans about his company's financial troubles, then blames negative reviews on trans people and Ukraine.\n*No Rest for the Wicked* is an RPG currently in Early Access, developed by Moon Studios, who are best known for *Ori and the Blind Forest* and *Ori and the Will of the Wisps*. Unlike the *Ori* games (which were published by Microsoft), *No Rest for the Wicked* is being self-published after its publisher Private Divisi",
+        "post_url": "https://www.reddit.com/r/SubredditDrama/comments/1kkhwi2/aint_no_rest_for_rnorestforthewicked_when_the_ceo/",
+        "keyword_matched": "company searching for new CEO",
+        "published_at": 1747017377.0
+      },
+      {
+        "company_name": "KPOP_MOD",
+        "author_handle": "KPOP_MOD",
+        "author_name": "KPOP_MOD",
+        "platform": "reddit",
+        "content": "Megathread 12: HYBE / ADOR / MHJ - Min Hee Jin files injunction for reappointment, HYBE responds, ADOR's new CEO holds meeting with NewJeans members, and More\nThis [megathread](https://i.imgur.com/CuuqLsG.png) is about the ongoing dispute within HYBE and the management of sub-label ADOR.\n\n**DO NOT make new posts related to this story to the subreddit. If you have new information/articles, add them to the comments below so they can be integrated into the main post.**\n\n\n**THIS POST MAY BE LOCKED O",
+        "post_url": "https://www.reddit.com/r/kpop/comments/1foa743/megathread_12_hybe_ador_mhj_min_hee_jin_files/",
+        "keyword_matched": "company searching for new CEO",
+        "published_at": 1727177440.0
+      },
+      {
+        "company_name": "Direct-Caterpillar77",
+        "author_handle": "Direct-Caterpillar77",
+        "author_name": "Direct-Caterpillar77",
+        "platform": "reddit",
+        "content": "how do we hire people who won\u2019t be alarmed by our cardboard coworker?\n**how do we hire people who won\u2019t be alarmed by our cardboard coworker?** \n\n**Originally posted to Ask A Manager** \n\n[Original Post](https://www.askamanager.org/2026/03/how-do-we-hire-people-who-wont-be-alarmed-by-our-cardboard-coworker.html)\u00a0 **March 18, 2026** \n\nRecently my manager asked me to help revise a job posting and the hiring process because the last two people we hired left only a few weeks after starting. One said ",
+        "post_url": "https://www.reddit.com/r/BestofRedditorUpdates/comments/1tpsf1v/how_do_we_hire_people_who_wont_be_alarmed_by_our/",
+        "keyword_matched": "company searching for new CEO",
+        "published_at": 1779940802.0
+      },
+      {
+        "company_name": "Accurate_Froyo1938",
+        "author_handle": "Accurate_Froyo1938",
+        "author_name": "Accurate_Froyo1938",
+        "platform": "reddit",
+        "content": "my new office is full of dogs \u2014 and I\u2019m allergic\nI am not the op, the original post is from the very useful column askamanager.org run by Alison Green. Go to the page to read her answer!\n\nContent Warning: >!ablism, toxic workplace, ask for more!<\nMood spoilers: >!infuriating!<\n\n[Original](https://www.askamanager.org/2015/07/my-new-office-is-full-of-dogs-and-im-allergic.html) July 29th, 2015\n\n\nThanks to your amazing advice, I was able to land a fantastic job with a big raise after years of stagna",
+        "post_url": "https://www.reddit.com/r/BestofRedditorUpdates/comments/1nz5y87/my_new_office_is_full_of_dogs_and_im_allergic/",
+        "keyword_matched": "company searching for new CEO",
+        "published_at": 1759713868.0
+      },
+      {
+        "company_name": "MaladroitMallard",
+        "author_handle": "MaladroitMallard",
+        "author_name": "MaladroitMallard",
+        "platform": "reddit",
+        "content": "That time the CEO humiliated me in front of the entire company for my anniversary\nThis happened a few years ago, but in celebration of me finding a new job and quitting my old shitty one I want to share this experience with you all.\n\nI started my old job way back in September 2009. Originally intended as a temp job during my studies, due to, let\u2019s say, circumstances, I stuck around until late last year. That meant September 2019 was my ten year anniversary working for the company.\n\nNow, in early",
+        "post_url": "https://www.reddit.com/r/antiwork/comments/199nvl9/that_time_the_ceo_humiliated_me_in_front_of_the/",
+        "keyword_matched": "company searching for new CEO",
+        "published_at": 1705576679.0
+      },
+      {
+        "company_name": "Puginator",
+        "author_handle": "Puginator",
+        "author_name": "Puginator",
+        "platform": "reddit",
+        "content": "Planet Fitness shares fall as company announces new CEO\nPlanet Fitness announced Tuesday that Colleen Keating will take over as the fitness club\u2019s new CEO, effective June 10.\n\nCraig Benson, who has been serving as interim CEO since the departure of Chris Rondeau in September, will remain on the board of directors.\n\nThe announcement comes after months of searching, and some analysts are calling it a positive for the stock, despite shares falling about 3% following the announcement.\n\nPiper Sandler",
+        "post_url": "https://www.reddit.com/r/stocks/comments/1c5vuke/planet_fitness_shares_fall_as_company_announces/",
+        "keyword_matched": "company searching for new CEO",
+        "published_at": 1713313016.0
+      },
+      {
+        "company_name": "-einfachman-",
+        "author_handle": "-einfachman-",
+        "author_name": "-einfachman-",
+        "platform": "reddit",
+        "content": "The Golden Treasure Part II [100% Proof Apes Get Paid]\n**TL;DR: The new Presidential Admin \\[Trump Administration\\] wants a resolution to the MMTLP situation \\[an indefinitely halted stock full of naked short positions\\]. The company that issued MMTLP successfully filed subpoenas to Citadel, Virtue, DTCC, and others for trading and share data. Multiple credible sources further confirm (1) the MMTLP stock price's exponential explosion before the rare U3 halt and reversal and (2) that a resolution",
+        "post_url": "https://www.reddit.com/r/Superstonk/comments/1ohiz4y/the_golden_treasure_part_ii_100_proof_apes_get/",
+        "keyword_matched": "company searching for new CEO",
+        "published_at": 1761582234.0
+      },
+      {
+        "company_name": "Chaosbrushogun",
+        "author_handle": "Chaosbrushogun",
+        "author_name": "Chaosbrushogun",
+        "platform": "reddit",
+        "content": "(Beloved trope) One of the main cast members frequently has their own independent adventures with little to no involvement or acknowledgement from the rest of the cast.\nMalcolm in the Middlem- Francis. Sent away to military school at the beginning of the series, the show would use his stories as the B or C plot to various episodes. This would become a common trend as the show went on, with only a handful of times where he\u2019s actually on screen together with his family.\n\nPhineas & Ferb - Perry the",
+        "post_url": "https://www.reddit.com/gallery/1sacpz1",
+        "keyword_matched": "company searching for new CEO",
+        "published_at": 1775122588.0
+      },
+      {
+        "company_name": "1992Prime",
+        "author_handle": "1992Prime",
+        "author_name": "1992Prime",
+        "platform": "reddit",
+        "content": "OPEN is the next fat finger attention trade that's worth buying anyways\nHey, its me again, shitty miata guy. I've been eyeing this trade for a while and now ready to share the DD I've put together. Today, we\u2019re going deep into Opendoor, so learn to read or skip to the pictures.\n\nOPEN has a new CEO from Shopify that reads the bible every day, is an AI maximalist, and receives a $1 salary. The business has excellent new products and plans, improving fundamentals, and real upcoming catalysts. Atten",
+        "post_url": "https://www.reddit.com/r/wallstreetbets/comments/1tur8yh/open_is_the_next_fat_finger_attention_trade_thats/",
+        "keyword_matched": "company searching for new CEO",
+        "published_at": 1780407483.0
+      },
+      {
+        "company_name": "cogito_ergo_subtract",
+        "author_handle": "cogito_ergo_subtract",
+        "author_name": "cogito_ergo_subtract",
+        "platform": "reddit",
+        "content": "A Statement from the Mods of /r/Amsterdam\nToday the NRC [published a story](https://www.nrc.nl/nieuws/2025/10/21/neobank-bunq-dreigt-met-rechtszaak-tegen-reddit-om-kritiek-ex-medewerker-a4910156) about Bunq contacting us.\n\nAs moderators of /r/Amsterdam, we are volunteers working to help provide community and discussion for the city we love. One of our values, in Dutch tradition, is open dialog. Following that value, we only delete posts if they break our rules (for example, hate/intolerance, spa",
+        "post_url": "https://www.reddit.com/r/Amsterdam/comments/1ocmqug/a_statement_from_the_mods_of_ramsterdam/",
+        "keyword_matched": "company searching for new CEO",
+        "published_at": 1761075550.0
+      },
+      {
+        "company_name": "callsonreddit",
+        "author_handle": "callsonreddit",
+        "author_name": "callsonreddit",
+        "platform": "reddit",
+        "content": "Google says AI demand forcing 2x capacity growth every 6 months as it targets 1000x scale in 5 years\nNo paywall: [https://arstechnica.com/ai/2025/11/google-tells-employees-it-must-double-capacity-every-6-months-to-meet-ai-demand/](https://arstechnica.com/ai/2025/11/google-tells-employees-it-must-double-capacity-every-6-months-to-meet-ai-demand/)\n\n>While AI bubble talk\u00a0fills the air\u00a0these days, with fears of overinvestment that could\u00a0pop\u00a0at any time, something of a contradiction is brewing on the",
+        "post_url": "https://www.reddit.com/r/wallstreetbets/comments/1p4532c/google_says_ai_demand_forcing_2x_capacity_growth/",
+        "keyword_matched": "company searching for new CEO",
+        "published_at": 1763847802.0
+      },
+      {
+        "company_name": "mrtnptrs",
+        "author_handle": "mrtnptrs",
+        "author_name": "mrtnptrs",
+        "platform": "reddit",
+        "content": "KSP1 likely has an upcoming update in the works & KSP1 and KSP2 are changing publisher; from Private Division to The Kerbal Company/KerbalCo LLC\nIt looks like that, since the 13th of March, 2026, **an update for Kerbal Space Program (KSP, 2015) is in the works**. Ever since that date, most days of the work-week, changes have been pushed to the Steam backend quite consistently. This might be occuring due to KSP and KSP2 seemingly having **changed publishers**.\n\nSince the 16th of April, Steam chan",
+        "post_url": "https://www.reddit.com/r/KerbalSpaceProgram/comments/1tj2wjs/ksp1_likely_has_an_upcoming_update_in_the_works/",
+        "keyword_matched": "company searching for new CEO",
+        "published_at": 1779319933.0
+      },
+      {
+        "company_name": "Suspicious_Might_663",
+        "author_handle": "Suspicious_Might_663",
+        "author_name": "Suspicious_Might_663",
+        "platform": "reddit",
+        "content": "Uncovering another church real estate company in New York with $92,510,000 in Staten Island property for development\nAfter doing more OSINT work, I located another seemingly under-the-radar church-owned company: **Sutherland Marine Development LLC** (Sutherland hereafter). Sutherland owns more than 15 million square feet of currently undeveloped land on Staten Island worth $92,510,000 and appears to have worked with a nearby logistics park to seek approval for extending the park onto Sutherland'",
+        "post_url": "https://www.reddit.com/gallery/1m4rtv1",
+        "keyword_matched": "company searching for new CEO",
+        "published_at": 1753025599.0
+      },
+      {
+        "company_name": "funyflyer",
+        "author_handle": "funyflyer",
+        "author_name": "funyflyer",
+        "platform": "reddit",
+        "content": "Update : Large US company came after me for releasing a free open source self-hostable alternative - Resolved in our favor\nThis is a follow up to my [previous post](https://www.reddit.com/r/selfhosted/comments/1rbkx5e/large_us_company_came_after_me_for_releasing_a/) regarding the C&D notice I received. I have some incredible news for the community: the matter is officially resolved in favor of the entire drone community.\n\n**TLDR:** **AirData UAV** has complied with community concerns, implemente",
+        "post_url": "https://www.reddit.com/r/selfhosted/comments/1rfroov/update_large_us_company_came_after_me_for/",
+        "keyword_matched": "company searching for new CEO",
+        "published_at": 1772152308.0
+      },
+      {
+        "company_name": "Casshew111",
+        "author_handle": "Casshew111",
+        "author_name": "Casshew111",
+        "platform": "reddit",
+        "content": "Meghan and Harry\u2019s Falling Out With Netflix \u2014 and Why the Royal Couple Is Struggling in Hollywood *VARIETY*\n**This is the longest Article - I've ever seen.  Settle in.**\n\n[**Here is the link**](https://variety.com/2026/film/news/meghan-markle-harry-netflix-partnership-struggling-1236690802/) \n\n\n\nAfter five and a half tumultuous years at Netflix, are the Duke and Duchess of Sussex on the outs in the streaming kingdom?\n\nThat\u2019s been a burning question around Hollywood, as the couple\u2019s company, Arch",
+        "post_url": "https://i.redd.it/pak9kinv4npg1.png",
+        "keyword_matched": "company searching for new CEO",
+        "published_at": 1773769101.0
+      },
+      {
+        "company_name": "CM_MOJO",
+        "author_handle": "CM_MOJO",
+        "author_name": "CM_MOJO",
+        "platform": "reddit",
+        "content": "Want to See the 1% Really S#!t Themselves\nI was called for jury duty in the early 2000s, in Orlando, Florida.\u00a0 The defendant was being tried for resisting arrest.\u00a0 We went through voir dire (where the lawyers question and select possible jurors), and the six jurors, of which I was one, and one alternate were selected.\u00a0\n\nWe listened to the case.\u00a0 It was a woman who had been arrested for assault.\u00a0 Some kind of domestic disturbance had occurred and the police were called.\u00a0 They arrived and decided ",
+        "post_url": "https://www.reddit.com/r/antiwork/comments/1hcwbu2/want_to_see_the_1_really_st_themselves/",
+        "keyword_matched": "company searching for new CEO",
+        "published_at": 1734039993.0
+      },
+      {
+        "company_name": "Direct-Caterpillar77",
+        "author_handle": "Direct-Caterpillar77",
+        "author_name": "Direct-Caterpillar77",
+        "platform": "reddit",
+        "content": "Is this job application horribly invasive or is it just me?\n**Is this\u00a0job application horribly invasive\u00a0or is it just me?**\n\n**Originally posted to Ask A Manager**\n\n**Thanks to u/Lynavi for help with the comments**\n\n[Original Post](https://www.askamanager.org/2016/11/is-this-job-application-horribly-invasive-or-is-it-just-me.html)  **Nov 23, 2016**\n\nI\u2019ve been looking for work for quite a while, and came across a job that looked fantastic. I was more than qualified, had a passion for the work, an",
+        "post_url": "https://www.reddit.com/r/BestofRedditorUpdates/comments/1ny7f3n/is_this_job_application_horribly_invasive_or_is/",
+        "keyword_matched": "company searching for new CEO",
+        "published_at": 1759616668.0
+      },
+      {
+        "company_name": "Direct-Caterpillar77",
+        "author_handle": "Direct-Caterpillar77",
+        "author_name": "Direct-Caterpillar77",
+        "platform": "reddit",
+        "content": "our horrible HR manager tells lies, is rude and petty, and won\u2019t do her job\n**our horrible HR manager tells lies, is rude and petty, and won\u2019t do her job**\n\n**Originally posted to Ask A Manager**\n\n**TRIGGER WARNING:** >!hostile workplace!<\n\n[Original Post](https://www.askamanager.org/2016/09/our-horrible-hr-manager-tells-lies-is-rude-and-petty-and-wont-do-her-job.html)  **Sept 19, 2016**\n\nI\u2019m in upper management at a growing company. Until two years ago, each executive had the HR responsibilitie",
+        "post_url": "https://www.reddit.com/r/BestofRedditorUpdates/comments/1nu3bpm/our_horrible_hr_manager_tells_lies_is_rude_and/",
+        "keyword_matched": "company searching for new CEO",
+        "published_at": 1759204922.0
+      },
+      {
+        "company_name": "KPOP_MOD",
+        "author_handle": "KPOP_MOD",
+        "author_name": "KPOP_MOD",
+        "platform": "reddit",
+        "content": "Megathread 24: HYBE / ADOR / MHJ - Court rules in favor of ADOR, NewJeans' Contract remains Valid, further hearings for Source, Belift, and HYBE against Min Hee Jin to come, and More\nThis [megathread](https://i.imgur.com/CuuqLsG.png) is about the ongoing dispute within HYBE and the management of sub-label ADOR.\n\n**Substantial news developments may be posted to the subreddit (outside of the Megathreads). Moderators will only approve posts that focus on statements by relevant parties, official rep",
+        "post_url": "https://www.reddit.com/r/kpop/comments/1ojnnsn/megathread_24_hybe_ador_mhj_court_rules_in_favor/",
+        "keyword_matched": "company searching for new CEO",
+        "published_at": 1761790048.0
+      },
+      {
+        "company_name": "RealPulte",
+        "author_handle": "RealPulte",
+        "author_name": "RealPulte",
+        "platform": "reddit",
+        "content": "AMA with u/RealPulte - grille me\nQ: After you onboarded BCG, what were the first signs that put up your red flags? (u/EternalEight) and Q:Who's decision was it to hire BCG and how did they know about/decide to use BCG? (u/Arkayb33)\n\nA: To be clear, I did not onboard BCG. My Grandpa (also Bill Pulte) retired in 2009. After that, then-CEO of PulteGroup, Richard Dugas, hired BCG to help him with strategy. Dugas had done a stupid deal in buying Centex Homes (top 3 USA homebuilder) and was struggling",
+        "post_url": "https://www.reddit.com/r/Superstonk/comments/u20qb5/ama_with_urealpulte_grille_me/",
+        "keyword_matched": "company searching for new CEO",
+        "published_at": 1649774582.0
+      },
+      {
+        "company_name": "redingerforcongress",
+        "author_handle": "redingerforcongress",
+        "author_name": "redingerforcongress",
+        "platform": "reddit",
+        "content": "Elon Musk pays people to astroturf reddit.\nWhy pay for a bunch of TV advertisements when you can pay a bunch of [college kids](https://xkcd.com/1019/) to make posts using specialized sockpuppet software?\n\nAn article from Deutschlandfunk describes how \"online armies take on defense work and information policy for Elon Musk\" via tech blogs and social media.\n\nIn addition, Tesla's clean-energy division Tesla Energy is alleged to have a team dedicated to searching for customer complaints on social me",
+        "post_url": "https://www.reddit.com/r/fuckcars/comments/xia0s9/elon_musk_pays_people_to_astroturf_reddit/",
+        "keyword_matched": "company searching for new CEO",
+        "published_at": 1663588866.0
+      },
+      {
+        "company_name": "bassnbrats",
+        "author_handle": "bassnbrats",
+        "author_name": "bassnbrats",
+        "platform": "reddit",
+        "content": "Is your team's owner a Nepo Baby? An Analysis of Current NFL Head Coach Searches\nWith Sean McDermot getting fired from the Buffalo Bills yesterday, the NFL will now see 10 novel head coaches-team pairings in the 2026 season. Four of the head coach openings have been filled as of this post (NY Giants - John Harbaugh, Atlanta Falcons - Kevin Stefanski, Miami Dolphins - Jeff Hafley, Tennessee Titans - Robert Saleh).\u00a0\u00a0\n\nJournalism concerning coaching searches leads us to believe that the owners of N",
+        "post_url": "https://www.reddit.com/r/nfl/comments/1qhzxtv/is_your_teams_owner_a_nepo_baby_an_analysis_of/",
+        "keyword_matched": "company searching for new CEO",
+        "published_at": 1768912508.0
+      },
+      {
+        "company_name": "dutch1664",
+        "author_handle": "dutch1664",
+        "author_name": "dutch1664",
+        "platform": "reddit",
+        "content": "Rockets Are Worth Their Weight in Gold (Aka RKLB to $519).\nI didn't think I could love Rocket Lab CEO Peter Beck more as a Engineer, a CEO, and all round good guy... until that is, I found out he owns a gold mine.\n\nI intend today to convince you that valuing rocket launch companies is analogous to valuing gold mining discoveries. (I'm not joking!)\n\n*TL;DR: Two or three survivors have to amortize the costs of all failed attempts (over 100+). This is a well proven and understood centuries old conc",
+        "post_url": "https://www.reddit.com/r/wallstreetbets/comments/1st4o9q/rockets_are_worth_their_weight_in_gold_aka_rklb/",
+        "keyword_matched": "company searching for new CEO",
+        "published_at": 1776907919.0
+      },
+      {
+        "company_name": "LearningFinance23",
+        "author_handle": "LearningFinance23",
+        "author_name": "LearningFinance23",
+        "platform": "reddit",
+        "content": "My new office is full of dogs \u2014 and I\u2019m allergic\n**I am not OP. This was originally posted on AskAManager** [**here**](https://www.askamanager.org/2015/07/my-new-office-is-full-of-dogs-and-im-allergic.html)**, and the update can be found** [**here**](https://www.askamanager.org/2015/12/update-my-new-office-is-full-of-dogs-and-im-allergic.html) **(JULY 29, 2015). The first contains Allison's response if you wish to read it.**\n\nThanks to your amazing advice, I was able to land a fantastic job with",
+        "post_url": "https://www.reddit.com/r/BestofRedditorUpdates/comments/ydipru/my_new_office_is_full_of_dogs_and_im_allergic/",
+        "keyword_matched": "company searching for new CEO",
+        "published_at": 1666739833.0
+      },
+      {
+        "company_name": "Your VP Engineering Search Has Already S",
+        "author_handle": "google_search",
+        "author_name": "Google Result",
+        "platform": "google",
+        "content": "Your VP Engineering Search Has Already Started | Imaz Akif\n",
+        "post_url": "https://www.linkedin.com/posts/imaz-akif-737475175_a-vp-engineering-search-often-starts-six-activity-7485661757550817280-XIdc",
+        "keyword_matched": "(\"searching for our next CEO\" OR \"VP Engineering search\" OR \"board announces leadership transition\") -\"executive coaching\" -\"leadership training program\"",
+        "published_at": "2026-07-30T00:00:00Z"
+      },
+      {
+        "company_name": "VP of Engineering Executive Search | Maj",
+        "author_handle": "google_search",
+        "author_name": "Google Result",
+        "platform": "google",
+        "content": "VP of Engineering Executive Search | Majhi Group\n",
+        "post_url": "https://www.majhigroup.com/vp-engineering-search.html",
+        "keyword_matched": "(\"searching for our next CEO\" OR \"VP Engineering search\" OR \"board announces leadership transition\") -\"executive coaching\" -\"leadership training program\"",
+        "published_at": "2026-07-30T00:00:00Z"
+      },
+      {
+        "company_name": "Retained CTO & VP Engineering Search",
+        "author_handle": "google_search",
+        "author_name": "Google Result",
+        "platform": "google",
+        "content": "Retained CTO & VP Engineering Search - APAC & EMEA - Sercxi\n",
+        "post_url": "https://sercxi.io/services/ai-era-executive-search",
+        "keyword_matched": "(\"searching for our next CEO\" OR \"VP Engineering search\" OR \"board announces leadership transition\") -\"executive coaching\" -\"leadership training program\"",
+        "published_at": "2026-07-30T00:00:00Z"
+      },
+      {
+        "company_name": "How to Hire Executive Tech Leaders | Blo",
+        "author_handle": "google_search",
+        "author_name": "Google Result",
+        "platform": "google",
+        "content": "How to Hire Executive Tech Leaders | Blog - Techneeds\n",
+        "post_url": "https://www.techneeds.com/2026/07/28/how-to-hire-executive-tech-leaders-the-4-best-methods-for-placing-executive-level-tech-talent-cto-vp/",
+        "keyword_matched": "(\"searching for our next CEO\" OR \"VP Engineering search\" OR \"board announces leadership transition\") -\"executive coaching\" -\"leadership training program\"",
+        "published_at": "2026-07-30T00:00:00Z"
+      },
+      {
+        "company_name": "SaaS & Technology Recruiting",
+        "author_handle": "google_search",
+        "author_name": "Google Result",
+        "platform": "google",
+        "content": "SaaS & Technology Recruiting\n",
+        "post_url": "https://recruitslab.com/saas-technology-recruiting",
+        "keyword_matched": "(\"searching for our next CEO\" OR \"VP Engineering search\" OR \"board announces leadership transition\") -\"executive coaching\" -\"leadership training program\"",
+        "published_at": "2026-07-30T00:00:00Z"
+      },
+      {
+        "company_name": "Most Indian Founders Hire Their VP Engin",
+        "author_handle": "google_search",
+        "author_name": "Google Result",
+        "platform": "google",
+        "content": "Most Indian Founders Hire Their VP Engineering or Head of AI at the ...\n",
+        "post_url": "https://www.linkedin.com/pulse/most-indian-founders-hire-vp-engineering-head-ai-wrong-siddiqui-atlsc",
+        "keyword_matched": "(\"searching for our next CEO\" OR \"VP Engineering search\" OR \"board announces leadership transition\") -\"executive coaching\" -\"leadership training program\"",
+        "published_at": "2026-07-30T00:00:00Z"
+      },
+      {
+        "company_name": "Testimonials \u2014 HireNest Global",
+        "author_handle": "google_search",
+        "author_name": "Google Result",
+        "platform": "google",
+        "content": "Testimonials \u2014 HireNest Global\n",
+        "post_url": "https://www.hirenestgloball.com/testimonials",
+        "keyword_matched": "(\"searching for our next CEO\" OR \"VP Engineering search\" OR \"board announces leadership transition\") -\"executive coaching\" -\"leadership training program\"",
+        "published_at": "2026-07-30T00:00:00Z"
+      },
+      {
+        "company_name": "Engagement Record",
+        "author_handle": "google_search",
+        "author_name": "Google Result",
+        "platform": "google",
+        "content": "Engagement Record - MitchelLake Group\n",
+        "post_url": "https://mitchellake.com/work",
+        "keyword_matched": "(\"searching for our next CEO\" OR \"VP Engineering search\" OR \"board announces leadership transition\") -\"executive coaching\" -\"leadership training program\"",
+        "published_at": "2026-07-30T00:00:00Z"
+      },
+      {
+        "company_name": "Customers",
+        "author_handle": "google_search",
+        "author_name": "Google Result",
+        "platform": "google",
+        "content": "Customers - Contrario\n",
+        "post_url": "https://www.contrario.ai/customers",
+        "keyword_matched": "(\"searching for our next CEO\" OR \"VP Engineering search\" OR \"board announces leadership transition\") -\"executive coaching\" -\"leadership training program\"",
+        "published_at": "2026-07-30T00:00:00Z"
+      },
+      {
+        "company_name": "MandateSignal \u2014 See your next mandate fi",
+        "author_handle": "google_search",
+        "author_name": "Google Result",
+        "platform": "google",
+        "content": "MandateSignal \u2014 See your next mandate first\n",
+        "post_url": "https://www.mandatesignal.com/",
+        "keyword_matched": "(\"searching for our next CEO\" OR \"VP Engineering search\" OR \"board announces leadership transition\") -\"executive coaching\" -\"leadership training program\"",
+        "published_at": "2026-07-30T00:00:00Z"
+      }
+    ]
+  },
+  "object_2_llm_qualified_leads": {
+    "active_niche": "recruitment_agencies",
+    "active_subtype": "executive_search",
+    "mistral_token_usage": {
+      "prompt_tokens": 12563,
+      "completion_tokens": 1877,
+      "total_tokens": 14440
+    },
+    "qualified_count": 12,
+    "qualified_leads": [
+      {
+        "company_name": "Founder",
+        "author_handle": "x_user",
+        "author_name": "X User",
+        "platform": "x",
+        "content": "\ud83d\udea8 #Swiggy Announces Leadership Change at Instamart \ud83d\uded2\n\n\ud83d\udfe2 Management Update\n\n\ud83d\udccc Amitesh Kumar Jha has resigned as CEO of Instamart to pursue other opportunities.\n\n\ud83d\udc69\u200d\ud83d\udcbc Nandita Sinha has been appointed as the new CEO of Instamart.\n\n\ud83c\udf1f Nandita Sinha brings extensive leadership",
+        "post_url": "https://x.com/CapitalInsight3/status/2082009776008081520",
+        "keyword_matched": "(\"VP of Engineering search\" OR \"VP of Sales search\" OR \"searching for our next CEO\" OR \"leadership transition\") -\"executive coaching\" -\"leadership training program\" -\"our HR consultancy\"",
+        "published_at": "Tue Jul 28 07:46:27 +0000 2026",
+        "classification": "HOT",
+        "reason": "Leadership transition (CEO departure + new CEO appointment) at Instamart, a B2B SaaS/tech company, signals urgent executive search need.",
+        "summary": "\"Amitesh Kumar Jha resigned; Nandita Sinha appointed as new CEO of Instamart\" - Leadership transition (CEO departure + new CEO appointment) at Instamart, a B2B SaaS/tech company, signals urgent executive search need.",
+        "confidence": 0.95,
+        "location_mentioned": null,
+        "budget_mentioned": null,
+        "urgency_indicators": [
+          "ASAP"
+        ],
+        "competitor_mentioned": null
+      },
+      {
+        "company_name": "Founder",
+        "author_handle": "x_user",
+        "author_name": "X User",
+        "platform": "x",
+        "content": "Cracker Barrel announced that its president and CEO, Julie Masino, will step down next month, nearly a year after the restaurant chain's attempted rebrand sparked fierce backlash from customers. https://t.co/I0LztoOBj6",
+        "post_url": "https://x.com/fox11reno/status/2081809373869838504",
+        "keyword_matched": "(\"VP of Engineering search\" OR \"VP of Sales search\" OR \"searching for our next CEO\" OR \"leadership transition\") -\"executive coaching\" -\"leadership training program\" -\"our HR consultancy\"",
+        "published_at": "Mon Jul 27 18:30:07 +0000 2026",
+        "classification": "HOT",
+        "reason": "Cracker Barrel\u2019s CEO departure post-rebrand failure indicates urgent leadership restructuring for a mid-sized restaurant chain.",
+        "summary": "\"Julie Masino stepping down after rebrand backlash\" - Cracker Barrel\u2019s CEO departure post-rebrand failure indicates urgent leadership restructuring for a mid-sized restaurant chain.",
+        "confidence": 0.9,
+        "location_mentioned": null,
+        "budget_mentioned": null,
+        "urgency_indicators": [
+          "ASAP"
+        ],
+        "competitor_mentioned": null
+      },
+      {
+        "company_name": "Founder",
+        "author_handle": "x_user",
+        "author_name": "X User",
+        "platform": "x",
+        "content": "International Tower Hill Mines Announces Executive Leadership Transition to Advance Livengood Gold Project $ITH.TO https://t.co/0aaZZo38D2",
+        "post_url": "https://x.com/JrMiningNetwork/status/2081698370003828995",
+        "keyword_matched": "(\"VP of Engineering search\" OR \"VP of Sales search\" OR \"searching for our next CEO\" OR \"leadership transition\") -\"executive coaching\" -\"leadership training program\" -\"our HR consultancy\"",
+        "published_at": "Mon Jul 27 11:09:02 +0000 2026",
+        "classification": "HOT",
+        "reason": "Executive leadership transition at International Tower Hill Mines (gold mining) signals urgent hiring for senior roles.",
+        "summary": "\"Leadership transition to advance Livengood Gold Project\" - Executive leadership transition at International Tower Hill Mines (gold mining) signals urgent hiring for senior roles.",
+        "confidence": 0.85,
+        "location_mentioned": null,
+        "budget_mentioned": null,
+        "urgency_indicators": [
+          "ASAP"
+        ],
+        "competitor_mentioned": null
+      },
+      {
+        "company_name": "Founder",
+        "author_handle": "x_user",
+        "author_name": "X User",
+        "platform": "x",
+        "content": "Infosys Announces Leadership Transition: Ashiss Kumar Dash to Become CEO from April 2027\n\nInfosys has announced a planned leadership transition, naming Ashiss Kumar Dash as its next Chief Executive Officer (CEO) and Managing Director.\n\n#Infosys #AshissKumarDash #SalilParekh #CEO https://t.co/Pss4iHTuMF",
+        "post_url": "https://x.com/BusinessConne16/status/2080553863736861013",
+        "keyword_matched": "(\"VP of Engineering search\" OR \"VP of Sales search\" OR \"searching for our next CEO\" OR \"leadership transition\") -\"executive coaching\" -\"leadership training program\" -\"our HR consultancy\"",
+        "published_at": "Fri Jul 24 07:21:10 +0000 2026",
+        "classification": "HOT",
+        "reason": "Infosys\u2019 planned CEO transition (Dash replacing Parekh) signals high-volume executive search urgency in a global tech leader.",
+        "summary": "\"Ashiss Kumar Dash to become Infosys CEO from April 2027\" - Infosys\u2019 planned CEO transition (Dash replacing Parekh) signals high-volume executive search urgency in a global tech leader.",
+        "confidence": 0.98,
+        "location_mentioned": null,
+        "budget_mentioned": null,
+        "urgency_indicators": [
+          "ASAP"
+        ],
+        "competitor_mentioned": null
+      },
+      {
+        "company_name": "Founder",
+        "author_handle": "x_user",
+        "author_name": "X User",
+        "platform": "x",
+        "content": "Lead change.\nGrow impact.\nShape the future.\n\nACA is searching for our next CEO \u2013 read more, apply, and share here\ud83d\udc47\ud83c\udffc\n\nhttps://t.co/k7OAhiNdF5 https://t.co/EVbijE6jr8",
+        "post_url": "https://x.com/AlignedOfAus/status/1955872491941060854",
+        "keyword_matched": "(\"VP of Engineering search\" OR \"VP of Sales search\" OR \"searching for our next CEO\" OR \"leadership transition\") -\"executive coaching\" -\"leadership training program\" -\"our HR consultancy\"",
+        "published_at": "Thu Aug 14 06:01:55 +0000 2025",
+        "classification": "HOT",
+        "reason": "CEO search announced with clear leadership transition signal",
+        "summary": "\"ACA is searching for our next CEO\" - CEO search announced with clear leadership transition signal",
+        "confidence": 0.95,
+        "location_mentioned": null,
+        "budget_mentioned": null,
+        "urgency_indicators": [
+          "ASAP"
+        ],
+        "competitor_mentioned": null
+      },
+      {
+        "company_name": "Founder",
+        "author_handle": "x_user",
+        "author_name": "X User",
+        "platform": "x",
+        "content": "We are searching for our next CEO who will provide clear leadership and deliver both existing and new strategic priorities. Someone with exceptional leadership &amp; communication skills, drive and commitment. Find out more https://t.co/kktuuvX5O7 https://t.co/wh2RazYWB1",
+        "post_url": "https://x.com/BiscuitNews/status/1354064296863436800",
+        "keyword_matched": "(\"VP of Engineering search\" OR \"VP of Sales search\" OR \"searching for our next CEO\" OR \"leadership transition\") -\"executive coaching\" -\"leadership training program\" -\"our HR consultancy\"",
+        "published_at": "Tue Jan 26 13:51:00 +0000 2021",
+        "classification": "HOT",
+        "reason": "CEO search announced with clear leadership transition signal",
+        "summary": "\"We are searching for our next CEO\" - CEO search announced with clear leadership transition signal",
+        "confidence": 0.95,
+        "location_mentioned": null,
+        "budget_mentioned": null,
+        "urgency_indicators": [
+          "ASAP"
+        ],
+        "competitor_mentioned": null
+      },
+      {
+        "company_name": "Founder",
+        "author_handle": "x_user",
+        "author_name": "X User",
+        "platform": "x",
+        "content": "\u201cI\u2019d love to see a CEO with rural roots \u2013 someone who truly understands life in rural communities,\u201d RCAP's Search Committee says. We are searching for our next CEO! If you or someone you know would be a great fit, see the position profile here: https://t.co/B3DNwGRSrS",
+        "post_url": "https://x.com/RCAPInc/status/1521119882049470467",
+        "keyword_matched": "(\"VP of Engineering search\" OR \"VP of Sales search\" OR \"searching for our next CEO\" OR \"leadership transition\") -\"executive coaching\" -\"leadership training program\" -\"our HR consultancy\"",
+        "published_at": "Mon May 02 13:30:15 +0000 2022",
+        "classification": "HOT",
+        "reason": "CEO search announced with clear leadership transition signal",
+        "summary": "\"RCAP's Search Committee says: We are searching for our next CEO\" - CEO search announced with clear leadership transition signal",
+        "confidence": 0.95,
+        "location_mentioned": null,
+        "budget_mentioned": null,
+        "urgency_indicators": [
+          "ASAP"
+        ],
+        "competitor_mentioned": null
+      },
+      {
+        "company_name": "Puginator",
+        "author_handle": "Puginator",
+        "author_name": "Puginator",
+        "platform": "reddit",
+        "content": "Planet Fitness shares fall as company announces new CEO\nPlanet Fitness announced Tuesday that Colleen Keating will take over as the fitness club\u2019s new CEO, effective June 10.\n\nCraig Benson, who has been serving as interim CEO since the departure of Chris Rondeau in September, will remain on the board of directors.\n\nThe announcement comes after months of searching, and some analysts are calling it a positive for the stock, despite shares falling about 3% following the announcement.\n\nPiper Sandler",
+        "post_url": "https://www.reddit.com/r/stocks/comments/1c5vuke/planet_fitness_shares_fall_as_company_announces/",
+        "keyword_matched": "company searching for new CEO",
+        "published_at": 1713313016.0,
+        "classification": "HOT",
+        "reason": "New CEO announced with clear leadership transition signal",
+        "summary": "\"Planet Fitness announces new CEO Colleen Keating\" - New CEO announced with clear leadership transition signal",
+        "confidence": 0.95,
+        "location_mentioned": null,
+        "budget_mentioned": null,
+        "urgency_indicators": [
+          "ASAP"
+        ],
+        "competitor_mentioned": null
+      },
+      {
+        "company_name": "RealPulte",
+        "author_handle": "RealPulte",
+        "author_name": "RealPulte",
+        "platform": "reddit",
+        "content": "AMA with u/RealPulte - grille me\nQ: After you onboarded BCG, what were the first signs that put up your red flags? (u/EternalEight) and Q:Who's decision was it to hire BCG and how did they know about/decide to use BCG? (u/Arkayb33)\n\nA: To be clear, I did not onboard BCG. My Grandpa (also Bill Pulte) retired in 2009. After that, then-CEO of PulteGroup, Richard Dugas, hired BCG to help him with strategy. Dugas had done a stupid deal in buying Centex Homes (top 3 USA homebuilder) and was struggling",
+        "post_url": "https://www.reddit.com/r/Superstonk/comments/u20qb5/ama_with_urealpulte_grille_me/",
+        "keyword_matched": "company searching for new CEO",
+        "published_at": 1649774582.0,
+        "classification": "HOT",
+        "reason": "Company hiring BCG for strategy, signaling urgent need for external expertise (enterprise-level consulting)",
+        "summary": "\"Richard Dugas hired BCG to help with strategy after a failed acquisition\" - Company hiring BCG for strategy, signaling urgent need for external expertise (enterprise-level consulting)",
+        "confidence": 0.95,
+        "location_mentioned": "USA",
+        "budget_mentioned": "$10M+",
+        "urgency_indicators": [
+          "ASAP"
+        ],
+        "competitor_mentioned": null
+      },
+      {
+        "company_name": "callsonreddit",
+        "author_handle": "callsonreddit",
+        "author_name": "callsonreddit",
+        "platform": "reddit",
+        "content": "Google says AI demand forcing 2x capacity growth every 6 months as it targets 1000x scale in 5 years\nNo paywall: [https://arstechnica.com/ai/2025/11/google-tells-employees-it-must-double-capacity-every-6-months-to-meet-ai-demand/](https://arstechnica.com/ai/2025/11/google-tells-employees-it-must-double-capacity-every-6-months-to-meet-ai-demand/)\n\n>While AI bubble talk\u00a0fills the air\u00a0these days, with fears of overinvestment that could\u00a0pop\u00a0at any time, something of a contradiction is brewing on the",
+        "post_url": "https://www.reddit.com/r/wallstreetbets/comments/1p4532c/google_says_ai_demand_forcing_2x_capacity_growth/",
+        "keyword_matched": "company searching for new CEO",
+        "published_at": 1763847802.0,
+        "classification": "WARM",
+        "reason": "AI demand growth signals potential scaling needs for tech/enterprise roles",
+        "summary": "\"Google doubles AI capacity every 6 months to meet demand\" - AI demand growth signals potential scaling needs for tech/enterprise roles",
+        "confidence": 0.8,
+        "location_mentioned": "San Francisco/USA",
+        "budget_mentioned": "$50M+",
+        "urgency_indicators": [
+          "Short-term"
+        ],
+        "competitor_mentioned": null
+      },
+      {
+        "company_name": "Your VP Engineering Search Has Already S",
+        "author_handle": "google_search",
+        "author_name": "Google Result",
+        "platform": "google",
+        "content": "Your VP Engineering Search Has Already Started | Imaz Akif\n",
+        "post_url": "https://www.linkedin.com/posts/imaz-akif-737475175_a-vp-engineering-search-often-starts-six-activity-7485661757550817280-XIdc",
+        "keyword_matched": "(\"searching for our next CEO\" OR \"VP Engineering search\" OR \"board announces leadership transition\") -\"executive coaching\" -\"leadership training program\"",
+        "published_at": "2026-07-30T00:00:00Z",
+        "classification": "HOT",
+        "reason": "Direct VP Engineering search signal in executive search context",
+        "summary": "\"VP Engineering Search Has Already Started\" - Direct VP Engineering search signal in executive search context",
+        "confidence": 0.95,
+        "location_mentioned": null,
+        "budget_mentioned": null,
+        "urgency_indicators": [
+          "ASAP"
+        ],
+        "competitor_mentioned": null
+      },
+      {
+        "company_name": "Most Indian Founders Hire Their VP Engin",
+        "author_handle": "google_search",
+        "author_name": "Google Result",
+        "platform": "google",
+        "content": "Most Indian Founders Hire Their VP Engineering or Head of AI at the ...\n",
+        "post_url": "https://www.linkedin.com/pulse/most-indian-founders-hire-vp-engineering-head-ai-wrong-siddiqui-atlsc",
+        "keyword_matched": "(\"searching for our next CEO\" OR \"VP Engineering search\" OR \"board announces leadership transition\") -\"executive coaching\" -\"leadership training program\"",
+        "published_at": "2026-07-30T00:00:00Z",
+        "classification": "WARM",
+        "reason": "Industry commentary on common hiring practice for VP Engineering/Head of AI roles",
+        "summary": "\"Most Indian Founders Hire Their VP Engineering or Head of AI at the ...\" - Industry commentary on common hiring practice for VP Engineering/Head of AI roles",
+        "confidence": 0.7,
+        "location_mentioned": null,
+        "budget_mentioned": null,
+        "urgency_indicators": [],
+        "competitor_mentioned": null
+      }
+    ]
+  }
+}

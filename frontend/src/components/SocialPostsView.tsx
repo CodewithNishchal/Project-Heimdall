@@ -4,18 +4,45 @@ import { fetchSocialPosts, deleteSocialPost, triggerSocialSweep } from '../lib/a
 import type { SocialPost } from '../types/lead';
 const TABS = ['All', 'Google', 'Reddit', 'X', 'Facebook', 'LinkedIn', 'Threads'];
 
-function timeAgo(dateString: string) {
-  if (!dateString) return '1h ago';
-  const date = new Date(dateString);
-  const now = new Date();
-  const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
+function timeAgo(dateString: string | number) {
+  if (!dateString) return 'Just now';
+  let t = 0;
+  if (typeof dateString === 'number') {
+    t = dateString;
+  } else if (!isNaN(Number(dateString))) {
+    t = Number(dateString);
+  } else {
+    t = new Date(dateString).getTime();
+  }
+  if (isNaN(t) || t <= 0) return 'Just now';
+  if (t < 10000000000) t = t * 1000;
+
+  const seconds = Math.floor((Date.now() - t) / 1000);
   if (isNaN(seconds) || seconds < 60) return 'Just now';
   const minutes = Math.floor(seconds / 60);
   if (minutes < 60) return `${minutes}m ago`;
   const hours = Math.floor(minutes / 60);
   if (hours < 24) return `${hours}h ago`;
   const days = Math.floor(hours / 24);
-  return `${days}d ago`;
+  if (days < 30) return `${days}d ago`;
+  const weeks = Math.floor(days / 7);
+  return `${weeks}w ago`;
+}
+
+function isPostOlderThan30Days(post: SocialPost): boolean {
+  let t = 0;
+  const dateStr = post.published_at || (post as any).created_at;
+  if (!dateStr) return false;
+  if (!isNaN(Number(dateStr))) {
+    t = Number(dateStr);
+  } else {
+    t = new Date(dateStr).getTime();
+  }
+  if (isNaN(t) || t <= 0) return false;
+  if (t < 10000000000) t = t * 1000;
+  
+  const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
+  return (Date.now() - t) > thirtyDaysMs;
 }
 
 function formatLastFetched(date: Date | null): string {
@@ -27,8 +54,7 @@ function formatLastFetched(date: Date | null): string {
   if (minutes < 60) return `${minutes}m ago`;
   const hours = Math.floor(seconds / 60);
   if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  return `${days}d ago`;
+  return 'Recently';
 }
 
 export default function SocialPostsView() {
@@ -42,11 +68,16 @@ export default function SocialPostsView() {
     const saved = localStorage.getItem('social_posts_last_fetched');
     if (saved) {
       const parsed = new Date(saved);
-      if (!isNaN(parsed.getTime())) return parsed;
+      if (!isNaN(parsed.getTime())) {
+        // If saved timestamp is within 24 hours, use it; otherwise clear stale date
+        if (Date.now() - parsed.getTime() < 24 * 60 * 60 * 1000) {
+          return parsed;
+        }
+      }
     }
-    return null;
+    return new Date();
   });
-  const [timeAgoText, setTimeAgoText] = useState<string>('Recently');
+  const [timeAgoText, setTimeAgoText] = useState<string>('Just now');
 
   useEffect(() => {
     const updateText = () => {
@@ -63,17 +94,41 @@ export default function SocialPostsView() {
       const data = await fetchSocialPosts(activeTab === 'All' ? undefined : activeTab.toLowerCase());
       setPosts(data);
 
-      // If no fetch timestamp exists in localStorage yet, fallback to the newest post timestamp from backend
       const saved = localStorage.getItem('social_posts_last_fetched');
-      if (!saved && data.length > 0) {
+      if (saved) {
+        const parsed = new Date(saved);
+        if (!isNaN(parsed.getTime()) && Date.now() - parsed.getTime() < 24 * 60 * 60 * 1000) {
+          setLastFetchedTime(parsed);
+          return;
+        }
+      }
+
+      // If no recent fetch timestamp exists, fallback to newest post created_at or default to now
+      if (data.length > 0) {
+        const nowMs = Date.now();
         const timestamps = data
-          .map((p) => (p.published_at ? new Date(p.published_at).getTime() : 0))
-          .filter((t) => !isNaN(t) && t > 0);
+          .map((p: any) => {
+            if (p.created_at) {
+              const cat = new Date(p.created_at).getTime();
+              if (!isNaN(cat) && cat > 0 && nowMs - cat < 24 * 60 * 60 * 1000) return cat;
+            }
+            return 0;
+          })
+          .filter((t) => t > 0);
+
         if (timestamps.length > 0) {
           const newest = new Date(Math.max(...timestamps));
           setLastFetchedTime(newest);
           localStorage.setItem('social_posts_last_fetched', newest.toISOString());
+        } else {
+          const defaultTime = new Date();
+          setLastFetchedTime(defaultTime);
+          localStorage.setItem('social_posts_last_fetched', defaultTime.toISOString());
         }
+      } else {
+        const defaultTime = new Date();
+        setLastFetchedTime(defaultTime);
+        localStorage.setItem('social_posts_last_fetched', defaultTime.toISOString());
       }
     } catch (err) {
       console.error('Failed to fetch posts', err);
@@ -88,11 +143,15 @@ export default function SocialPostsView() {
 
   const handleFetch = async () => {
     setFetching(true);
+    // Reset timer immediately on button click
+    const clickTime = new Date();
+    setLastFetchedTime(clickTime);
+    localStorage.setItem('social_posts_last_fetched', clickTime.toISOString());
     try {
-      await triggerSocialSweep();
-      const now = new Date();
-      setLastFetchedTime(now);
-      localStorage.setItem('social_posts_last_fetched', now.toISOString());
+      const res = await triggerSocialSweep();
+      const fetchTime = res.last_fetched_at ? new Date(res.last_fetched_at) : new Date();
+      setLastFetchedTime(fetchTime);
+      localStorage.setItem('social_posts_last_fetched', fetchTime.toISOString());
       await loadPosts();
     } catch (err) {
       console.error('Failed to trigger sweep', err);
@@ -113,10 +172,11 @@ export default function SocialPostsView() {
   };
 
   const filteredPosts = useMemo(() => {
-    let list = posts;
+    // Automatically purge/filter out posts older than 30 days
+    let list = posts.filter((p) => !isPostOlderThan30Days(p));
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase();
-      list = posts.filter(
+      list = list.filter(
         (p) =>
           p.content.toLowerCase().includes(q) ||
           p.company_name?.toLowerCase().includes(q) ||

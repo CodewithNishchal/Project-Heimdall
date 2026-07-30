@@ -17,7 +17,15 @@ router = APIRouter(prefix="/api/social-posts", tags=["Social Posts"])
 
 @router.get("/")
 def get_social_posts(platform: Optional[str] = None, keyword: Optional[str] = None, db: Session = Depends(get_db)):
-    query = db.query(SocialPostSnapshot)
+    thirty_days_ago = datetime.now(timezone.utc) - timedelta(days=30)
+    # Clean up old database records > 30 days
+    try:
+        db.query(SocialPostSnapshot).filter(SocialPostSnapshot.created_at < thirty_days_ago).delete(synchronize_session=False)
+        db.commit()
+    except Exception:
+        db.rollback()
+
+    query = db.query(SocialPostSnapshot).filter(SocialPostSnapshot.created_at >= thirty_days_ago)
     if platform and platform.lower() != 'all':
         query = query.filter(func.lower(SocialPostSnapshot.platform).contains(platform.lower()))
     if keyword:
@@ -99,10 +107,12 @@ async def trigger_fetch_social_posts(db: Session = Depends(get_db)):
 
     logger.info(f"Saving {saved_count} new high-intent posts to the database out of {len(new_posts)} fetched posts.")
     db.commit()
+    now_iso = datetime.now(timezone.utc).isoformat()
     return {
         "status": "success", 
         "fetched_count": len(new_posts), 
-        "saved_new": saved_count
+        "saved_new": saved_count,
+        "last_fetched_at": now_iso
     }
 
 

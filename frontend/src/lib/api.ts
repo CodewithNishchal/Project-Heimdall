@@ -117,8 +117,8 @@ export function generateICPWithAI(prompt: string): Promise<AIICPResponse> {
 }
 
 
-export async function triggerSocialSweep(): Promise<{ status: string; fetched_count: number; saved_new: number }> {
-  return requestJson<{ status: string; fetched_count: number; saved_new: number }>('/api/social-posts/fetch', {
+export async function triggerSocialSweep(): Promise<{ status: string; fetched_count: number; saved_new: number; last_fetched_at?: string }> {
+  return requestJson<{ status: string; fetched_count: number; saved_new: number; last_fetched_at?: string }>('/api/social-posts/fetch', {
     method: 'POST',
   });
 }
