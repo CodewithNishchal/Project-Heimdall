@@ -23,8 +23,23 @@
     "recommend"
   ],
   "social_topics": [
-    "Fractional CMO",
-    "Growth Marketing"
+    "Marketing Agency",
+    "Growth Marketing Agency",
+    "Fractional CMO"
+  ],
+  "icp_service_categories": [
+    "Marketing Agency",
+    "Growth Marketing Agency",
+    "Digital Marketing Agency"
+  ],
+  "icp_description": "Companies seeking an external marketing agency to handle growth, paid acquisition, or full-service marketing",
+  "icp_seller_keywords": [
+    "book a call",
+    "our agency",
+    "we offer",
+    "taking on clients",
+    "DM us",
+    "case study"
   ],
   "min_employees": 20,
   "max_employees": 500,

@@ -395,7 +395,7 @@ async def synthesize_intent(enriched_data: list[dict]) -> list[dict]:
     }
     
     payload = {
-        "model": "openai/gpt-4o-mini",
+        "model": "meta-llama/llama-3.3-70b-instruct",
         "messages": [
             {"role": "system", "content": SYSTEM_INSTRUCTION},
             {"role": "user", "content": prompt}
@@ -406,6 +406,10 @@ async def synthesize_intent(enriched_data: list[dict]) -> list[dict]:
     try:
         async with httpx.AsyncClient(timeout=45.0) as client:
             resp = await client.post(url, headers=headers, json=payload)
+            if resp.status_code != 200:
+                logger.warning(f"[Enrichment OpenRouter] Primary model failed with HTTP {resp.status_code}. Retrying with deepseek/deepseek-chat")
+                payload["model"] = "deepseek/deepseek-chat"
+                resp = await client.post(url, headers=headers, json=payload)
             resp.raise_for_status()
             data = resp.json()
             content = data["choices"][0]["message"]["content"]

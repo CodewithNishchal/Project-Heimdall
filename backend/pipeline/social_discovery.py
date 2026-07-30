@@ -99,9 +99,9 @@ async def fetch_social_micro_intent(keywords: list[str]) -> list[dict]:
         try:
             async with httpx.AsyncClient(timeout=95.0) as client:
                 for kw in keywords[:2]:
-                    strict_kw = f'"{kw}"'
+                    clean_kw = kw.strip('\'"')
                     payload = {
-                        "searchTerms": [strict_kw],
+                        "searchTerms": [clean_kw],
                         "maxItems": 100,
                         "sort": "Latest"
                     }
@@ -111,7 +111,7 @@ async def fetch_social_micro_intent(keywords: list[str]) -> list[dict]:
                         if resp.status_code in (200, 201):
                             data = resp.json()
                             items = data if isinstance(data, list) else data.get("data", [])
-                            logger.info(f"[Apify Twitter] Received {len(items)} items for '{strict_kw}'")
+                            logger.info(f"[Apify Twitter] Received {len(items)} items for '{clean_kw}'")
                             for item in items:
                                 text = item.get("text") or item.get("full_text") or item.get("caption", "")
                                 text_lower = str(text).lower()
@@ -140,7 +140,7 @@ async def fetch_social_micro_intent(keywords: list[str]) -> list[dict]:
                         else:
                             logger.warning(f"[Apify Twitter] Returned status {resp.status_code}: {resp.text[:100]}")
                     except Exception as err:
-                        logger.warning(f"[Apify Twitter] Query '{strict_kw}' failed: {err}")
+                        logger.warning(f"[Apify Twitter] Query '{clean_kw}' failed: {err}")
         except Exception as e:
             logger.error(f"[Apify Twitter] Live search sweep error: {e}")
 
@@ -400,25 +400,24 @@ async def fetch_social_micro_intent(triggers: list[str], topics: list[str]) -> l
     # Format triggers & topics for platform-specific queries
     trig1 = clean_trigs[0] if clean_trigs else "looking for"
     trig2 = clean_trigs[1] if len(clean_trigs) > 1 else "recommend"
-    top1 = clean_tops[0] if clean_tops else "web design"
-    top2 = clean_tops[1] if len(clean_tops) > 1 else "redesign"
+    top1 = clean_tops[0] if clean_tops else "Marketing Agency"
+    top2 = clean_tops[1] if len(clean_tops) > 1 else "Growth Marketing Agency"
 
-    # 1. ScrapeBadger Reddit: ("looking for" OR "recommend") ("web design" OR "redesign") -"I run a"
-    trig_clause_reddit = f'("{trig1}" OR "{trig2}")'
-    top_clause_reddit = f'("{top1}" OR "{top2}")'
-    reddit_query = f'{trig_clause_reddit} {top_clause_reddit} -"I run a" -"video editor" -"we are hiring"'
+    # Build natural, high-yield search queries for social engines
+    # 1. ScrapeBadger Reddit: Growth Marketing agency OR looking for Growth Marketing
+    reddit_query = f'{top1} agency OR looking for {top1}'
 
-    # 2. ScrapeBadger Twitter (X): "looking for web design agency" OR "recommend web designer"
-    twitter_query = f'"{trig1} {top1} agency" OR "{trig2} {top1} designer"'
+    # 2. ScrapeBadger Twitter (X): Growth Marketing agency OR looking for Growth Marketing
+    twitter_query = f'{top1} agency OR looking for {top1}'
 
-    # 3. Apify LinkedIn: "looking for web agency" OR "website redesign RFP"
-    linkedin_query = f'"{trig1} {top1} agency" OR "{top2} RFP"'
+    # 3. Apify LinkedIn: Growth Marketing agency OR Growth Marketing RFP
+    linkedin_query = f'{top1} agency OR {top1} RFP'
 
-    # 4. ScrapeCreators Threads: Query 1: "looking for web design", Query 2: "recommend website redesign"
-    threads_q1 = f"{trig1} {top1}"
-    threads_q2 = f"{trig2} {top2}"
+    # 4. ScrapeCreators Threads: Query 1: top1 (Fractional CMO), Query 2: top2 (Growth Marketing)
+    threads_q1 = f"{top1}"
+    threads_q2 = f"{top2}"
 
-    # 5. ScrapeCreators Google: RFP query
+    # 5. ScrapeCreators Google: RFP + topic query
     google_query = f"RFP {top1}"
             
     results = []

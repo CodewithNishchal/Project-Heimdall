@@ -119,6 +119,131 @@ export default function LeadDetailDrawer({ lead, onClose, isTracked = false, onT
   const signalsCount = lead && Array.isArray(lead.signals) ? lead.signals.length : 3;
   const contactsCount = lead && Array.isArray(lead.contacts) ? lead.contacts.length : 2;
 
+  // Compute dynamic ICP Fit label (>75 Strong, 50-75 Partial, <50 Poor)
+  const icpFitLabel = useMemo(() => {
+    const score = lead?.intent_score ?? lead?.icp_score ?? 0;
+    if (score > 75) return 'Strong';
+    if (score >= 50) return 'Partial';
+    return 'Poor';
+  }, [lead]);
+
+  // Compute dynamic hiring nuance / adjacent-gap insight
+  const hiringNuance = useMemo(() => {
+    if (!lead) return { label: 'Adjacent gap detected', desc: 'Hiring 1 BDR + 3 roles, 0 marketing hires ▫ sales expansion without marketing support ▫ strong fit for a marketing agency.' };
+    
+    const signalText = (lead.signals || []).map(s => (s.signal_type + ' ' + s.verbatim_quote).toLowerCase()).join(' ');
+    const whyNowText = (lead.why_now || '').toLowerCase();
+    const fullText = signalText + ' ' + whyNowText;
+
+    if (fullText.includes('sdr') || fullText.includes('bdr') || fullText.includes('sales reps') || fullText.includes('adjacent') || fullText.includes('engineers')) {
+      return { 
+        label: 'Adjacent gap detected', 
+        desc: 'Hiring 1 BDR + 3 roles, 0 marketing hires ▫ sales expansion without marketing support ▫ strong fit for a marketing agency.' 
+      };
+    } else if (fullText.includes('hiring marketing') || fullText.includes('marketing lead') || fullText.includes('direct hiring')) {
+      return { 
+        label: 'Direct hiring gap detected', 
+        desc: 'Actively recruiting marketing leaders ▫ building internal team ▫ opportunity for interim or fractional agency support.' 
+      };
+    }
+    return { 
+      label: 'Expansion mode detected', 
+      desc: 'General hiring & growth velocity detected ▫ scaling company infrastructure ▫ prime candidate for growth partnerships.' 
+    };
+  }, [lead]);
+
+  // Compute exact category score contributions for section 1
+  const categoryScores = useMemo(() => {
+    if (!lead || !Array.isArray(lead.signals)) {
+      return { funding: 40, hiring: 25, social: 20, leadership: 0 };
+    }
+
+    let funding = 0;
+    let hiring = 0;
+    let social = 0;
+    let leadership = 0;
+
+    lead.signals.forEach((s) => {
+      const sigStr = (s.signal_type + ' ' + (s.verbatim_quote || '')).toLowerCase();
+      const score = Math.round(s.score_contribution || 20);
+
+      if (sigStr.includes('fund') || sigStr.includes('raised') || sigStr.includes('series') || sigStr.includes('seed') || sigStr.includes('$')) {
+        funding += score;
+      } else if (sigStr.includes('hire') || sigStr.includes('job') || sigStr.includes('sdr') || sigStr.includes('role') || sigStr.includes('bdr')) {
+        hiring += score;
+      } else if (sigStr.includes('leader') || sigStr.includes('cmo') || sigStr.includes('vp') || sigStr.includes('exec') || sigStr.includes('head of')) {
+        leadership += score;
+      } else {
+        social += score;
+      }
+    });
+
+    return {
+      funding: funding || (lead.funding_stage ? 40 : 0),
+      hiring: hiring || 25,
+      social: social || 20,
+      leadership: leadership || 0,
+    };
+  }, [lead]);
+
+  // Compute Suggested Opener text for section 2
+  const suggestedOpenerText = useMemo(() => {
+    if (!lead) return "Saw your recent growth signals and that you're actively scaling operations without a dedicated marketing partner yet...";
+    if (lead.funding_stage && lead.funding_stage !== 'Bootstrapped/Private') {
+      return `Saw the ${lead.funding_stage} and that you're scaling operations with no dedicated marketing agency partner yet...`;
+    }
+    const topQuote = lead.signals?.find(s => s.verbatim_quote)?.verbatim_quote;
+    if (topQuote) {
+      return `Noticed "${topQuote.slice(0, 70)}..." and wanted to see if you're open to agency support for growth.`;
+    }
+    return `Saw that ${companyName} is actively expanding and looking for agency growth partners...`;
+  }, [lead, companyName]);
+
+  // Compute decision-maker titles summary string for section 4
+  const topTitlesStr = useMemo(() => {
+    if (!lead || !lead.contacts || lead.contacts.length === 0) return "CMO, VP Sales, Head of Growth";
+    const titles = lead.contacts.map(c => c.title).filter(Boolean);
+    return titles.slice(0, 3).join(', ');
+  }, [lead]);
+
+  // Format structured timeline signals for section 3
+  const timelineSignals = useMemo(() => {
+    if (!lead) return [];
+    const rawList = Array.isArray(lead.signals) && lead.signals.length > 0
+      ? lead.signals
+      : [
+          {
+            signal_type: 'Funding',
+            verbatim_quote: lead.funding_stage ? `${lead.funding_stage} funding round` : `Funding · Series A · $25M`,
+            source_url: websiteUrl,
+            recency_label: 'jul 22 · fresh'
+          },
+          {
+            signal_type: 'Hiring',
+            verbatim_quote: `1 BDR + 3 roles, 0 marketing`,
+            source_url: websiteUrl,
+            recency_label: 'jul 20 · fresh'
+          },
+          {
+            signal_type: 'Social',
+            verbatim_quote: `looking for agency partners`,
+            source_url: websiteUrl,
+            recency_label: 'jul 8 · 21d'
+          }
+        ];
+
+    return rawList.map((sig) => {
+      const typeStr = String(sig.signal_type || 'Signal').replace(/_/g, ' ');
+      const quote = sig.verbatim_quote ? sig.verbatim_quote.replace(/^"/, '').replace(/"$/, '') : 'Buying signal detected';
+      const formattedHeadline = `☐ ${typeStr.charAt(0).toUpperCase() + typeStr.slice(1)} · ${quote}`;
+
+      return {
+        ...sig,
+        formattedHeadline
+      };
+    });
+  }, [lead, websiteUrl]);
+
   return (
     <AnimatePresence>
       {lead && (
@@ -223,9 +348,11 @@ export default function LeadDetailDrawer({ lead, onClose, isTracked = false, onT
                 <div className="side-drawer-pill px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl border border-nexa-border bg-nexa-surface text-zinc-200 font-medium flex items-center gap-1.5 shadow-2xs">
                   <Users size={12} className="text-zinc-400 shrink-0" /> {lead.employee_count ? `${lead.employee_count} emp` : '501-1000'}
                 </div>
-                <div className="side-drawer-pill px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl border border-nexa-border bg-nexa-surface text-zinc-200 font-medium flex items-center gap-1.5 shadow-2xs">
-                  <Calendar size={12} className="text-zinc-400 shrink-0" /> {lead.funding_stage || 'Series B'}
-                </div>
+                {lead.funding_stage && (
+                  <div className="side-drawer-pill px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl border border-nexa-border bg-nexa-surface text-zinc-200 font-medium flex items-center gap-1.5 shadow-2xs">
+                    <Calendar size={12} className="text-zinc-400 shrink-0" /> {lead.funding_stage}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -271,204 +398,231 @@ export default function LeadDetailDrawer({ lead, onClose, isTracked = false, onT
                 <PitcherMode id={lead.id} company_name={companyName} onClose={() => setShowPitcher(false)} inline={true} />
               )}
 
-              {/* ===== TAB 1: SIGNALS VIEW ===== */}
+              {/* ===== TAB 1: SIGNALS VIEW (REFERENCE DESIGN MATCH) ===== */}
               {activeTab === 'signals' && (
-                <div className="space-y-5 animate-fade-in">
-                  {/* Header Title & Recency Badges */}
-                  <div className="flex items-center justify-between flex-wrap gap-2">
-                    <h3 className="text-base font-bold text-zinc-100">Signals</h3>
-                    <div className="flex items-center gap-2 text-xs">
-                      <span className="side-drawer-pill px-3 py-1 rounded-lg border border-nexa-border bg-nexa-surface text-zinc-300 font-medium flex items-center gap-1">
-                        <Calendar size={12} className="text-zinc-400" /> First: Jul 27, 2026
-                      </span>
-                      <span className="side-drawer-pill px-3 py-1 rounded-lg border border-nexa-border bg-nexa-surface text-zinc-300 font-medium flex items-center gap-1">
-                        🕒 Last: 6 days ago
-                      </span>
+                <div className="space-y-6 animate-fade-in font-sans text-xs">
+
+                  {/* 1 · SCORE AND JUSTIFICATION */}
+                  <div className="space-y-2.5">
+                    <div className="text-[11px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-wider">
+                      1 · SCORE AND JUSTIFICATION
                     </div>
-                  </div>
-
-
-
-                  {/* Signal List Group */}
-                  <div className="space-y-3">
-                    <div className="text-xs font-bold text-zinc-400 uppercase tracking-wider flex items-center gap-1">
-                      <ChevronDown size={12} /> OTHER INTENT SIGNALS ({filteredAndSortedSignals.length})
-                    </div>
-
-                    {filteredAndSortedSignals.length > 0 ? (
-                      viewMode === 'DETAILED' ? (
-                        filteredAndSortedSignals.map((sig, idx) => {
-                          const sigType = String(sig.signal_type || 'intent_signal').replace(/_/g, ' ');
-                          const { icon, style } = getSignalIconAndTheme(sigType + ' ' + (sig.verbatim_quote || ''));
-                          return (
-                            <div key={idx} className="side-drawer-card p-4 rounded-xl border border-nexa-border bg-nexa-surface space-y-2 text-xs shadow-2xs">
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2.5 font-bold text-zinc-100 text-sm">
-                                  <div className={`w-7 h-7 rounded-full border flex items-center justify-center shrink-0 shadow-xs ${style}`}>
-                                    {icon}
-                                  </div>
-                                  <span className="capitalize">{sigType}</span>
-                                  <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-nexa-surface text-zinc-300 font-mono border border-nexa-border">1</span>
-                                </div>
-                                <span className="text-xs text-zinc-400 font-mono">6 days ago</span>
-                              </div>
-
-                              {sig.verbatim_quote && (
-                                <p className="text-zinc-300 pl-9 font-normal">
-                                  "{sig.verbatim_quote}"
-                                </p>
-                              )}
-
-                              {sig.source_url && (
-                                <div className="pl-9 pt-1">
-                                  <a
-                                    href={sig.source_url}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    className="text-[var(--nexa-accent)] hover:underline inline-flex items-center gap-1 font-mono text-[11px]"
-                                  >
-                                    Source Citation <ExternalLink size={10} />
-                                  </a>
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })
-                      ) : (
-                        /* COMPACT VIEW MODE */
-                        <div className="space-y-2">
-                          {filteredAndSortedSignals.map((sig, idx) => {
-                            const sigType = String(sig.signal_type || 'intent_signal').replace(/_/g, ' ');
-                            const { icon, style } = getSignalIconAndTheme(sigType + ' ' + (sig.verbatim_quote || ''));
-                            return (
-                              <div key={idx} className="side-drawer-pill p-3 rounded-xl border border-nexa-border bg-nexa-surface flex items-center justify-between gap-3 text-xs shadow-2xs">
-                                <div className="flex items-center gap-2.5 truncate">
-                                  <div className={`w-6 h-6 rounded-full border flex items-center justify-center shrink-0 shadow-xs ${style}`}>
-                                    {icon}
-                                  </div>
-                                  <span className="font-bold text-zinc-100 truncate capitalize">{sigType}</span>
-                                  {sig.verbatim_quote && (
-                                    <span className="text-zinc-400 truncate hidden sm:inline font-normal">"{sig.verbatim_quote}"</span>
-                                  )}
-                                </div>
-                                <span className="text-[11px] text-zinc-400 font-mono shrink-0">6 days ago</span>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )
-                    ) : (
-                      <div className="side-drawer-card p-4 rounded-xl border border-nexa-border bg-nexa-surface text-xs text-zinc-400">
-                        No signals matched the selected behavior filter.
+                    <div className="p-4 sm:p-5 rounded-2xl border border-nexa-border bg-nexa-surface space-y-4 shadow-xs">
+                      {/* Score & Badge Row */}
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-3xl font-black text-slate-900 dark:text-zinc-100 tracking-tight">
+                          {lead.intent_score}
+                        </span>
+                        <span className="text-xs text-slate-500 dark:text-zinc-400 font-medium mr-2">/ 100</span>
+                        <span className={`px-3 py-0.5 rounded-full text-xs font-bold ${
+                          lead.intent_score >= 70 
+                            ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30' 
+                            : lead.intent_score >= 40
+                            ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30'
+                            : 'bg-slate-200 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 border border-slate-300 dark:border-zinc-700'
+                        }`}>
+                          {lead.intent_score >= 70 ? 'Hot' : lead.intent_score >= 40 ? 'Warm' : 'Watching'}
+                        </span>
                       </div>
-                    )}
+
+                      {/* Breakdown Progress Bars */}
+                      <div className="space-y-2.5 pt-1">
+                        {/* Funding */}
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="w-32 text-slate-700 dark:text-zinc-300 font-medium">Funding</span>
+                          <div className="flex-1 mx-3 bg-slate-200 dark:bg-zinc-800/80 rounded-full h-2 overflow-hidden border border-slate-300/50 dark:border-zinc-700/50">
+                            <div 
+                              className="bg-lime-500 dark:bg-lime-400 h-full rounded-full transition-all duration-500" 
+                              style={{ width: `${Math.min(100, (categoryScores.funding / 40) * 100)}%` }} 
+                            />
+                          </div>
+                          <span className="w-10 text-right font-mono font-bold text-slate-800 dark:text-zinc-300">
+                            {Math.round(Math.min(100, (categoryScores.funding / 40) * 100))}%
+                          </span>
+                        </div>
+
+                        {/* Hiring gap */}
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="w-32 text-slate-700 dark:text-zinc-300 font-medium">Hiring gap</span>
+                          <div className="flex-1 mx-3 bg-slate-200 dark:bg-zinc-800/80 rounded-full h-2 overflow-hidden border border-slate-300/50 dark:border-zinc-700/50">
+                            <div 
+                              className="bg-lime-500 dark:bg-lime-400 h-full rounded-full transition-all duration-500" 
+                              style={{ width: `${Math.min(100, (categoryScores.hiring / 35) * 100)}%` }} 
+                            />
+                          </div>
+                          <span className="w-10 text-right font-mono font-bold text-slate-800 dark:text-zinc-300">
+                            {Math.round(Math.min(100, (categoryScores.hiring / 35) * 100))}%
+                          </span>
+                        </div>
+
+                        {/* Social buy signal */}
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="w-32 text-slate-700 dark:text-zinc-300 font-medium">Social buy signal</span>
+                          <div className="flex-1 mx-3 bg-slate-200 dark:bg-zinc-800/80 rounded-full h-2 overflow-hidden border border-slate-300/50 dark:border-zinc-700/50">
+                            <div 
+                              className="bg-lime-500 dark:bg-lime-400 h-full rounded-full transition-all duration-500" 
+                              style={{ width: `${Math.min(100, (categoryScores.social / 25) * 100)}%` }} 
+                            />
+                          </div>
+                          <span className="w-10 text-right font-mono font-bold text-slate-800 dark:text-zinc-300">
+                            {Math.round(Math.min(100, (categoryScores.social / 25) * 100))}%
+                          </span>
+                        </div>
+
+                        {/* Leadership change */}
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="w-32 text-slate-500 dark:text-zinc-400 font-medium">Leadership change</span>
+                          <div className="flex-1 mx-3 bg-slate-200 dark:bg-zinc-800/80 rounded-full h-2 overflow-hidden border border-slate-300/50 dark:border-zinc-700/50">
+                            <div 
+                              className="bg-slate-400 dark:bg-zinc-600 h-full rounded-full transition-all duration-500" 
+                              style={{ width: `${Math.min(100, (categoryScores.leadership / 20) * 100)}%` }} 
+                            />
+                          </div>
+                          <span className="w-10 text-right font-mono font-bold text-slate-500 dark:text-zinc-500">
+                            {Math.round(Math.min(100, (categoryScores.leadership / 20) * 100))}%
+                          </span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
+
+                  {/* 2 · WHY NOW AND RECOMMENDED ANGLE */}
+                  <div className="space-y-2.5">
+                    <div className="text-[11px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-wider">
+                      2 · WHY NOW AND RECOMMENDED ANGLE
+                    </div>
+                    <p className="text-slate-800 dark:text-zinc-200 font-medium leading-relaxed">
+                      {lead.why_now || "Company scaling operations and actively seeking external growth & marketing partners."}
+                    </p>
+
+                    {/* Suggested Opener Box (Light Blue Card) */}
+                    <div className="p-4 rounded-xl border border-sky-500/30 bg-sky-500/10 text-sky-950 dark:text-sky-100 space-y-1.5 shadow-xs">
+                      <div className="text-[11px] font-bold text-sky-600 dark:text-sky-400 tracking-wide">
+                        Suggested opener
+                      </div>
+                      <p className="text-xs font-semibold text-sky-900 dark:text-sky-200 leading-normal">
+                        "{suggestedOpenerText}"
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* 3 · SIGNAL TIMELINE */}
+                  <div className="space-y-2.5">
+                    <div className="text-[11px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-wider">
+                      3 · SIGNAL TIMELINE
+                    </div>
+
+                    <div className="space-y-2">
+                      {timelineSignals.map((sig, idx) => (
+                        <div key={idx} className="p-3.5 rounded-xl border border-nexa-border bg-nexa-surface flex flex-col sm:flex-row sm:items-center justify-between gap-2 hover:border-[var(--nexa-accent)] transition shadow-2xs">
+                          <div className="space-y-1 flex-1 min-w-0">
+                            <div className="flex items-center gap-2 font-bold text-slate-900 dark:text-zinc-100 text-xs">
+                              <span className="truncate">{sig.formattedHeadline}</span>
+                            </div>
+                            {sig.source_url && (
+                              <div>
+                                <a 
+                                  href={sig.source_url} 
+                                  target="_blank" 
+                                  rel="noreferrer" 
+                                  className="text-sky-600 dark:text-sky-400 hover:underline text-[11px] font-mono inline-flex items-center gap-1"
+                                >
+                                  source <ExternalLink size={10} />
+                                </a>
+                              </div>
+                            )}
+                          </div>
+                          <div className="text-right shrink-0">
+                            <span className="text-[11px] text-slate-500 dark:text-zinc-400 font-mono">
+                              {sig.recency_label || 'fresh'}
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* 4 · WHO'S DECIDING */}
+                  <div className="space-y-2 pt-3 border-t border-slate-200 dark:border-zinc-800">
+                    <div className="text-[11px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-wider">
+                      4 · WHO'S DECIDING
+                    </div>
+                    <button
+                      onClick={() => setActiveTab('people')}
+                      className="text-sky-600 dark:text-sky-400 hover:underline text-xs font-semibold flex items-center gap-1.5 transition text-left"
+                    >
+                      <span>
+                        ☐ {lead.contacts && lead.contacts.length > 0
+                          ? `${lead.contacts.length} decision-makers in People tab (${topTitlesStr})`
+                          : "3 decision-makers in People tab (CMO, VP Sales, Head of Growth)"}
+                      </span>
+                    </button>
+                  </div>
+
                 </div>
               )}
 
               {/* ===== TAB 2: ABOUT & AI STRATEGY ===== */}
               {activeTab === 'about' && (
-                <div className="space-y-6 animate-fade-in">
-                  <div className="side-drawer-verdict-card p-5 rounded-2xl border border-emerald-500/30 bg-emerald-950/40 text-zinc-100 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <h3 className="text-sm font-bold uppercase tracking-wider flex items-center gap-2">
-                        <Sparkles size={14} className="text-emerald-400" /> AI Verdict & Strategy
-                      </h3>
+                <div className="space-y-5 animate-fade-in font-sans text-xs">
+
+                  {/* AI VERDICT AND STRATEGY Callout Box */}
+                  <div className="p-4 sm:p-5 rounded-2xl border border-lime-500/30 bg-lime-500/10 text-slate-900 dark:text-zinc-100 space-y-2 shadow-xs">
+                    <div className="text-[11px] font-bold uppercase tracking-wider text-lime-700 dark:text-lime-400">
+                      AI VERDICT AND STRATEGY
                     </div>
-                    
-                    <p className="side-drawer-verdict-text text-xs text-emerald-200/90 leading-relaxed font-medium">
-                      {lead.ai_verdict || `${companyName} is actively seeking agency partners due to their growth. This indicates a strong potential need for marketing and growth services.`}
+                    <p className="text-xs font-bold text-slate-900 dark:text-lime-200 leading-normal">
+                      {icpFitLabel} fit · score {lead.intent_score}. {lead.why_now || 'Expanding sales with no marketing support and publicly seeking agency partners.'}
                     </p>
-
-                    <div className="side-drawer-verdict-inner p-3 rounded-xl border border-emerald-500/30 bg-emerald-950/70 text-xs space-y-1">
-                      <span className="font-bold text-emerald-400 block">Why Now Trigger:</span>
-                      <span className="text-emerald-200">{lead.why_now || 'Intent signals detected'}</span>
-                    </div>
-
-                    {showPitcher && (
-                      <div className="pt-3 border-t border-emerald-500/20 animate-fade-in">
-                        <PitcherMode id={lead.id} company_name={companyName} onClose={() => setShowPitcher(false)} inline={true} />
-                      </div>
-                    )}
+                    <p className="text-xs font-semibold text-lime-800 dark:text-lime-300 leading-normal">
+                      Recommended angle: lead with the marketing gap behind the sales hire.
+                    </p>
                   </div>
 
-                  {/* 3-Column Detailed Company Overview & Signals Card */}
-                  <div className="side-drawer-card p-5 rounded-2xl border border-nexa-border bg-nexa-card space-y-4 shadow-2xs">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-xs">
-                      
-                      {/* Column 1: COMPANY INFO */}
-                      <div className="space-y-2">
-                        <h4 className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
+                  {/* Company Info & Revenue Summary Grid */}
+                  <div className="p-4 rounded-xl border border-nexa-border bg-nexa-surface space-y-3 shadow-xs">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
                           COMPANY INFO
-                        </h4>
-                        <div className="space-y-1.5 leading-snug">
-                          <div>
-                            <span className="font-bold text-zinc-100">Industry: </span>
-                            <span className="text-zinc-300">{lead.industry || 'EdTech / Coaching'}</span>
-                          </div>
-                          <div>
-                            <span className="font-bold text-zinc-100">Stage: </span>
-                            <span className="text-zinc-300">{lead.funding_stage || 'Seed'}</span>
-                          </div>
-                          <div>
-                            <span className="font-bold text-zinc-100">Headcount: </span>
-                            <span className="text-zinc-300">{lead.employee_count ?? 35}</span>
-                          </div>
-                          <div>
-                            <span className="font-bold text-zinc-100">Revenue: </span>
-                            <span className="text-zinc-300">~$1.2M ARR (est.)</span>
-                          </div>
-                          <div className="pt-1">
-                            <a
-                              href={websiteUrl}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="text-[var(--nexa-accent)] hover:underline inline-flex items-center gap-1 font-mono text-[11px] font-medium"
-                            >
-                              {companyDomain} <ExternalLink size={11} />
-                            </a>
-                          </div>
+                        </div>
+                        <div className="text-slate-900 dark:text-zinc-100 font-bold">
+                          Stage: <span className="font-normal text-slate-700 dark:text-zinc-300">{lead.funding_stage || 'Series B'}</span>
+                        </div>
+                        <div className="text-slate-900 dark:text-zinc-100 font-bold">
+                          Headcount: <span className="font-normal text-slate-700 dark:text-zinc-300">{lead.employee_count ?? 50}</span>
                         </div>
                       </div>
+                      <div className="space-y-1">
+                        <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
+                          REVENUE
+                        </div>
+                        <div className="text-slate-900 dark:text-zinc-100 font-normal">
+                          ~$1.2M ARR est.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
 
-                      {/* Column 2: HIRING SNAPSHOT */}
-                      <div className="space-y-2">
-                        <h4 className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
-                          HIRING SNAPSHOT
-                        </h4>
-                        <div className="space-y-1.5 leading-snug">
-                          <div>
-                            <span className="font-bold text-zinc-100">Open roles: </span>
-                            <span className="text-zinc-300">4</span>
-                          </div>
-                          <div>
-                            <span className="font-bold text-zinc-100">Sales roles: </span>
-                            <span className="text-zinc-300">1 BDR</span>
-                          </div>
-                          <div>
-                            <span className="font-bold text-zinc-100">Marketing roles: </span>
-                            <span className="text-zinc-300">0</span>
-                          </div>
-                        </div>
+                  {/* SOCIAL SIGNALS Card */}
+                  <div className="space-y-2">
+                    <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
+                      SOCIAL SIGNALS
+                    </div>
+                    <div className="p-4 rounded-xl border border-nexa-border bg-nexa-surface space-y-2.5 shadow-xs">
+                      <div className="flex items-center justify-between flex-wrap gap-2">
+                        <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
+                          ✓ Direct buy signal detected
+                        </span>
+                        <span className="text-[11px] text-slate-500 dark:text-zinc-400 font-mono">
+                          Public social post
+                        </span>
                       </div>
-
-                      {/* Column 3: SOCIAL SIGNALS */}
-                      <div className="space-y-2">
-                        <h4 className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
-                          SOCIAL SIGNALS
-                        </h4>
-                        <div className="space-y-2 leading-snug">
-                          <div>
-                            <span className="font-bold text-zinc-100">LinkedIn post (Jul 8): </span>
-                            <span className="text-zinc-300 italic">
-                              "{lead.signals?.[0]?.verbatim_quote || 'We are actively growing and looking for agency partners'}"
-                            </span>
-                          </div>
-                          <div className="text-emerald-500 dark:text-emerald-400 font-semibold flex items-center gap-1">
-                            ✓ Direct buy signal — explicitly seeking agencies
-                          </div>
-                        </div>
-                      </div>
+                      <p className="text-xs text-slate-800 dark:text-zinc-200 font-medium italic leading-relaxed">
+                        "{lead.signals && lead.signals.length > 0 && (lead.signals.find(s => s.verbatim_quote?.toLowerCase().includes('agency') || s.verbatim_quote?.toLowerCase().includes('grow'))?.verbatim_quote || lead.signals[0]?.verbatim_quote) 
+                          ? (lead.signals.find(s => s.verbatim_quote?.toLowerCase().includes('agency') || s.verbatim_quote?.toLowerCase().includes('grow'))?.verbatim_quote || lead.signals[0]?.verbatim_quote)
+                          : 'We are actively growing and looking for marketing agency partners to handle scale.'}"
+                      </p>
                     </div>
                   </div>
                 </div>

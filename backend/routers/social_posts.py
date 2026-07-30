@@ -73,31 +73,26 @@ async def trigger_fetch_social_posts(db: Session = Depends(get_db)):
     for i in range(0, len(posts_to_process), batch_size):
         batch = posts_to_process[i:i+batch_size]
         try:
-            classifications = await batch_classify_social_intent(batch)
+            relevant_posts = await batch_classify_social_intent(batch)
             
-            for idx, p in enumerate(batch):
-                c = classifications[idx] if idx < len(classifications) else None
+            for p in relevant_posts:
                 url_key = p["post_url"]
-                intent_type = str(c.get("intent", "")).lower() if c else "seeking_provider"
-                
-                # Save post if seeking provider, buyer intent, unclear or confidence >= 0.4
-                if not c or intent_type in ["seeking_provider", "buyer_intent", "seeking_services", "unclear"] or c.get("confidence", 0) >= 0.4:
-                    existing = db.query(SocialPostSnapshot).filter(SocialPostSnapshot.post_url == url_key).first()
-                    if not existing:
-                        db_post = SocialPostSnapshot(
-                            id=str(uuid.uuid4()),
-                            platform=p["platform"],
-                            author_name=p["author_name"],
-                            author_handle=p["author_handle"],
-                            content=p["content"],
-                            post_url=p["post_url"],
-                            keyword_matched=c.get("service_category") if c and c.get("service_category") != "other" else p.get("keyword_matched", "intent signal"),
-                            company_name=p["company_name"],
-                            summary=c.get("one_line_summary") if c else None,
-                            published_at=p["published_at"]
-                        )
-                        db.add(db_post)
-                        saved_count += 1
+                existing = db.query(SocialPostSnapshot).filter(SocialPostSnapshot.post_url == url_key).first()
+                if not existing:
+                    db_post = SocialPostSnapshot(
+                        id=str(uuid.uuid4()),
+                        platform=p["platform"],
+                        author_name=p["author_name"],
+                        author_handle=p["author_handle"],
+                        content=p["content"],
+                        post_url=p["post_url"],
+                        keyword_matched=p.get("service_category") or p.get("keyword_matched", "intent signal"),
+                        company_name=p["company_name"],
+                        summary=p.get("summary"),
+                        published_at=p["published_at"]
+                    )
+                    db.add(db_post)
+                    saved_count += 1
         except Exception as e:
             logger.error(f"Batch processing failed for chunk: {e}")
             continue

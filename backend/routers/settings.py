@@ -23,6 +23,9 @@ class IntentConfigModel(BaseModel):
     extraction_keywords: List[str]
     social_triggers: List[str]
     social_topics: List[str]
+    icp_service_categories: Optional[List[str]] = ["Fractional CMO", "Marketing Agency", "Growth Marketing Agency"]
+    icp_description: Optional[str] = "Companies seeking external marketing leadership, fractional CMOs, or agency partners"
+    icp_seller_keywords: Optional[List[str]] = ["book a call", "our agency", "we offer", "taking on clients", "DM us", "case study"]
     min_employees: Optional[int] = 10
     max_employees: Optional[int] = 2000
     target_industries: Optional[List[str]] = []
@@ -39,6 +42,9 @@ class AIICPResponse(BaseModel):
     extraction_keywords: List[str]
     social_triggers: List[str]
     social_topics: List[str]
+    icp_service_categories: Optional[List[str]] = ["Fractional CMO", "Marketing Agency"]
+    icp_description: Optional[str] = "Companies seeking external marketing leadership or agency partners"
+    icp_seller_keywords: Optional[List[str]] = ["book a call", "our agency", "we offer"]
     news_queries: List[str]
     serper_queries: List[str]
     summary_explanation: str
@@ -96,7 +102,8 @@ Return ONLY a raw valid JSON object (no markdown code blocks, no preambles, no c
 
 CRITICAL RULES:
 1. 'social_triggers' MUST ALWAYS be high-converting buyer action verbs (e.g. ["looking for", "recommend", "need an agency"]).
-2. 'social_topics' MUST be specific target service terms (e.g. ["web design", "website redesign"]).
+2. 'social_topics' MUST be specific target service terms (e.g. ["Fractional CMO", "Marketing Agency", "Growth Marketing"]).
+3. NEVER add negative operators like - "I run a" or - "we are hiring" into search queries. Keep all search queries natural plain text.
 """
 
     prompt = f"User ICP Requirement: \"{user_prompt}\"\n\nGenerate the structured JSON settings."
@@ -109,11 +116,11 @@ CRITICAL RULES:
             "X-Title": "Heimdall Lead Intel",
             "Content-Type": "application/json"
         }
-        # Try Claude Haiku on OpenRouter, fallback to mini
+        # Try active OpenRouter models
         models_to_try = [
-            "anthropic/claude-3.5-haiku",
-            "openai/gpt-4o-mini",
-            "inclusionai/ling-3.0-flash:free"
+            "meta-llama/llama-3.3-70b-instruct",
+            "deepseek/deepseek-chat",
+            "openai/gpt-4o-mini"
         ]
         
         for m in models_to_try:

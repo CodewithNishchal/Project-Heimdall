@@ -128,6 +128,14 @@ def list_all_leads():
             elif not payload.get("last_updated"):
                 payload["last_updated"] = datetime.now(timezone.utc).isoformat()
             results.append(payload)
+            
+        # Always score-descending within each bucket. Never surface the weakest lead first.
+        results.sort(
+            key=lambda p: (
+                p.get("icp_score") if p.get("icp_score") is not None else p.get("intent_score", 0)
+            ),
+            reverse=True
+        )
         return results
     finally:
         db.close()

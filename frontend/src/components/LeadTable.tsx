@@ -278,12 +278,12 @@ export default function LeadTable({
         matchesDate = leadTime >= thirtyDaysAgo.getTime() || lead.badge === 'new_today';
       }
 
-      // 4. Score Filter
+      // 4. Score Filter (Hot >= 70, Warm 40-69, Watching < 40)
       let matchesScore = true;
       const leadScore = lead.icp_score ?? lead.intent_score ?? 0;
-      if (scoreFilter === 'HIGH') matchesScore = leadScore >= 80;
-      else if (scoreFilter === 'MEDIUM') matchesScore = leadScore >= 60 && leadScore < 80;
-      else if (scoreFilter === 'LOW') matchesScore = leadScore < 60;
+      if (scoreFilter === 'HIGH') matchesScore = leadScore >= 70;
+      else if (scoreFilter === 'MEDIUM') matchesScore = leadScore >= 40 && leadScore < 70;
+      else if (scoreFilter === 'LOW') matchesScore = leadScore < 40;
 
       // 5. Signal Filter
       let matchesSignal = true;
@@ -307,6 +307,14 @@ export default function LeadTable({
       }
 
       return matchesSearch && matchesTier && matchesDate && matchesScore && matchesSignal;
+    }).sort((a, b) => {
+      // Always score-descending within each bucket. Never surface the weakest lead first.
+      const scoreA = a.icp_score ?? a.intent_score ?? 0;
+      const scoreB = b.icp_score ?? b.intent_score ?? 0;
+      if (scoreB !== scoreA) {
+        return scoreB - scoreA; // Highest score first
+      }
+      return (b.confidence?.verified ?? 0) - (a.confidence?.verified ?? 0);
     });
   }, [leads, scannedLeads, searchTerm, externalSearchTerm, selectedTier, dateFilter, scoreFilter, signalFilter, isPipelineTab]);
 
@@ -577,7 +585,7 @@ export default function LeadTable({
                                   {lead.company_name}
                                 </span>
                                 <span className="text-xs text-zinc-400 font-normal">
-                                  {(!lead.industry || lead.industry === 'Unknown') ? 'SaaS' : lead.industry} · {lead.funding_stage || 'Series B'} · {formatEmployeeCount(lead.employee_count)}
+                                  {(!lead.industry || lead.industry === 'Unknown') ? 'SaaS' : lead.industry}{lead.funding_stage ? ` · ${lead.funding_stage}` : ''} · {formatEmployeeCount(lead.employee_count)}
                                 </span>
                               </div>
                             </div>

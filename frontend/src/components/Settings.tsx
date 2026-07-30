@@ -9,9 +9,9 @@ const DEFAULT_TEMPLATES = [
     prompt: 'Recruitment agency in USA targeting DevOps, Cybersecurity, and ML roles with 50-2000 employee headcount',
   },
   {
-    title: 'FinTech B2B SaaS',
-    desc: 'Fractional CMO & Growth (20-500 emp)',
-    prompt: 'B2B SaaS companies in FinTech with 20-500 employees looking for Fractional CMOs and Growth Marketing partners',
+    title: 'Marketing Agency ICP',
+    desc: 'Marketing Agency & Growth (20-500 emp)',
+    prompt: 'B2B SaaS companies in FinTech with 20-500 employees looking for a Marketing Agency or Growth Marketing partners',
   },
   {
     title: 'E-Commerce & Retail',
@@ -468,7 +468,7 @@ export default function Settings() {
                         <textarea 
                           className="flex-1 w-full text-[11px] font-mono text-slate-800 dark:text-zinc-200 bg-white/80 dark:bg-black/40 p-2.5 rounded-lg border border-slate-200/80 dark:border-white/5 shadow-xs focus:outline-none focus:border-orange-500/50 resize-none"
                           rows={2}
-                          defaultValue={previewQuery || '("looking for" OR "recommend") "web design" OR "website redesign"'}
+                          defaultValue={previewQuery || 'Fractional CMO agency OR looking for Marketing Agency'}
                         />
                       </div>
 

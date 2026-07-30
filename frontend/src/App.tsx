@@ -49,17 +49,28 @@ export default function App() {
   };
 
   const savedLeads = useMemo(() => {
+    let list = [];
     if (trackedLeadIds.length === 0) {
-      return leads.filter((l) => l.badge === 'new_today' || l.icp_fit === 'Strong');
+      list = leads.filter((l) => {
+        const score = l.icp_score ?? l.intent_score ?? 0;
+        return l.badge === 'new_today' || score > 75;
+      });
+    } else {
+      list = leads.filter((l) => {
+        const key = String(l.id || l.domain || l.company_name);
+        return (
+          trackedLeadIds.includes(key) ||
+          trackedLeadIds.includes(l.id) ||
+          trackedLeadIds.includes(l.domain) ||
+          trackedLeadIds.includes(l.company_name)
+        );
+      });
     }
-    return leads.filter((l) => {
-      const key = String(l.id || l.domain || l.company_name);
-      return (
-        trackedLeadIds.includes(key) ||
-        trackedLeadIds.includes(l.id) ||
-        trackedLeadIds.includes(l.domain) ||
-        trackedLeadIds.includes(l.company_name)
-      );
+
+    return list.sort((a, b) => {
+      const scoreA = a.icp_score ?? a.intent_score ?? 0;
+      const scoreB = b.icp_score ?? b.intent_score ?? 0;
+      return scoreB - scoreA;
     });
   }, [leads, trackedLeadIds]);
 
@@ -114,7 +125,10 @@ export default function App() {
   const totalScans = leads.length;
 
   const strongICPCount = useMemo(() => {
-    return leads.filter((l) => l.icp_fit === 'Strong' || l.icp_fit === 'Partial').length;
+    return leads.filter((l) => {
+      const score = l.icp_score ?? l.intent_score ?? 0;
+      return score >= 50; // Strong (>75) or Partial (50-75)
+    }).length;
   }, [leads]);
 
   const globalAvgConfidence = useMemo(() => {
@@ -127,10 +141,9 @@ export default function App() {
     return leads.find((l) => l.id === selectedLeadId) || null;
   }, [leads, selectedLeadId]);
 
-  const avgIntentScore = useMemo(() => {
-    if (leads.length === 0) return 0;
-    const sum = leads.reduce((acc, l) => acc + (l.intent_score ?? l.icp_score ?? 0), 0);
-    return Math.round(sum / leads.length);
+  const researchHoursSaved = useMemo(() => {
+    const companiesScored = leads.length;
+    return Math.round((companiesScored * 25) / 60);
   }, [leads]);
 
   const newTodayCount = useMemo(() => {
@@ -300,17 +313,17 @@ export default function App() {
                     </div>
                   </motion.div>
 
-                  {/* Card 4: Average Intent Score across companies in pipeline */}
+                  {/* Card 4: Research Hours Saved */}
                   <motion.div variants={itemVariants} className="nexa-card px-2.5 py-1.5 sm:p-4 flex flex-col justify-between min-h-[3.1rem] sm:h-24 relative overflow-hidden">
                     <span className="text-[8px] sm:text-[11px] font-bold uppercase tracking-wider text-zinc-500">
-                      Avg Intent Score
+                      Research Hours Saved
                     </span>
                     <div className="flex items-baseline gap-1 sm:gap-2 mt-0.5 sm:mt-1">
                       <span className="text-sm sm:text-3xl font-extrabold text-[var(--nexa-accent)]">
-                        {avgIntentScore}
+                        {researchHoursSaved}h
                       </span>
                       <span className="text-[7.5px] sm:text-xs text-emerald-600 dark:text-emerald-400 font-mono font-bold">
-                        / 100
+                        this week
                       </span>
                     </div>
                   </motion.div>
