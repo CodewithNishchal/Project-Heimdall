@@ -65,6 +65,8 @@ export function runPipeline(): Promise<{ message: string; timestamp: string }> {
 }
 
 export interface IntentConfig {
+  active_niche?: string;
+  active_subtype?: string;
   news_queries: string[];
   serper_queries: string[];
   jobspy_search_term: string;

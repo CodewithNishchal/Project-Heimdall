@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { motion, Variants } from 'framer-motion';
-import { Sparkles, LayoutGrid, Workflow, MessageSquare, Target, Settings as SettingsIcon } from 'lucide-react';
+import { Sparkles, LayoutGrid, Workflow, MessageSquare, Bookmark, Settings as SettingsIcon } from 'lucide-react';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
 import LeadTable from './components/LeadTable';
@@ -34,7 +34,7 @@ export default function App() {
     { label: 'Dashboard', key: 'dashboard', icon: LayoutGrid },
     { label: 'Find Leads', key: 'pipeline', icon: Workflow },
     { label: 'Social Signals', key: 'social media posts', icon: MessageSquare },
-    { label: 'Saved Leads', key: 'statistics', icon: Target },
+    { label: 'Track Leads', key: 'statistics', icon: Bookmark },
     { label: 'Settings', key: 'settings', icon: SettingsIcon },
   ];
 

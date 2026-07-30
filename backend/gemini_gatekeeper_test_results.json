@@ -1,0 +1,53 @@
+{
+  "active_niche": "recruitment_agencies",
+  "active_subtype": "healthcare_recruitment",
+  "execution_time_seconds": 99.09,
+  "input_candidates_count": 10,
+  "top_5_leads": [
+    {
+      "rank": 1,
+      "company_name": "BioHealth Solutions",
+      "domain": "biohealthsolutions.com",
+      "fits_icp": true,
+      "disqualification_reason": null,
+      "primary_signal_category": "HIRING",
+      "signal_recency": 0
+    },
+    {
+      "rank": 2,
+      "company_name": "PharmaCare Plus",
+      "domain": "pharmacareplus.com",
+      "fits_icp": true,
+      "disqualification_reason": null,
+      "primary_signal_category": "HIRING",
+      "signal_recency": 0
+    },
+    {
+      "rank": 3,
+      "company_name": "MedTech Innovators",
+      "domain": "medtechinnovators.com",
+      "fits_icp": true,
+      "disqualification_reason": null,
+      "primary_signal_category": "HIRING",
+      "signal_recency": 0
+    },
+    {
+      "rank": 4,
+      "company_name": "VirtualCare MD",
+      "domain": "virtualcaremd.com",
+      "fits_icp": true,
+      "disqualification_reason": null,
+      "primary_signal_category": "HIRING",
+      "signal_recency": 0
+    },
+    {
+      "rank": 5,
+      "company_name": "TechSolve Agency",
+      "domain": "techsolveagency.com",
+      "fits_icp": true,
+      "disqualification_reason": null,
+      "primary_signal_category": "SOCIAL_INTENT",
+      "signal_recency": 0
+    }
+  ]
+}

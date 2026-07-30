@@ -38,8 +38,13 @@ def load_intent_config() -> dict:
 
 def save_intent_config(config: dict) -> bool:
     try:
+        current = load_intent_config()
+        # Merge top-level keys
+        for k, v in config.items():
+            if v is not None:
+                current[k] = v
         with open(CONFIG_PATH, "w", encoding="utf-8") as f:
-            json.dump(config, f, indent=2)
+            json.dump(current, f, indent=2)
         return True
     except Exception as e:
         logger.error(f"Failed to save intent config: {e}")

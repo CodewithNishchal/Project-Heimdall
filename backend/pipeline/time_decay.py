@@ -1,12 +1,12 @@
 from datetime import datetime, timezone
 
 RECENCY_TIERS = [
-    (30,  1.00),   # < 30 days  -> Full weight contribution (100%)
-    (90,  0.70),   # 30-90 days -> 70% retention multiplier
-    (180, 0.40),   # 90-180 days -> 40% retention multiplier
-    (365, 0.20),   # 180-365 days -> 20% retention multiplier
+    (30,  1.50),   # < 30 days   -> 1.5x recency boost
+    (90,  1.00),   # 1-3 months  -> 1.0x baseline weight
+    (180, 0.70),   # 3-6 months  -> 0.7x weight multiplier
+    (365, 0.40),   # 6-12 months -> 0.4x weight multiplier
 ]
-FALLBACK_MULTIPLIER = 0.10  # > 1 year -> 10% anchor floor
+FALLBACK_MULTIPLIER = 0.10  # > 12 months -> 0.1x floor multiplier
 
 
 def calculate_time_decay(event_date_str: str) -> tuple[float, str]:

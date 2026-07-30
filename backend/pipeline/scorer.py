@@ -82,15 +82,51 @@ def process_hybrid_lead_scoring(
             "score_contribution": round(contribution, 1),
         })
 
-    # Compute systemic baseline score (Direct Gemini AI score pass-through)
+    # Compute systemic baseline score
     aggregated_base = float(base_ai_score)
 
-    # Social Intelligence Boost (Segment B protection: 0 ads is a buying trigger for Paid Ads)
-    if "Scrape Creators Ad & Social Audit" in raw_source_text:
-        aggregated_base += 10.0  # Reward verified social intelligence data
+    # Multi-Signal Co-Occurrence Bonus
+    signal_categories = {s.get("signal_type") for s in signals_processed if s.get("signal_type")}
+    num_cats = len(signal_categories)
+    if num_cats >= 4:
+        aggregated_base += 20.0
+    elif num_cats == 3:
+        aggregated_base += 15.0
+    elif num_cats == 2:
+        aggregated_base += 10.0
 
-    # ICP fit label passed from orchestrator gatekeeper (single-pass, no double penalty)
+    raw_lower = raw_source_text.lower()
+    from backend.config_manager import load_intent_config
+    _cfg = load_intent_config()
+    _active_st = _cfg.get("active_subtype", "tech_recruitment")
+    _st_info = _cfg.get("recruitment_subtypes", {}).get(_active_st, {})
+    _prioritized = _st_info.get("prioritized_signals", [])
+    if any(p_sig.lower() in raw_lower for p_sig in _prioritized):
+        aggregated_base += 10.0
+
+    # Social Intelligence Boost
+    if "Scrape Creators Ad & Social Audit" in raw_source_text:
+        aggregated_base += 10.0
+
     final_intent_score = max(0, min(int(aggregated_base), 100))
+
+    # Check for explicit buying signal or high-intent trigger
+    has_explicit_buy = raw_extracted_payload.get("intent_classification") == "HOT" or "agency" in raw_lower or "looking for" in raw_lower or "recruiter" in raw_lower or "hiring" in raw_lower
+
+    # Senior Spec v2 Hard Rules
+    unique_sources = {sig.get("source_url") for sig in signals_processed if sig.get("source_url")}
+    # Max 40 with single source, UNLESS explicit high-intent buy signal is detected
+    if len(unique_sources) <= 1 and not has_explicit_buy and base_ai_score < 75:
+        final_intent_score = min(final_intent_score, 40)
+
+    # Max 70 without any signal from last 6 months (180 days)
+    has_recent_signal = any(sig.get("recency_label") not in ["historical", "365d_stale"] for sig in signals_processed)
+    if not has_recent_signal and len(signals_processed) > 0:
+        final_intent_score = min(final_intent_score, 70)
+
+    # Max 85 without explicit buy signal or 3+ strong signals
+    if not has_explicit_buy and len(signals_processed) < 3:
+        final_intent_score = min(final_intent_score, 85)
 
     # Enforce algorithmic score categorization bands
     if final_intent_score >= 70:
@@ -113,12 +149,20 @@ def process_hybrid_lead_scoring(
     company_segment = raw_extracted_payload.get("company_segment") or firmographics.get("company_segment", "Growth Scale-up")
     why_now = raw_extracted_payload.get("why_now") or "Verified public buying intent triggers detected. Recommend targeted outreach."
     signal_tags = raw_extracted_payload.get("signal_tags", [])
+    
+    intent_class = raw_extracted_payload.get("intent_classification")
+    if not intent_class:
+        intent_class = "HOT" if final_intent_score >= 75 else ("WARM" if final_intent_score >= 40 else "SKIP")
+        
+    one_line_reason = raw_extracted_payload.get("one_line_reason") or why_now.split(". ")[0]
 
     return {
         "company_name": raw_extracted_payload.get("company_name"),
         "industry": extracted_industry,
         "company_segment": company_segment,
         "intent_score": final_intent_score,
+        "intent_classification": intent_class,
+        "one_line_reason": one_line_reason,
         "signal_freshness": min(avg_freshness, 100),
         "tier": assigned_tier,
         "icp_fit": icp_fit_label,
@@ -134,8 +178,7 @@ COLOR_THEME_MAP = {
     "hiring": "emerald",
     "agency_intent": "rose",
     "product": "amber",
-    "expansion": "teal",
-    "growth": "purple"
+    "expansion": "amber"
 }
 
 
@@ -143,7 +186,8 @@ async def analyze_lead_intent_with_llm(
     company_name: str,
     cleaned_html: str,
     firmographics: dict,
-    icp_fit_label: str = "Strong"
+    icp_fit_label: str = "Strong",
+    raw_signals: list = None
 ) -> dict:
     """
     Calls Groq API to extract signals and then applies hybrid scoring.
@@ -160,10 +204,14 @@ async def analyze_lead_intent_with_llm(
             try:
                 config_path = os.path.join(os.path.dirname(__file__), "..", "intent_config.json")
                 keywords = ["growth", "hiring", "funding", "expansion"]
+                subtype_rules = "Prioritize active expansion and scaling hiring."
                 if os.path.exists(config_path):
                     with open(config_path, "r") as f:
                         intent_cfg = json.load(f)
                         keywords = intent_cfg.get("extraction_keywords", keywords)
+                        active_st = intent_cfg.get("active_subtype", "tech_recruitment")
+                        st_info = intent_cfg.get("recruitment_subtypes", {}).get(active_st, {})
+                        subtype_rules = st_info.get("rules", subtype_rules)
                     
                 keywords_str = ", ".join(keywords)
 
@@ -180,45 +228,45 @@ TASK:
 Extract intent signals matching the TARGET KEYWORDS, generate a 2-sentence 'why_now' trigger statement, assign intent category tags, and calculate a composite intent score.
 
 STRICT EXTRACTION RULES:
-1. verbatim_quote: MUST be a 100% exact, contiguous word-for-word substring copied directly from the INPUT TEXT. Do NOT paraphrase, fix typos, reformat, or alter capitalization/punctuation, or validation will fail.
-2. source_url: Copy the exact URL from the `[Source URL: ...]` tag immediately preceding the text block where the quote was found.
-3. Zero Signals Handling: If NO text matches the target keywords, return `"signals": []` and `"intent_score": 0`. Do NOT force or invent quotes if no match exists.
-4. intent_score: Calculate an integer from 0-100 based on this strict rubric:
-   - 0: No matching keywords or intent found.
-   - 1-40: Weak, indirect, or generic brand mentions.
-   - 41-75: Moderate intent (general hiring, active feature discussions, growth chatter).
-   - 76-100: High actionable intent (recent funding rounds, direct vendor/agency requests, C-level expansion announcements).
-5. Agency Guard: If the INPUT TEXT itself describes {company_name} as a marketing/advertising/staffing/consulting agency or service provider, set "intent_score": 0 and "signals": [] regardless of keyword matches.
-6. Deduplication: If multiple text blocks describe the same underlying event (e.g., the same funding round reported by two different sources), include only ONE signal entry for it.
-7. event_date: If no explicit date is stated in or immediately adjacent to the source text, return "event_date": null — do not estimate or infer a plausible date.
-8. Multi-Signal Bonus: If signals from 2 or more distinct categories are present for {company_name} (e.g. funding AND hiring), add +15 to the base intent score (capped at 100).
+1. verbatim_quote: MUST be a 100% exact, contiguous word-for-word substring copied directly from the INPUT TEXT. Do NOT paraphrase or alter capitalization/punctuation.
+2. source_post_index: Set "source_post_index": <int> matching the integer index in '[POST_INDEX: n]'.
+3. Zero Signals Handling: If NO text matches target keywords, return "signals": [] and "intent_score": 0.
+4. intent_score: Calculate an integer from 0-100 based strictly on this 7-tier rubric:
+   - 0: No relevant signals found, OR company is itself an agency/competitor.
+   - 1-15: Single weak signal only (generic mention, no hiring/funding data).
+   - 16-35: One moderate signal (some hiring OR vague social mention).
+   - 36-55: One strong signal OR two moderate signals (recent funding alone, or headcount growth + general jobs).
+   - 56-75: Two or more strong signals suggesting expansion (funding + sales hiring).
+   - 76-90: Strong multi-signal WITH direct agency indicator (funding + agency ask, or leadership change).
+   - 91-100: Explicit agency-seeking post + multiple expansion signals + recent funding.
+5. Agency Guard: If the text describes {company_name} as an agency, set "intent_score": 0 and "signals": [].
+6. Single Signal High-Intent Handling: High-impact individual signals (e.g. recent major funding round >$10M, C-level executive appointment, or explicit agency request) SHOULD be scored in the 75–90 range based on actionable lead value, even if ingested from a single source.
+7. Active Sub-Type Evaluation Rule: {subtype_rules}
 
 OUTPUT JSON SCHEMA:
 {{
   "company_name": "{company_name}",
-  "industry": "Specific Industry Name (e.g. EdTech, B2B SaaS, E-Commerce, Healthcare, FinTech, Retail)",
-  "company_segment": "High-level market segment (e.g. FinTech Scale-up, DTC Consumer Brand, AI Infra)",
-  "intent_score": 85,
-  "why_now": "Sentence 1 (Catalyst): State the exact recent funding, hiring spree, or metric found in the text. Sentence 2 (Opportunity): State the immediate strategic hook or problem your services solve for them right now.",
+  "industry": "<Specific Industry Name>",
+  "company_segment": "<Market Segment>",
+  "intent_score": <integer 0-100 based on rubric above>,
+  "intent_classification": "HOT" | "WARM" | "SKIP",
+  "one_line_reason": "<1-sentence concise reason why post/company was flagged for lead card>",
+  "why_now": "Sentence 1 (Catalyst): State exact recent funding/hiring metric found. Sentence 2 (Opportunity): State immediate strategic hook.",
   "signal_tags": [
     {{
-      "tag": "Series C Funding",
-      "category": "funding"
-    }},
-    {{
-      "tag": "Fractional CMO Request",
-      "category": "agency_intent"
+      "tag": "<Exact Milestone Found, e.g. Series B Funding / $45M Round>",
+      "category": "funding|hiring|leadership|agency_intent|expansion"
     }}
   ],
   "signals": [
     {{
-      "signal_type": "Exact keyword or topic matched",
-      "verbatim_quote": "Exact word-for-word string copied directly from text",
-      "source_url": "https://example.com/source-link",
+      "signal_type": "<Keyword or topic matched>",
+      "verbatim_quote": "<Exact word-for-word string copied directly from text>",
+      "source_post_index": 0,
       "event_date": "YYYY-MM-DD or null"
     }}
   ],
-  "ai_verdict": "A highly specific 2-3 sentence summary detailing verified intent triggers and proposed outreach strategy."
+  "ai_verdict": "Concise 2-sentence summary detailing verified intent triggers and outreach strategy."
 }}
 """
 
@@ -265,11 +313,28 @@ OUTPUT JSON SCHEMA:
                             cat = str(st.get("category", "")).lower()
                             st["color_theme"] = COLOR_THEME_MAP.get(cat, "indigo")
 
-                    # Python verbatim quote verification guard
+                    # Python Index-to-URL mapper with Defensive Out-of-Bounds Logging & Null Fallback
                     if raw_payload.get("signals"):
                         valid_signals = []
                         for sig in raw_payload["signals"]:
                             quote = sig.get("verbatim_quote", "")
+
+                            # Only run index-to-URL mapping when raw_signals is provided (batch pipeline)
+                            if raw_signals is not None:
+                                idx = sig.get("source_post_index")
+                                if idx is not None and isinstance(idx, int) and 0 <= idx < len(raw_signals):
+                                    item_src = raw_signals[idx]
+                                    sig["source_url"] = item_src.get("url") or item_src.get("link") or item_src.get("extracted_url")
+                                    sig["quote_validated"] = True
+                                else:
+                                    logger.warning(
+                                        f"[Groq Index Warning] Invalid or out-of-bounds source_post_index '{idx}' "
+                                        f"returned for company '{company_name}' (Total signals: {len(raw_signals)}). "
+                                        f"Setting source_url to None."
+                                    )
+                                    sig["source_url"] = None
+                                    sig["quote_validated"] = False
+
                             if quote and quote.lower() in cleaned_html.lower():
                                 valid_signals.append(sig)
                         raw_payload["signals"] = valid_signals

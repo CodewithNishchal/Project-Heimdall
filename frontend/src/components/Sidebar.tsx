@@ -1,4 +1,4 @@
-import { LayoutGrid, Workflow, MessageSquare, Target, Settings as SettingsIcon, Shield, X } from 'lucide-react';
+import { LayoutGrid, Workflow, MessageSquare, Bookmark, Settings as SettingsIcon, Shield, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
 
@@ -17,7 +17,7 @@ export default function Sidebar({ currentView, setCurrentView, status, isMobileO
     { label: 'Dashboard', key: 'dashboard', icon: LayoutGrid },
     { label: 'Find Leads', key: 'pipeline', icon: Workflow },
     { label: 'Social Signals', key: 'social media posts', icon: MessageSquare },
-    { label: 'Saved Leads', key: 'statistics', icon: Target },
+    { label: 'Track Leads', key: 'statistics', icon: Bookmark },
   ];
 
   const handleNavClick = (key: string) => {

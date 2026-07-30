@@ -509,6 +509,7 @@ async def fetch_job_signals(company_name: str) -> list[dict]:
                     "domain": "derived_or_unknown.com",
                     "raw_text": raw_text,
                     "source_api": "JobSpy",
+                    "url": url,
                     "extracted_url": url,
                 }
             )
@@ -534,3 +535,195 @@ async def fetch_public_intent_signals(query: str) -> list[dict]:
         return combined
 
     return []
+
+
+# ======================================================================
+# Phase 1 & 2 — Exa AI 50-Company Discovery + Deterministic Regex Pre-Filtering
+# ======================================================================
+
+import re
+CATEGORY_REGEX = re.compile(r"is an?\s+([\w,\s]+?)\s+(?:company|organization|institution|firm)\.", re.IGNORECASE)
+HEADCOUNT_REGEX = re.compile(r"(\d{1,3}(?:,\d{3})*|\d+)\s*(?:employees|people|emp)", re.IGNORECASE)
+
+def parse_headcount(text: str) -> int | None:
+    match = HEADCOUNT_REGEX.search(text)
+    if match:
+        val_str = match.group(1).replace(",", "")
+        try:
+            return int(val_str)
+        except ValueError:
+            return None
+    return None
+
+def extract_category(text: str) -> str | None:
+    match = CATEGORY_REGEX.search(text)
+    if match:
+        return match.group(1).strip()
+    return None
+
+async def fetch_exa_candidates_50(icp_config: dict = None) -> list[dict]:
+    """
+    Queries Exa AI Neural Search across all niche-specific client queries concurrently.
+    Deduplicates candidates by URL and domain and returns up to 100 combined raw candidates max.
+    """
+    import os
+    import json
+    import asyncio
+    from dotenv import dotenv_values
+    from backend.config_manager import load_intent_config
+    env_vars = dotenv_values("backend/.env")
+    exa_api_key = env_vars.get("EXA_API_KEY") or os.getenv("EXA_API_KEY") or getattr(settings, "EXA_API_KEY", "")
+
+    config = load_intent_config()
+    active_niche = config.get("active_niche", "marketing_agencies")
+    
+    # Select niche query list
+    niche_query_key = f"{active_niche.split('_')[0]}_exa_queries" if "_" in active_niche else "marketing_exa_queries"
+    if active_niche == "appointment_setting":
+        niche_query_key = "appointment_setting_exa_queries"
+    elif active_niche == "recruitment_agencies":
+        niche_query_key = "recruitment_exa_queries"
+        
+    query_objs = config.get(niche_query_key, [])
+    if not query_objs:
+        default_q = config.get("exa_query") or "B2B companies growing revenue, expanding team, hiring roles in US 2025 2026"
+        queries = [default_q]
+    else:
+        queries = [q.get("query") for q in query_objs if q.get("query")]
+
+    # Dynamically inject active sub-type target industries, prioritized signals, and rules into Exa queries
+    active_subtype = config.get("active_subtype")
+    if active_subtype:
+        subtypes_dict = config.get(f"{active_niche.split('_')[0]}_subtypes", {}) or config.get("recruitment_subtypes", {})
+        st_info = subtypes_dict.get(active_subtype, {})
+        target_inds = st_info.get("target_industries", [])
+        prioritized = st_info.get("prioritized_signals", [])
+        rules_text = st_info.get("rules", "")
+
+        parts = []
+        if target_inds:
+            parts.append("(" + " OR ".join(target_inds) + ")")
+        if prioritized:
+            parts.append("(" + " OR ".join(prioritized[:2]) + ")")
+        if rules_text:
+            parts.append(rules_text)
+
+        if parts:
+            subtype_addon = " ".join(parts)
+            queries = [f"{q} {subtype_addon}" for q in queries]
+            logger.info(f"[Exa AI Discovery] Injected active sub-type '{active_subtype}' context into Exa queries: {subtype_addon[:80]}...")
+
+    if not exa_api_key or "your_" in exa_api_key:
+        logger.warning("[Exa AI] API Key missing or invalid. Falling back to local cache if available.")
+        fallback_path = os.path.join(os.path.dirname(__file__), "..", "exa_hard_query_results.json")
+        if os.path.exists(fallback_path):
+            with open(fallback_path, "r", encoding="utf-8") as f:
+                return json.load(f)[:100]
+        return []
+
+    url = "https://api.exa.ai/search"
+    headers = {
+        "accept": "application/json",
+        "content-type": "application/json",
+        "x-api-key": exa_api_key
+    }
+
+    async def fetch_single_query(client: httpx.AsyncClient, query_str: str) -> list[dict]:
+        payload = {
+            "query": query_str,
+            "type": "neural",
+            "useAutoprompt": False,
+            "category": "company",
+            "excludeDomains": ["clutch.co", "upcity.com", "designrush.com", "goodfirms.co", "linkedin.com", "crunchbase.com"],
+            "numResults": 50,
+            "contents": {
+                "text": True,
+                "summary": True
+            }
+        }
+        try:
+            resp = await client.post(url, headers=headers, json=payload)
+            if resp.status_code == 200:
+                return resp.json().get("results", [])
+            else:
+                logger.error(f"[Exa AI Discovery] HTTP Error {resp.status_code} for query '{query_str[:30]}...': {resp.text[:150]}")
+                return []
+        except Exception as e:
+            logger.error(f"[Exa AI Discovery] Execution error for query '{query_str[:30]}...': {e}")
+            return []
+
+    try:
+        async with httpx.AsyncClient(timeout=35.0) as client:
+            logger.info(f"[Exa AI Discovery] Executing {len(queries)} client-intent queries concurrently for active niche '{active_niche}'...")
+            tasks = [fetch_single_query(client, q) for q in queries]
+            query_results = await asyncio.gather(*tasks)
+
+            # Deduplicate across all query results by URL and Domain
+            seen = set()
+            deduped_results = []
+            for batch in query_results:
+                for item in batch:
+                    item_url = str(item.get("url") or "").lower()
+                    if item_url and item_url not in seen:
+                        seen.add(item_url)
+                        deduped_results.append(item)
+                    elif not item_url and item.get("title") and item.get("title") not in seen:
+                        seen.add(item.get("title"))
+                        deduped_results.append(item)
+
+            logger.info(f"[Exa AI Parallel Discovery] Executed {len(queries)} queries -> Fetched {sum(len(b) for b in query_results)} raw results -> Deduplicated to {len(deduped_results)} candidates (Capped at 150 max).")
+            return deduped_results[:150]
+    except Exception as e:
+        logger.error(f"[Exa AI Discovery] Concurrent execution error: {e}")
+        return []
+
+def apply_deterministic_filter(candidates: list[dict], icp_config: dict = None) -> list[dict]:
+    """
+    Applies zero-token regex extraction on text_snippet and evaluates against
+    per-ICP headcount range, category allowlists, and geography limits while preserving rank.
+    """
+    import os
+    import json
+    if not icp_config:
+        config_path = os.path.join(os.path.dirname(__file__), "..", "icp_config.json")
+        if os.path.exists(config_path):
+            with open(config_path, "r", encoding="utf-8") as f:
+                icp_config = json.load(f)
+        else:
+            icp_config = {}
+
+    allowed_cats = [c.lower() for c in icp_config.get("allowed_categories", ["software", "technology", "financial"])]
+    min_hc = icp_config.get("headcount_min", 5)
+    max_hc = icp_config.get("headcount_max", 500)
+
+    survivors = []
+    for rank, item in enumerate(candidates, start=1):
+        item_copy = dict(item)
+        item_copy["original_rank"] = rank
+        snippet = item_copy.get("text_snippet") or item_copy.get("text") or item_copy.get("summary") or ""
+
+        extracted_cat = extract_category(snippet)
+        parsed_hc = parse_headcount(snippet)
+
+        item_copy["extracted_category"] = extracted_cat
+        item_copy["parsed_headcount"] = parsed_hc
+
+        # 1. Category Check (Allowlist + Fail-Closed)
+        if extracted_cat:
+            cat_lower = extracted_cat.lower()
+            if not any(ac in cat_lower for ac in allowed_cats):
+                logger.info(f"[Filter Reject] Rank #{rank} '{item_copy.get('title')}': Category '{extracted_cat}' outside allowlist.")
+                continue
+        else:
+            item_copy["regex_unmatched"] = True
+
+        # 2. Headcount Check
+        if parsed_hc is not None:
+            if parsed_hc < min_hc or parsed_hc > max_hc:
+                logger.info(f"[Filter Reject] Rank #{rank} '{item_copy.get('title')}': Headcount {parsed_hc} out of bounds ({min_hc}-{max_hc}).")
+                continue
+
+        survivors.append(item_copy)
+
+    logger.info(f"[Deterministic Filter] Evaluated {len(candidates)} candidates -> {len(survivors)} SURVIVORS allowed.")
+    return survivors

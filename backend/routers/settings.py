@@ -15,14 +15,16 @@ logger = logging.getLogger("SettingsRouter")
 router = APIRouter(prefix="/api/settings", tags=["Settings"])
 
 class IntentConfigModel(BaseModel):
-    news_queries: List[str]
-    serper_queries: List[str]
-    jobspy_search_term: str
+    active_niche: Optional[str] = "recruitment_agencies"
+    active_subtype: Optional[str] = "tech_recruitment"
+    news_queries: Optional[List[str]] = []
+    serper_queries: Optional[List[str]] = []
+    jobspy_search_term: Optional[str] = "Fractional CMO, Growth Marketing Manager"
     news_signals_query_template: Optional[str] = ""
     exa_query: Optional[str] = "companies looking for a marketing agency, fractional CMO, PPC agency, or lead generation services, expanding operations or hiring growth leaders in the United States"
-    extraction_keywords: List[str]
-    social_triggers: List[str]
-    social_topics: List[str]
+    extraction_keywords: Optional[List[str]] = []
+    social_triggers: Optional[List[str]] = []
+    social_topics: Optional[List[str]] = []
     icp_service_categories: Optional[List[str]] = ["Fractional CMO", "Marketing Agency", "Growth Marketing Agency"]
     icp_description: Optional[str] = "Companies seeking external marketing leadership, fractional CMOs, or agency partners"
     icp_seller_keywords: Optional[List[str]] = ["book a call", "our agency", "we offer", "taking on clients", "DM us", "case study"]

@@ -1,0 +1,459 @@
+{
+  "total_evaluated": 45,
+  "survivors_count": 25,
+  "rejected_count": 20,
+  "survivors": [
+    {
+      "original_rank": 1,
+      "title": "Pylon",
+      "url": "https://usepylon.com/",
+      "category": "Technology, Information and Internet",
+      "headcount": 105,
+      "status": "ALLOWED",
+      "reason": "Category 'Technology, Information and Internet' matched Allowlist | Headcount OK (105)",
+      "snippet_preview": "# Pylon (Pylon Labs, Inc.)  Pylon is a Technology, Information and Internet company. Pylon is an AI-native support platf..."
+    },
+    {
+      "original_rank": 2,
+      "title": "Ashby",
+      "url": "https://ashbyhq.com/",
+      "category": "Software Development",
+      "headcount": 316,
+      "status": "ALLOWED",
+      "reason": "Category 'Software Development' matched Allowlist | Headcount OK (316)",
+      "snippet_preview": "# Ashby (Ashby, Inc.)  Ashby is a Software Development company. Ashby is an all-in-one recruiting software that consolid..."
+    },
+    {
+      "original_rank": 3,
+      "title": "Humanly (humanly.io)",
+      "url": "https://humanly.io/",
+      "category": "Software Development",
+      "headcount": 57,
+      "status": "ALLOWED",
+      "reason": "Category 'Software Development' matched Allowlist | Headcount OK (57)",
+      "snippet_preview": "# Humanly (humanly.io) (HumanlyHR Inc)  Humanly (humanly.io) is a Software Development company. Humanly provides convers..."
+    },
+    {
+      "original_rank": 4,
+      "title": "OrbitShift AI",
+      "url": "https://orbitshift.ai/",
+      "category": "Software Development",
+      "headcount": 53,
+      "status": "ALLOWED",
+      "reason": "Category 'Software Development' matched Allowlist | Headcount OK (53)",
+      "snippet_preview": "# OrbitShift AI (Orbitshift AI, INC.)  OrbitShift AI is a Software Development company. OrbitShift is an AI-native sales..."
+    },
+    {
+      "original_rank": 5,
+      "title": "Mintlify",
+      "url": "https://mintlify.com/",
+      "category": "Software Development",
+      "headcount": 60,
+      "status": "ALLOWED",
+      "reason": "Category 'Software Development' matched Allowlist | Headcount OK (60)",
+      "snippet_preview": "# Mintlify (Mintlify, Inc.)  Mintlify is a Software Development company. Mintlify is an intelligent knowledge platform t..."
+    },
+    {
+      "original_rank": 6,
+      "title": "PartnerStack",
+      "url": "https://partnerstack.com/",
+      "category": "Software Development",
+      "headcount": 123,
+      "status": "ALLOWED",
+      "reason": "Category 'Software Development' matched Allowlist | Headcount OK (123)",
+      "snippet_preview": "# PartnerStack (PartnerStack Inc.)  PartnerStack is a Software Development company. PartnerStack is a partner ecosystem ..."
+    },
+    {
+      "original_rank": 7,
+      "title": "Distyl",
+      "url": "https://distyl.ai/",
+      "category": "Software Development",
+      "headcount": 143,
+      "status": "ALLOWED",
+      "reason": "Category 'Software Development' matched Allowlist | Headcount OK (143)",
+      "snippet_preview": "# Distyl (Distyl AI, Inc.)  Distyl is a Software Development company. Distyl is an AI-Native Enterprise that partners wi..."
+    },
+    {
+      "original_rank": 8,
+      "title": "Conveyor",
+      "url": "https://conveyor.com/",
+      "category": "Software Development",
+      "headcount": 36,
+      "status": "ALLOWED",
+      "reason": "Category 'Software Development' matched Allowlist | Headcount OK (36)",
+      "snippet_preview": "# Conveyor (Conveyor Inc.)  Conveyor is a Software Development company. Conveyor is an AI-powered security review platfo..."
+    },
+    {
+      "original_rank": 9,
+      "title": "Middesk",
+      "url": "https://middesk.com/",
+      "category": "Software Development",
+      "headcount": 128,
+      "status": "ALLOWED",
+      "reason": "Category 'Software Development' matched Allowlist | Headcount OK (128)",
+      "snippet_preview": "# Middesk (Middesk, Inc.)  Middesk is a Software Development company. Middesk is a business intelligence platform that p..."
+    },
+    {
+      "original_rank": 10,
+      "title": "OneSignal",
+      "url": "https://onesignal.com/",
+      "category": "Software Development",
+      "headcount": 148,
+      "status": "ALLOWED",
+      "reason": "Category 'Software Development' matched Allowlist | Headcount OK (148)",
+      "snippet_preview": "# OneSignal (OneSignal, Inc.)  OneSignal is a Software Development company. OneSignal employs 148 people and has an annu..."
+    },
+    {
+      "original_rank": 11,
+      "title": "Tonkean",
+      "url": "https://tonkean.com/",
+      "category": "Software Development",
+      "headcount": 69,
+      "status": "ALLOWED",
+      "reason": "Category 'Software Development' matched Allowlist | Headcount OK (69)",
+      "snippet_preview": "# Tonkean (Tonkean, Inc.)  Tonkean is a Software Development company. Tonkean is an AI-native process platform that enab..."
+    },
+    {
+      "original_rank": 12,
+      "title": "HockeyStack",
+      "url": "https://hockeystack.com/",
+      "category": "Software Development",
+      "headcount": 65,
+      "status": "ALLOWED",
+      "reason": "Category 'Software Development' matched Allowlist | Headcount OK (65)",
+      "snippet_preview": "# HockeyStack (HockeyStack, Inc.)  HockeyStack is a Software Development company. HockeyStack is a marketing intelligenc..."
+    },
+    {
+      "original_rank": 13,
+      "title": "Orb",
+      "url": "https://withorb.com/",
+      "category": "Software Development",
+      "headcount": 66,
+      "status": "ALLOWED",
+      "reason": "Category 'Software Development' matched Allowlist | Headcount OK (66)",
+      "snippet_preview": "# Orb (Orb, Inc.)  Orb is a Software Development company. Orb is a billing engine that helps streamline finance workflow..."
+    },
+    {
+      "original_rank": 14,
+      "title": "SigNoz",
+      "url": "https://signoz.io/",
+      "category": "Software Development",
+      "headcount": 45,
+      "status": "ALLOWED",
+      "reason": "Category 'Software Development' matched Allowlist | Headcount OK (45)",
+      "snippet_preview": "# SigNoz (SigNoz, Inc.)  SigNoz is a Software Development company. SigNoz is an open-source observability tool that prov..."
+    },
+    {
+      "original_rank": 15,
+      "title": "Mura",
+      "url": "https://mura.co/",
+      "category": "Technology, Information and Internet",
+      "headcount": 11,
+      "status": "ALLOWED",
+      "reason": "Category 'Technology, Information and Internet' matched Allowlist | Headcount OK (11)",
+      "snippet_preview": "# Mura (Mura Technologies, Inc.)  Mura is a Technology, Information and Internet company. Mura is an AI-driven automatio..."
+    },
+    {
+      "original_rank": 16,
+      "title": "Vitally",
+      "url": "https://vitally.io/",
+      "category": "Software Development",
+      "headcount": 70,
+      "status": "ALLOWED",
+      "reason": "Category 'Software Development' matched Allowlist | Headcount OK (70)",
+      "snippet_preview": "# Vitally (Vitally, Inc.)  Vitally is a Software Development company. Vitally employs 70 people (+16.4% YoY, +19 people)..."
+    },
+    {
+      "original_rank": 17,
+      "title": "Merge",
+      "url": "https://merge.dev/",
+      "category": "Software Development",
+      "headcount": 119,
+      "status": "ALLOWED",
+      "reason": "Category 'Software Development' matched Allowlist | Headcount OK (119)",
+      "snippet_preview": "# Merge (Merge API Inc.)  Merge is a Software Development company. Merge is a unified API that offers 40+ hris integrati..."
+    },
+    {
+      "original_rank": 18,
+      "title": "Omnistrate",
+      "url": "https://omnistrate.com/",
+      "category": "Software Development",
+      "headcount": 22,
+      "status": "ALLOWED",
+      "reason": "Category 'Software Development' matched Allowlist | Headcount OK (22)",
+      "snippet_preview": "# Omnistrate (Omnistrate, Inc.)  Omnistrate is a Software Development company. Omnistrate is a control-plane as-a-servic..."
+    },
+    {
+      "original_rank": 19,
+      "title": "Mercura (YC W25)",
+      "url": "https://mercura.ai/",
+      "category": "Software Development",
+      "headcount": 23,
+      "status": "ALLOWED",
+      "reason": "Category 'Software Development' matched Allowlist | Headcount OK (23)",
+      "snippet_preview": "# Mercura (YC W25) (Mercura Technologies GmbH)  Mercura (YC W25) is a Software Development company. Mercura automates qu..."
+    },
+    {
+      "original_rank": 20,
+      "title": "GetCrux",
+      "url": "https://bit.ly/scalefasterwithcrux",
+      "category": "Software Development",
+      "headcount": 16,
+      "status": "ALLOWED",
+      "reason": "Category 'Software Development' matched Allowlist | Headcount OK (16)",
+      "snippet_preview": "# GetCrux (Crux Technologies, Inc)  GetCrux is a Software Development company. GetCrux employs 16 people (+61.5% YoY, +8..."
+    },
+    {
+      "original_rank": 22,
+      "title": "Chief",
+      "url": "https://getchief.com/",
+      "category": "Software Development",
+      "headcount": 9,
+      "status": "ALLOWED",
+      "reason": "Category 'Software Development' matched Allowlist | Headcount OK (9)",
+      "snippet_preview": "# Chief (Chief, Inc.)  Chief is a Software Development company. Chief is an AI sales performance management platform tha..."
+    },
+    {
+      "original_rank": 23,
+      "title": "SuperOps",
+      "url": "https://superops.com/",
+      "category": "Software Development",
+      "headcount": 159,
+      "status": "ALLOWED",
+      "reason": "Category 'Software Development' matched Allowlist | Headcount OK (159)",
+      "snippet_preview": "# SuperOps (SuperOps Inc.)  SuperOps is a Software Development company. SuperOps is a future-ready, unified PSA-RMM plat..."
+    },
+    {
+      "original_rank": 24,
+      "title": "Osfin.ai",
+      "url": "https://osfin.ai/",
+      "category": "Software Development",
+      "headcount": 176,
+      "status": "ALLOWED",
+      "reason": "Category 'Software Development' matched Allowlist | Headcount OK (176)",
+      "snippet_preview": "# Osfin.ai (Beeworks Softwares Private Limited)  Osfin.ai is a Software Development company. Osfin AI is an all-in-one f..."
+    },
+    {
+      "original_rank": 25,
+      "title": "Sapiom",
+      "url": "https://sapiom.ai/",
+      "category": "Financial Services",
+      "headcount": 8,
+      "status": "ALLOWED",
+      "reason": "Category 'Financial Services' matched Allowlist | Headcount OK (8)",
+      "snippet_preview": "# Sapiom (Sapiom, Inc)  Sapiom is a Financial Services company. Sapiom employs 8 people, founded in 2025. Headquartered ..."
+    },
+    {
+      "original_rank": 26,
+      "title": "TeamEx",
+      "url": "https://teamex.io/",
+      "category": "Software Development",
+      "headcount": 26,
+      "status": "ALLOWED",
+      "reason": "Category 'Software Development' matched Allowlist | Headcount OK (26)",
+      "snippet_preview": "# TeamEx  TeamEx is a Software Development company. TeamEx helps hire and manage fully committed experts from LATAM and ..."
+    }
+  ],
+  "rejected": [
+    {
+      "original_rank": 21,
+      "title": "Hirelytiq",
+      "url": "https://hirelytiq.com/",
+      "category": "Human Resources Services",
+      "headcount": 2,
+      "status": "REJECTED",
+      "reason": "Denied Category ('Human Resources Services') | Headcount Out of Range (2)",
+      "snippet_preview": "# Hirelytiq  Hirelytiq is a Human Resources Services company. Hirelytiq employs 2 people, founded in 2024. Headquartered..."
+    },
+    {
+      "original_rank": 27,
+      "title": "Haladir (YC W26)",
+      "url": "https://haladir.com/",
+      "category": "Software Development",
+      "headcount": 4,
+      "status": "REJECTED",
+      "reason": "Category 'Software Development' matched Allowlist | Headcount Out of Range (4)",
+      "snippet_preview": "# Haladir (YC W26) (Haladir, Inc)  Haladir (YC W26) is a Software Development company. Haladir (YC W26) employs 4 people..."
+    },
+    {
+      "original_rank": 28,
+      "title": "Tekon Systems",
+      "url": "https://tekonsystems.com/",
+      "category": "Staffing and Recruiting",
+      "headcount": 3,
+      "status": "REJECTED",
+      "reason": "Denied Category ('Staffing and Recruiting') | Headcount Out of Range (3)",
+      "snippet_preview": "# Tekon Systems  Tekon Systems is a Staffing and Recruiting company. Tekon Systems employs 3 people. Headquartered in Ba..."
+    },
+    {
+      "original_rank": 29,
+      "title": "Bridgexcel",
+      "url": "https://bridgexcel.com/",
+      "category": "Human Resources Services",
+      "headcount": 11,
+      "status": "REJECTED",
+      "reason": "Denied Category ('Human Resources Services') | Headcount OK (11)",
+      "snippet_preview": "# Bridgexcel  Bridgexcel is a Human Resources Services company. Bridgexcel employs 11 people (-13.3% YoY, -2 people). He..."
+    },
+    {
+      "original_rank": 30,
+      "title": "Talent Nexa Consulting",
+      "url": "https://talentnexa.in/",
+      "category": "Human Resources Services",
+      "headcount": 6,
+      "status": "REJECTED",
+      "reason": "Denied Category ('Human Resources Services') | Headcount OK (6)",
+      "snippet_preview": "# Talent Nexa Consulting  Talent Nexa Consulting is a Human Resources Services company. Talent Nexa Consulting employs 6..."
+    },
+    {
+      "original_rank": 31,
+      "title": "DigiHIRE | AI Hiring Platform",
+      "url": "https://digihire.co.in/",
+      "category": "IT Services and IT Consulting",
+      "headcount": 9,
+      "status": "REJECTED",
+      "reason": "Denied Category ('IT Services and IT Consulting') | Headcount OK (9)",
+      "snippet_preview": "# DigiHIRE | AI Hiring Platform  DigiHIRE | AI Hiring Platform is a IT Services and IT Consulting company. DighiHIRE is ..."
+    },
+    {
+      "original_rank": 32,
+      "title": "Hirly™",
+      "url": "https://hirly.in/",
+      "category": "Staffing and Recruiting",
+      "headcount": 5,
+      "status": "REJECTED",
+      "reason": "Denied Category ('Staffing and Recruiting') | Headcount OK (5)",
+      "snippet_preview": "# Hirly™  Hirly™ is a Staffing and Recruiting company. Hirly™ employs 5 people (+400.0% YoY, +4 people), founded in 2024..."
+    },
+    {
+      "original_rank": 33,
+      "title": "Aikho",
+      "url": "https://aikho.ai/",
+      "category": "Software Development",
+      "headcount": 3,
+      "status": "REJECTED",
+      "reason": "Category 'Software Development' matched Allowlist | Headcount Out of Range (3)",
+      "snippet_preview": "# Aikho (Aikho Tech FZ-LLC)  Aikho is a Software Development company. Aikho employs 3 people, founded in 2025. Headquart..."
+    },
+    {
+      "original_rank": 34,
+      "title": "OutreachAI",
+      "url": "https://outreachai.co/",
+      "category": "Technology, Information and Internet",
+      "headcount": 3,
+      "status": "REJECTED",
+      "reason": "Category 'Technology, Information and Internet' matched Allowlist | Headcount Out of Range (3)",
+      "snippet_preview": "# OutreachAI  OutreachAI is a Technology, Information and Internet company. OutreachAI is a lead generation service that..."
+    },
+    {
+      "original_rank": 35,
+      "title": "LINKMARK",
+      "url": "https://linkmark.net/",
+      "category": "Human Resources Services",
+      "headcount": 5,
+      "status": "REJECTED",
+      "reason": "Denied Category ('Human Resources Services') | Headcount OK (5)",
+      "snippet_preview": "# LINKMARK  LINKMARK is a Human Resources Services company. LINKMARK employs 5 people (+16.7% YoY, +2 people), founded i..."
+    },
+    {
+      "original_rank": 36,
+      "title": "Forstaffing Talent Sourcing/ Recruitment Consultancy",
+      "url": "https://forstaffing.com/",
+      "category": "Human Resources Services",
+      "headcount": 2,
+      "status": "REJECTED",
+      "reason": "Denied Category ('Human Resources Services') | Headcount Out of Range (2)",
+      "snippet_preview": "# Forstaffing Talent Sourcing/ Recruitment Consultancy (Forstaffing)  Forstaffing Talent Sourcing/ Recruitment Consultan..."
+    },
+    {
+      "original_rank": 37,
+      "title": "Bonn Search Partners",
+      "url": "https://bonnsearchpartners.com/",
+      "category": "Executive Search Services",
+      "headcount": 5,
+      "status": "REJECTED",
+      "reason": "Category 'Executive Search Services' not in Allowlist | Headcount OK (5)",
+      "snippet_preview": "# Bonn Search Partners  Bonn Search Partners is a Executive Search Services company. Bonn Search Partners is a modern ex..."
+    },
+    {
+      "original_rank": 38,
+      "title": "Right Human Resource Associates",
+      "url": "https://righthr.in/",
+      "category": "Staffing and Recruiting",
+      "headcount": 16,
+      "status": "REJECTED",
+      "reason": "Denied Category ('Staffing and Recruiting') | Headcount OK (16)",
+      "snippet_preview": "# Right Human Resource Associates  Right Human Resource Associates is a Staffing and Recruiting company. RightMatch HR S..."
+    },
+    {
+      "original_rank": 39,
+      "title": "AGP Talent",
+      "url": "https://agptalent.com/",
+      "category": "Staffing and Recruiting",
+      "headcount": 3,
+      "status": "REJECTED",
+      "reason": "Denied Category ('Staffing and Recruiting') | Headcount Out of Range (3)",
+      "snippet_preview": "# AGP Talent  AGP Talent is a Staffing and Recruiting company. AGP Talent is a company that specializes in sales talent ..."
+    },
+    {
+      "original_rank": 40,
+      "title": "Hireacle - Talent Scouts",
+      "url": "https://hireacle.com/",
+      "category": "Staffing and Recruiting",
+      "headcount": 3,
+      "status": "REJECTED",
+      "reason": "Denied Category ('Staffing and Recruiting') | Headcount Out of Range (3)",
+      "snippet_preview": "# Hireacle - Talent Scouts  Hireacle - Talent Scouts is a Staffing and Recruiting company. Hireacle - Talent Scouts empl..."
+    },
+    {
+      "original_rank": 41,
+      "title": "HiresCrew",
+      "url": "https://hirescrew.vercel.app/",
+      "category": "Staffing and Recruiting",
+      "headcount": 4,
+      "status": "REJECTED",
+      "reason": "Denied Category ('Staffing and Recruiting') | Headcount Out of Range (4)",
+      "snippet_preview": "# HiresCrew  HiresCrew is a Staffing and Recruiting company. HiresCrew employs 4 people (+150.0% YoY, +3 people), founde..."
+    },
+    {
+      "original_rank": 42,
+      "title": "Vhire Consultancy",
+      "url": "https://vhireconsultancy.com/",
+      "category": "Staffing and Recruiting",
+      "headcount": 2,
+      "status": "REJECTED",
+      "reason": "Denied Category ('Staffing and Recruiting') | Headcount Out of Range (2)",
+      "snippet_preview": "# Vhire Consultancy  Vhire Consultancy is a Staffing and Recruiting company. Vhire Consultancy employs 2 people. Headqua..."
+    },
+    {
+      "original_rank": 43,
+      "title": "Joyinside",
+      "url": "https://joyinside.nl/",
+      "category": "Staffing and Recruiting",
+      "headcount": 2,
+      "status": "REJECTED",
+      "reason": "Denied Category ('Staffing and Recruiting') | Headcount Out of Range (2)",
+      "snippet_preview": "# Joyinside  Joyinside is a Staffing and Recruiting company. Joyinside employs 2 people (+100.0% YoY, +1 person), founde..."
+    },
+    {
+      "original_rank": 44,
+      "title": "Ascent Hiring",
+      "url": "https://ascenthiring.com/",
+      "category": "Professional Services",
+      "headcount": 8,
+      "status": "REJECTED",
+      "reason": "Category 'Professional Services' not in Allowlist | Headcount OK (8)",
+      "snippet_preview": "# Ascent Hiring (Ascent Hiring, LLC.)  Ascent Hiring is a Professional Services company. Ascent Hiring is a skilled cons..."
+    },
+    {
+      "original_rank": 45,
+      "title": "Attitude360",
+      "url": "https://attitude360.in/",
+      "category": "Staffing and Recruiting",
+      "headcount": 360,
+      "status": "REJECTED",
+      "reason": "Denied Category ('Staffing and Recruiting') | Headcount OK (360)",
+      "snippet_preview": "# Attitude360  Attitude360 is a Staffing and Recruiting company. Attitude360 employs 2 people (-50.0% YoY, -2 people), f..."
+    }
+  ]
+}

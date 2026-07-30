@@ -1,22 +1,43 @@
-import { Shield, Key, Bell, Database, Target, Save, Loader2, Cpu, Wand2, Sliders, Check, RefreshCw, ChevronDown, ChevronUp, History, Sparkles, Clock, Trash2, MessageSquare } from 'lucide-react';
+import { Shield, Key, Bell, Database, Target, Save, Loader2, Cpu, Wand2, Sliders, Check, RefreshCw, ChevronDown, ChevronUp, History, Sparkles, Clock, Trash2, MessageSquare, Lock } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { fetchIntents, updateIntents, generateICPWithAI, type IntentConfig, type AIICPResponse } from '../lib/api';
 
 const DEFAULT_TEMPLATES = [
   {
-    title: 'Recruitment Agency',
+    title: 'Tech Recruitment Agency',
     desc: 'DevOps, Cybersecurity, ML (50-2000 emp)',
-    prompt: 'Recruitment agency in USA targeting DevOps, Cybersecurity, and ML roles with 50-2000 employee headcount',
+    niche: 'recruitment_agencies',
+    subtype: 'tech_recruitment',
   },
   {
-    title: 'Marketing Agency ICP',
-    desc: 'Marketing Agency & Growth (20-500 emp)',
-    prompt: 'B2B SaaS companies in FinTech with 20-500 employees looking for a Marketing Agency or Growth Marketing partners',
+    title: 'Executive Search',
+    desc: 'C-Suite, VP Transitions (100-5000 emp)',
+    niche: 'recruitment_agencies',
+    subtype: 'executive_search',
   },
   {
-    title: 'E-Commerce & Retail',
-    desc: 'Shopify, Meta Ads, Local SEO',
-    prompt: 'E-Commerce brands using Shopify looking for Meta Ads management, Google Ads, and Local SEO optimization',
+    title: 'Volume / RPO Hiring',
+    desc: 'Mass Hiring, Warehouses (200-10000 emp)',
+    niche: 'recruitment_agencies',
+    subtype: 'volume_rpo',
+  },
+  {
+    title: 'Startup Tech Recruitment',
+    desc: 'Seed/Series A Founders (<100 emp)',
+    niche: 'recruitment_agencies',
+    subtype: 'startup_tech',
+  },
+  {
+    title: 'Healthcare Recruitment',
+    desc: 'Clinical Shortages, Facilities (50-5000 emp)',
+    niche: 'recruitment_agencies',
+    subtype: 'healthcare_recruitment',
+  },
+  {
+    title: 'Sales Recruitment',
+    desc: 'VP Sales, SDR/AE Clusters (50-2000 emp)',
+    niche: 'recruitment_agencies',
+    subtype: 'sales_recruitment',
   },
 ];
 
@@ -201,6 +222,12 @@ export default function Settings() {
           </div>
         </div>
 
+        {/* Disabled Notice Banner */}
+        <div className="p-3 sm:p-4 rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-300 text-xs font-medium flex items-center gap-2.5 shadow-xs">
+          <Lock size={16} className="text-amber-400 shrink-0" />
+          <span>Client-facing ICP and keyword editing is temporarily disabled. Quick Enterprise Templates remain available below.</span>
+        </div>
+
         {/* 1. AI ICP ASSISTANT CARD (UNCONGESTED, SPACIOUS CHAT BOX) */}
         <section className="side-drawer-card p-3.5 sm:p-6 border border-[var(--nexa-accent)]/30 bg-[var(--nexa-accent-dim)] rounded-2xl space-y-3 sm:space-y-5 shadow-sm">
           <div className="flex items-start sm:items-center gap-2.5 sm:gap-3">
@@ -220,24 +247,18 @@ export default function Settings() {
           {/* Chat Input Box & Action */}
           <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 pt-1">
             <textarea
-              className="flex-1 glass-input rounded-xl p-3 sm:p-3.5 text-xs text-zinc-100 placeholder-zinc-500 border border-white/10 bg-nexa-surface focus:border-[var(--nexa-accent)] transition-all resize-none font-medium leading-relaxed"
+              disabled
+              className="flex-1 glass-input rounded-xl p-3 sm:p-3.5 text-xs text-zinc-100 placeholder-zinc-400 border border-white/10 bg-nexa-surface resize-none font-medium leading-relaxed opacity-60 cursor-not-allowed"
               rows={3}
-              placeholder="e.g. Target recruitment agencies in USA hiring for DevOps, Cybersecurity, ML roles, company headcount 50-2000, 6-8 years experience..."
+              placeholder="Target marketing agency looking for SEO, ads opportunities headcount ≤5000"
               value={aiPrompt}
               onChange={e => setAiPrompt(e.target.value)}
-              onKeyDown={e => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  handleGenerateAIICP();
-                }
-              }}
             />
             <button
-              onClick={() => handleGenerateAIICP()}
-              disabled={aiGenerating || !aiPrompt.trim()}
-              className="w-full sm:w-auto px-5 py-3 sm:py-4 rounded-xl font-bold text-xs bg-[var(--nexa-accent)] text-zinc-950 hover:brightness-110 transition-all flex items-center justify-center gap-2 sm:gap-2.5 whitespace-nowrap disabled:opacity-50 shadow-md shrink-0"
+              disabled
+              className="w-full sm:w-auto px-5 py-3 sm:py-4 rounded-xl font-bold text-xs bg-[var(--nexa-accent)]/50 text-zinc-950 flex items-center justify-center gap-2 sm:gap-2.5 whitespace-nowrap opacity-50 cursor-not-allowed shadow-md shrink-0"
             >
-              {aiGenerating ? <Loader2 size={16} className="animate-spin" /> : <Wand2 size={16} />}
+              <Wand2 size={16} />
               Generate & Populate
             </button>
           </div>
@@ -272,20 +293,40 @@ export default function Settings() {
           <div className="space-y-2">
             <span className="text-[11px] font-bold text-zinc-400 block uppercase tracking-wider">Quick Enterprise Templates:</span>
             <div className="flex flex-wrap gap-2">
-              {DEFAULT_TEMPLATES.map((tmpl, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => {
-                    setAiPrompt(tmpl.prompt);
-                    handleGenerateAIICP(tmpl.prompt);
-                  }}
-                  className="side-drawer-pill px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl border border-[var(--nexa-accent)]/30 bg-[var(--nexa-accent-dim)] text-[var(--nexa-accent)] hover:bg-[var(--nexa-accent-glow)] transition-all text-xs font-semibold flex items-center gap-1.5 sm:gap-2 shadow-2xs text-left"
-                >
-                  <Sparkles size={12} className="shrink-0" />
-                  <span>{tmpl.title}</span>
-                  <span className="text-[10px] opacity-75 font-normal hidden sm:inline">({tmpl.desc})</span>
-                </button>
-              ))}
+              {DEFAULT_TEMPLATES.map((tmpl, idx) => {
+                const isActive = intents?.active_niche === tmpl.niche && (tmpl.subtype ? intents?.active_subtype === tmpl.subtype : true);
+                return (
+                  <button
+                    key={idx}
+                    onClick={async () => {
+                      if (!intents) return;
+                      setSaving(true);
+                      const updated = {
+                        ...intents,
+                        active_niche: tmpl.niche,
+                        active_subtype: tmpl.subtype,
+                      };
+                      try {
+                        const saved = await updateIntents(updated);
+                        setIntents(saved);
+                      } catch (e) {
+                        console.error('Failed to set subtype', e);
+                      } finally {
+                        setSaving(false);
+                      }
+                    }}
+                    className={`side-drawer-pill px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl border transition-all text-xs font-semibold flex items-center gap-1.5 sm:gap-2 shadow-2xs text-left ${
+                      isActive 
+                        ? 'border-emerald-500/60 bg-emerald-500/15 text-emerald-400 font-bold' 
+                        : 'border-[var(--nexa-accent)]/30 bg-[var(--nexa-accent-dim)] text-[var(--nexa-accent)] hover:bg-[var(--nexa-accent-glow)]'
+                    }`}
+                  >
+                    {isActive ? <Check size={12} className="shrink-0 text-emerald-400" /> : <Sparkles size={12} className="shrink-0" />}
+                    <span>{tmpl.title}</span>
+                    <span className="text-[10px] opacity-75 font-normal hidden sm:inline">({tmpl.desc})</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -299,11 +340,8 @@ export default function Settings() {
                 {historyICPs.map((hist, idx) => (
                   <button
                     key={idx}
-                    onClick={() => {
-                      setAiPrompt(hist.prompt);
-                      handleGenerateAIICP(hist.prompt);
-                    }}
-                    className="side-drawer-pill px-3 py-1.5 sm:px-3.5 sm:py-1.5 rounded-xl border border-nexa-border bg-nexa-surface text-zinc-200 hover:border-[var(--nexa-accent)]/60 transition-all text-xs font-medium flex items-center gap-2 shadow-2xs"
+                    disabled
+                    className="side-drawer-pill px-3 py-1.5 sm:px-3.5 sm:py-1.5 rounded-xl border border-nexa-border bg-nexa-surface text-zinc-400 text-xs font-medium flex items-center gap-2 shadow-2xs cursor-not-allowed opacity-60"
                   >
                     <span>{hist.title}</span>
                     <span className="text-[10px] text-zinc-500 font-mono">{hist.date}</span>
@@ -319,13 +357,14 @@ export default function Settings() {
           <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-2">
             <Sliders size={14} /> Target Company Filters & Industry Niche
           </h3>
-          <div className="side-drawer-card space-y-3.5 sm:space-y-4 p-3.5 sm:p-5 rounded-2xl border border-nexa-border bg-nexa-surface">
+          <div className="side-drawer-card space-y-3.5 sm:space-y-4 p-3.5 sm:p-5 rounded-2xl border border-nexa-border bg-nexa-surface opacity-85">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               <div>
                 <label className="block text-xs font-bold text-zinc-200 mb-1.5">Minimum Employee Headcount</label>
                 <input
                   type="number"
-                  className="w-full glass-input rounded-xl p-2.5 sm:p-3 text-xs text-zinc-100 border border-nexa-border bg-nexa-surface font-medium"
+                  disabled
+                  className="w-full glass-input rounded-xl p-2.5 sm:p-3 text-xs text-zinc-100 border border-nexa-border bg-nexa-surface font-medium cursor-not-allowed opacity-60"
                   value={minEmployees}
                   onChange={e => setMinEmployees(Number(e.target.value))}
                 />
@@ -334,7 +373,8 @@ export default function Settings() {
                 <label className="block text-xs font-bold text-zinc-200 mb-1.5">Maximum Employee Headcount</label>
                 <input
                   type="number"
-                  className="w-full glass-input rounded-xl p-2.5 sm:p-3 text-xs text-zinc-100 border border-nexa-border bg-nexa-surface font-medium"
+                  disabled
+                  className="w-full glass-input rounded-xl p-2.5 sm:p-3 text-xs text-zinc-100 border border-nexa-border bg-nexa-surface font-medium cursor-not-allowed opacity-60"
                   value={maxEmployees}
                   onChange={e => setMaxEmployees(Number(e.target.value))}
                 />
@@ -343,7 +383,8 @@ export default function Settings() {
                 <label className="block text-xs font-bold text-zinc-200 mb-1.5">Minimum Target ARR</label>
                 <input
                   type="text"
-                  className="w-full glass-input rounded-xl p-2.5 sm:p-3 text-xs text-zinc-100 border border-nexa-border bg-nexa-surface font-medium"
+                  disabled
+                  className="w-full glass-input rounded-xl p-2.5 sm:p-3 text-xs text-zinc-100 border border-nexa-border bg-nexa-surface font-medium cursor-not-allowed opacity-60"
                   placeholder="$5M"
                   value={minArr}
                   onChange={e => setMinArr(e.target.value)}
@@ -353,7 +394,8 @@ export default function Settings() {
                 <label className="block text-xs font-bold text-zinc-200 mb-1.5">Maximum Target ARR</label>
                 <input
                   type="text"
-                  className="w-full glass-input rounded-xl p-2.5 sm:p-3 text-xs text-zinc-100 border border-nexa-border bg-nexa-surface font-medium"
+                  disabled
+                  className="w-full glass-input rounded-xl p-2.5 sm:p-3 text-xs text-zinc-100 border border-nexa-border bg-nexa-surface font-medium cursor-not-allowed opacity-60"
                   placeholder="$50M"
                   value={maxArr}
                   onChange={e => setMaxArr(e.target.value)}
@@ -367,7 +409,8 @@ export default function Settings() {
               </label>
               <input
                 type="text"
-                className="w-full glass-input rounded-xl p-2.5 sm:p-3 text-xs text-zinc-100 border border-nexa-border bg-nexa-surface font-medium"
+                disabled
+                className="w-full glass-input rounded-xl p-2.5 sm:p-3 text-xs text-zinc-100 border border-nexa-border bg-nexa-surface font-medium cursor-not-allowed opacity-60"
                 placeholder="Fintech SaaS, B2B Software, Healthcare, Multi-Location Franchise, Home Services"
                 value={rawTargetIndustries}
                 onChange={e => setRawTargetIndustries(e.target.value)}
@@ -394,11 +437,11 @@ export default function Settings() {
                 <h3 className="text-xs sm:text-sm font-bold text-zinc-100 tracking-tight flex flex-wrap items-center gap-1.5 sm:gap-2">
                   <span>Intent Signals & Search Queries Configuration</span>
                   <span className="px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] bg-nexa-surface border border-nexa-border text-zinc-400 font-mono font-normal shrink-0">
-                    {configOpen ? 'Open / Editable' : 'Collapsed'}
+                    {configOpen ? 'Open / Read-Only' : 'Collapsed'}
                   </span>
                 </h3>
                 <p className="text-[11px] sm:text-xs text-zinc-400 font-medium leading-normal truncate sm:whitespace-normal">
-                  Review and manually edit job roles, extraction keywords, social triggers, and search queries.
+                  Review job roles, extraction keywords, social triggers, and search queries.
                 </p>
               </div>
             </div>
@@ -417,14 +460,15 @@ export default function Settings() {
                 </div>
               ) : intents ? (
                 <>
-                  {/* EXA AI NEURAL SEARCH PROMPT */}
+                  {/* NEURAL SEARCH PROMPT */}
                   <div>
                     <label className="block text-xs font-bold text-zinc-200 mb-1.5 flex items-center justify-between">
-                      <span>Exa AI Neural Search Prompt (Phase 1 Discovery) — <span className="text-[var(--nexa-accent)] font-semibold">Auto-Generated & Editable</span></span>
-                      <span className="text-[10px] text-zinc-400 font-mono font-normal">Used by Exa AI to fetch 100 high-intent leads</span>
+                      <span>Neural Search Prompt (Phase 1 Discovery) — <span className="text-[var(--nexa-accent)] font-semibold">Auto-Generated</span></span>
+                      <span className="text-[10px] text-zinc-400 font-mono font-normal">Used to fetch 100 high-intent leads</span>
                     </label>
                     <textarea
-                      className="w-full glass-input rounded-xl p-3.5 text-xs text-zinc-100 border border-[var(--nexa-accent)]/40 bg-nexa-surface focus:border-[var(--nexa-accent)] transition-all font-medium leading-relaxed"
+                      disabled
+                      className="w-full glass-input rounded-xl p-3.5 text-xs text-zinc-100 border border-[var(--nexa-accent)]/40 bg-nexa-surface font-medium leading-relaxed cursor-not-allowed opacity-60"
                       rows={3}
                       value={rawExaQuery}
                       onChange={e => setRawExaQuery(e.target.value)}
@@ -436,97 +480,97 @@ export default function Settings() {
                   <div className="pt-3 border-t border-nexa-border space-y-4">
                     <div className="flex items-center justify-between">
                       <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-300 flex items-center gap-2">
-                        <MessageSquare size={14} className="text-amber-400" /> Social Signals Search Queries (Platform-by-Platform AI Generation)
+                        <MessageSquare size={14} className="text-amber-400" /> Social Signals Search Queries
                       </h4>
                       <span className="text-[11px] text-zinc-400 font-medium">Auto-compiled for each platform</span>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
                       {/* 1. Google */}
-                      <div className="p-3.5 rounded-xl border border-blue-500/20 bg-blue-500/5 space-y-1.5 flex flex-col">
+                      <div className="p-3.5 rounded-xl border border-blue-500/20 bg-blue-500/5 space-y-1.5 flex flex-col opacity-85">
                         <div className="flex items-center justify-between mb-1">
                           <span className="text-xs font-bold text-blue-600 dark:text-blue-400 flex items-center gap-1.5">
                             <span className="w-2 h-2 rounded-full bg-blue-500" /> Google Search & Q&A
                           </span>
-                          <span className="text-[10px] font-mono text-slate-500 dark:text-zinc-400">Serper API</span>
                         </div>
                         <textarea 
-                          className="flex-1 w-full text-[11px] font-mono text-slate-800 dark:text-zinc-200 bg-white/80 dark:bg-black/40 p-2.5 rounded-lg border border-slate-200/80 dark:border-white/5 shadow-xs focus:outline-none focus:border-blue-500/50 resize-none"
+                          disabled
+                          className="flex-1 w-full text-[11px] font-mono text-slate-800 dark:text-zinc-200 bg-white/80 dark:bg-black/40 p-2.5 rounded-lg border border-slate-200/80 dark:border-white/5 shadow-xs resize-none cursor-not-allowed opacity-60"
                           rows={2}
                           defaultValue={'site:linkedin.com/posts ("looking for web design agency" OR "website redesign RFP")'}
                         />
                       </div>
 
                       {/* 2. Reddit */}
-                      <div className="p-3.5 rounded-xl border border-orange-500/20 bg-orange-500/5 space-y-1.5 flex flex-col">
+                      <div className="p-3.5 rounded-xl border border-orange-500/20 bg-orange-500/5 space-y-1.5 flex flex-col opacity-85">
                         <div className="flex items-center justify-between mb-1">
                           <span className="text-xs font-bold text-orange-600 dark:text-orange-400 flex items-center gap-1.5">
                             <span className="w-2 h-2 rounded-full bg-orange-500" /> Reddit Intent Scanner
                           </span>
-                          <span className="text-[10px] font-mono text-slate-500 dark:text-zinc-400">Reddit API</span>
                         </div>
                         <textarea 
-                          className="flex-1 w-full text-[11px] font-mono text-slate-800 dark:text-zinc-200 bg-white/80 dark:bg-black/40 p-2.5 rounded-lg border border-slate-200/80 dark:border-white/5 shadow-xs focus:outline-none focus:border-orange-500/50 resize-none"
+                          disabled
+                          className="flex-1 w-full text-[11px] font-mono text-slate-800 dark:text-zinc-200 bg-white/80 dark:bg-black/40 p-2.5 rounded-lg border border-slate-200/80 dark:border-white/5 shadow-xs resize-none cursor-not-allowed opacity-60"
                           rows={2}
                           defaultValue={previewQuery || 'Fractional CMO agency OR looking for Marketing Agency'}
                         />
                       </div>
 
                       {/* 3. LinkedIn */}
-                      <div className="p-3.5 rounded-xl border border-sky-500/20 bg-sky-500/5 space-y-1.5 flex flex-col">
+                      <div className="p-3.5 rounded-xl border border-sky-500/20 bg-sky-500/5 space-y-1.5 flex flex-col opacity-85">
                         <div className="flex items-center justify-between mb-1">
                           <span className="text-xs font-bold text-sky-600 dark:text-sky-400 flex items-center gap-1.5">
                             <span className="w-2 h-2 rounded-full bg-sky-500" /> LinkedIn Posts & RFPs
                           </span>
-                          <span className="text-[10px] font-mono text-slate-500 dark:text-zinc-400">Apify LinkedIn</span>
                         </div>
                         <textarea 
-                          className="flex-1 w-full text-[11px] font-mono text-slate-800 dark:text-zinc-200 bg-white/80 dark:bg-black/40 p-2.5 rounded-lg border border-slate-200/80 dark:border-white/5 shadow-xs focus:outline-none focus:border-sky-500/50 resize-none"
+                          disabled
+                          className="flex-1 w-full text-[11px] font-mono text-slate-800 dark:text-zinc-200 bg-white/80 dark:bg-black/40 p-2.5 rounded-lg border border-slate-200/80 dark:border-white/5 shadow-xs resize-none cursor-not-allowed opacity-60"
                           rows={2}
                           defaultValue={'"looking for web design agency" OR "website redesign RFP"'}
                         />
                       </div>
 
                       {/* 4. X (Twitter) */}
-                      <div className="p-3.5 rounded-xl border border-slate-300/40 dark:border-zinc-500/20 bg-slate-500/5 space-y-1.5 flex flex-col">
+                      <div className="p-3.5 rounded-xl border border-slate-300/40 dark:border-zinc-500/20 bg-slate-500/5 space-y-1.5 flex flex-col opacity-85">
                         <div className="flex items-center justify-between mb-1">
                           <span className="text-xs font-bold text-slate-700 dark:text-zinc-300 flex items-center gap-1.5">
                             <span className="w-2 h-2 rounded-full bg-slate-500 dark:bg-zinc-400" /> X (Twitter) Real-time
                           </span>
-                          <span className="text-[10px] font-mono text-slate-500 dark:text-zinc-400">ScrapeBadger</span>
                         </div>
                         <textarea 
-                          className="flex-1 w-full text-[11px] font-mono text-slate-800 dark:text-zinc-200 bg-white/80 dark:bg-black/40 p-2.5 rounded-lg border border-slate-200/80 dark:border-white/5 shadow-xs focus:outline-none focus:border-slate-500/50 resize-none"
+                          disabled
+                          className="flex-1 w-full text-[11px] font-mono text-slate-800 dark:text-zinc-200 bg-white/80 dark:bg-black/40 p-2.5 rounded-lg border border-slate-200/80 dark:border-white/5 shadow-xs resize-none cursor-not-allowed opacity-60"
                           rows={2}
                           defaultValue={previewQuery ? `${previewQuery} -is:retweet` : '("looking for" OR "recommend") ("web design" OR "website redesign") -is:retweet'}
                         />
                       </div>
 
                       {/* 5. Facebook */}
-                      <div className="p-3.5 rounded-xl border border-blue-600/20 bg-blue-600/5 space-y-1.5 flex flex-col">
+                      <div className="p-3.5 rounded-xl border border-blue-600/20 bg-blue-600/5 space-y-1.5 flex flex-col opacity-85">
                         <div className="flex items-center justify-between mb-1">
                           <span className="text-xs font-bold text-blue-600 dark:text-blue-300 flex items-center gap-1.5">
                             <span className="w-2 h-2 rounded-full bg-blue-600" /> Facebook Groups & Public Posts
                           </span>
-                          <span className="text-[10px] font-mono text-slate-500 dark:text-zinc-400">FB Scraper</span>
                         </div>
                         <textarea 
-                          className="flex-1 w-full text-[11px] font-mono text-slate-800 dark:text-zinc-200 bg-white/80 dark:bg-black/40 p-2.5 rounded-lg border border-slate-200/80 dark:border-white/5 shadow-xs focus:outline-none focus:border-blue-600/50 resize-none"
+                          disabled
+                          className="flex-1 w-full text-[11px] font-mono text-slate-800 dark:text-zinc-200 bg-white/80 dark:bg-black/40 p-2.5 rounded-lg border border-slate-200/80 dark:border-white/5 shadow-xs resize-none cursor-not-allowed opacity-60"
                           rows={2}
                           defaultValue={'"looking for website redesign agency" OR "recommend marketing agency"'}
                         />
                       </div>
 
                       {/* 6. Threads */}
-                      <div className="p-3.5 rounded-xl border border-purple-500/20 bg-purple-500/5 space-y-1.5 flex flex-col">
+                      <div className="p-3.5 rounded-xl border border-purple-500/20 bg-purple-500/5 space-y-1.5 flex flex-col opacity-85">
                         <div className="flex items-center justify-between mb-1">
                           <span className="text-xs font-bold text-purple-600 dark:text-purple-300 flex items-center gap-1.5">
                             <span className="w-2 h-2 rounded-full bg-purple-500" /> Threads Micro-Posts
                           </span>
-                          <span className="text-[10px] font-mono text-slate-500 dark:text-zinc-400">Threads API</span>
                         </div>
                         <textarea 
-                          className="flex-1 w-full text-[11px] font-mono text-slate-800 dark:text-zinc-200 bg-white/80 dark:bg-black/40 p-2.5 rounded-lg border border-slate-200/80 dark:border-white/5 shadow-xs focus:outline-none focus:border-purple-500/50 resize-none"
+                          disabled
+                          className="flex-1 w-full text-[11px] font-mono text-slate-800 dark:text-zinc-200 bg-white/80 dark:bg-black/40 p-2.5 rounded-lg border border-slate-200/80 dark:border-white/5 shadow-xs resize-none cursor-not-allowed opacity-60"
                           rows={2}
                           defaultValue={'"looking for web design agency" OR "need agency recommendation"'}
                         />
@@ -536,11 +580,10 @@ export default function Settings() {
 
                   <div className="flex justify-end pt-3">
                     <button
-                      onClick={handleSaveIntents}
-                      disabled={saving}
-                      className="flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3 text-xs font-bold rounded-xl bg-[var(--nexa-accent)] text-zinc-950 hover:brightness-110 transition-all disabled:opacity-50 shadow-md"
+                      disabled
+                      className="flex items-center justify-center gap-2 w-full sm:w-auto px-6 py-3 text-xs font-bold rounded-xl bg-[var(--nexa-accent)]/50 text-zinc-950 opacity-50 cursor-not-allowed shadow-md"
                     >
-                      {saving ? <Loader2 className="animate-spin" size={14} /> : <Save size={14} />}
+                      <Save size={14} />
                       Save Intent Configuration
                     </button>
                   </div>

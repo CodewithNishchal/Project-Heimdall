@@ -86,6 +86,12 @@ export interface LeadDetailResponse {
   employee_count: number | null;
   funding_stage: string | null;
   intent_score: number;
+  intent_classification?: 'HOT' | 'WARM' | 'SKIP' | null;
+  one_line_reason?: string | null;
+  location_mentioned?: string | null;
+  budget_mentioned?: string | null;
+  urgency_indicators?: string[];
+  competitor_mentioned?: string | null;
   icp_score?: number;
   signal_freshness: number;
   tier: LeadTier;

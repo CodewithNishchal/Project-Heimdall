@@ -1,4 +1,4 @@
-import { ChevronDown, Sparkles, Trash2, Loader2, Search, Filter, Check, X, SlidersHorizontal, Workflow, Target } from 'lucide-react';
+import { ChevronDown, Sparkles, Trash2, Loader2, Search, Filter, Check, X, SlidersHorizontal, Workflow, Bookmark } from 'lucide-react';
 import { Fragment, useMemo, useState, useRef, useEffect } from 'react';
 import type { LeadDetailResponse, LeadTier } from '../types/lead';
 import ConfidenceMeter from './ConfidenceMeter';
@@ -357,11 +357,11 @@ export default function LeadTable({
         <div className="nexa-card nexa-card-no-hover p-4 sm:p-7 rounded-2xl sm:rounded-3xl border border-amber-500/30 bg-gradient-to-r from-amber-950/40 via-slate-900/80 to-amber-950/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-5 shadow-lg">
           <div className="flex items-center gap-3 sm:gap-4 text-left">
             <div className="flex h-10 w-10 sm:h-13 sm:w-13 shrink-0 items-center justify-center rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/40 shadow-md">
-              <Target size={22} className="sm:w-7 sm:h-7" />
+              <Bookmark size={22} className="sm:w-7 sm:h-7" />
             </div>
             <div>
               <h2 className="text-sm sm:text-lg font-black text-slate-900 dark:text-zinc-100 flex flex-wrap items-center gap-2">
-                Saved Leads & Active Watchlist
+                Track Leads & Active Watchlist
                 <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-amber-600 dark:text-amber-400 bg-amber-100 dark:bg-amber-950/60 px-2 py-0.5 rounded-full border border-amber-500/30">
                   {leads.length} Tracked
                 </span>
@@ -561,33 +561,13 @@ export default function LeadTable({
                         >
                           {/* COMPANY */}
                           <td className="p-4 font-medium text-zinc-100 text-left">
-                            <div className="flex items-center gap-2 text-left group">
-                              <button
-                                type="button"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  onToggleTrackLead?.(leadKey);
-                                }}
-                                className={`p-1.5 rounded-lg transition shrink-0 border ${trackedLeadIds.includes(leadKey) || trackedLeadIds.includes(lead.domain) || trackedLeadIds.includes(lead.company_name)
-                                    ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400 font-bold'
-                                    : 'border-transparent text-slate-400 dark:text-zinc-500 hover:text-slate-700 dark:hover:text-zinc-200 hover:bg-slate-100 dark:hover:bg-white/10'
-                                  }`}
-                                title={
-                                  trackedLeadIds.includes(leadKey) || trackedLeadIds.includes(lead.domain) || trackedLeadIds.includes(lead.company_name)
-                                    ? 'Tracked in Saved Leads (Click to untrack)'
-                                    : 'Click to Track Company'
-                                }
-                              >
-                                <Target size={14} />
-                              </button>
-                              <div className="flex flex-col items-start gap-0.5 text-left">
-                                <span className="font-bold text-zinc-100 text-sm group-hover:text-[var(--nexa-accent)] transition-colors">
-                                  {lead.company_name}
-                                </span>
-                                <span className="text-xs text-zinc-400 font-normal">
-                                  {(!lead.industry || lead.industry === 'Unknown') ? 'SaaS' : lead.industry}{lead.funding_stage ? ` · ${lead.funding_stage}` : ''} · {formatEmployeeCount(lead.employee_count)}
-                                </span>
-                              </div>
+                            <div className="flex flex-col items-start gap-0.5 text-left group">
+                              <span className="font-bold text-zinc-100 text-sm group-hover:text-[var(--nexa-accent)] transition-colors">
+                                {lead.company_name}
+                              </span>
+                              <span className="text-xs text-zinc-400 font-normal">
+                                {(!lead.industry || lead.industry === 'Unknown') ? 'SaaS' : lead.industry}{lead.funding_stage ? ` · ${lead.funding_stage}` : ''} · {formatEmployeeCount(lead.employee_count)}
+                              </span>
                             </div>
                           </td>
 
@@ -677,9 +657,9 @@ export default function LeadTable({
                           <td className="p-4 text-xs text-zinc-300 text-left leading-snug max-w-sm">
                             <div className="flex flex-col gap-1 text-left">
                               {(() => {
-                                const whyNowText = lead.why_now && lead.why_now !== 'Intent signals detected'
+                                const whyNowText = lead.one_line_reason || (lead.why_now && lead.why_now !== 'Intent signals detected'
                                   ? lead.why_now
-                                  : getFirstSentence(lead.ai_verdict);
+                                  : getFirstSentence(lead.ai_verdict));
                                 return (
                                   <span className="line-clamp-3 text-zinc-300 font-medium leading-relaxed">
                                     {whyNowText}
@@ -692,6 +672,23 @@ export default function LeadTable({
                           {/* ACTIONS */}
                           <td className="p-4 text-center">
                             <div className="flex items-center justify-center gap-2" onClick={(e) => e.stopPropagation()}>
+                              <button
+                                type="button"
+                                onClick={() => onToggleTrackLead?.(leadKey)}
+                                className={`rounded-xl border p-2 transition shadow-xs ${
+                                  (trackedLeadIds || []).includes(leadKey) || (trackedLeadIds || []).includes(lead.domain) || (trackedLeadIds || []).includes(lead.company_name)
+                                    ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400 font-bold'
+                                    : 'border-slate-200 bg-slate-100 text-slate-400 dark:border-white/10 dark:bg-white/5 dark:text-zinc-500 hover:text-slate-700 dark:hover:text-zinc-200 hover:bg-slate-200 dark:hover:bg-white/10'
+                                }`}
+                                title={
+                                  (trackedLeadIds || []).includes(leadKey) || (trackedLeadIds || []).includes(lead.domain) || (trackedLeadIds || []).includes(lead.company_name)
+                                    ? 'Tracked in Track Leads (Click to untrack)'
+                                    : 'Click to Track Company'
+                                }
+                              >
+                                <Bookmark size={15} className={(trackedLeadIds || []).includes(leadKey) || (trackedLeadIds || []).includes(lead.domain) || (trackedLeadIds || []).includes(lead.company_name) ? 'fill-emerald-400 text-emerald-400' : ''} />
+                              </button>
+
                               {confirmDeleteId === String(lead.id || lead.domain || lead.company_name) ? (
                                 <div className="flex items-center gap-1.5">
                                   <button

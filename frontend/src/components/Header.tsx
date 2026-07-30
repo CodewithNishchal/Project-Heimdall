@@ -140,38 +140,8 @@ export default function Header({ status, searchTerm, setSearchTerm, isDark, setI
           <Search size={15} />
         </button>
 
-        {/* DESKTOP ONLY: Notification Bell */}
-        <div ref={notificationRef} className="relative hidden sm:block">
-          <button
-            type="button"
-            onClick={() => setNotificationsOpen(!notificationsOpen)}
-            className="relative flex h-8 w-8 items-center justify-center rounded-xl border border-slate-200 dark:border-white/10 bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-zinc-300 hover:text-slate-950 dark:hover:text-white transition"
-            title="Notifications"
-          >
-            <Bell size={15} />
-            <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-emerald-500 ring-2 ring-white dark:ring-[#111118]" />
-          </button>
-
-          {/* Notification Popover */}
-          {notificationsOpen && (
-            <div className="notification-popover absolute right-0 mt-2 w-72 rounded-2xl border border-slate-200 dark:border-nexa-border bg-white dark:bg-[#181824] p-4 shadow-2xl z-50 animate-in fade-in slide-in-from-top-2 text-left">
-              <div className="flex items-center justify-between border-b border-slate-100 dark:border-white/10 pb-2 mb-2">
-                <span className="text-xs font-bold text-slate-900 dark:text-zinc-100">Notifications</span>
-                <span className="text-[10px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-100 dark:bg-emerald-950/50 px-2 py-0.5 rounded-full">3 New</span>
-              </div>
-              <div className="space-y-2 text-xs">
-                <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200/80 dark:border-white/5">
-                  <p className="font-bold text-slate-900 dark:text-zinc-100">Pipeline Sweep Complete</p>
-                  <p className="text-[11px] text-slate-600 dark:text-zinc-400 mt-0.5">15 new target companies discovered today.</p>
-                </div>
-                <div className="p-2.5 rounded-xl bg-slate-50 dark:bg-white/5 border border-slate-200/80 dark:border-white/5">
-                  <p className="font-bold text-slate-900 dark:text-zinc-100">High Intent Signal</p>
-                  <p className="text-[11px] text-slate-600 dark:text-zinc-400 mt-0.5">Leland posted new series B partner request.</p>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
+        {/* DESKTOP ONLY: Notification Bell (Hidden for now) */}
+        {/* <div ref={notificationRef} className="relative hidden sm:block">...</div> */}
 
         {/* Theme Toggle (Visible on Desktop & Mobile) */}
         <button

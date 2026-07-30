@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ExternalLink, Building2, Users, DollarSign, Globe, Target, Mail, Sparkles, Copy, Check, Flame, Zap, ChevronUp, ChevronDown, Compass, FileText, Signal, Filter, MapPin, Calendar, Briefcase, Link as LinkIcon } from 'lucide-react';
+import { X, ExternalLink, Building2, Users, DollarSign, Globe, Target, Bookmark, Mail, Sparkles, Copy, Check, Flame, Zap, ChevronUp, ChevronDown, Compass, FileText, Signal, Filter, MapPin, Calendar, Briefcase, Link as LinkIcon } from 'lucide-react';
 import type { LeadDetailResponse } from '../types/lead';
 import PitcherMode from './PitcherMode';
 
@@ -288,7 +288,7 @@ export default function LeadDetailDrawer({ lead, onClose, isTracked = false, onT
                       : 'bg-[var(--nexa-accent)] text-zinc-950 hover:brightness-110'
                   }`}
                 >
-                  <Target size={13} /> <span>{isTracked ? 'Tracked' : 'Track'}</span>
+                  <Bookmark size={13} className={isTracked ? 'fill-white' : ''} /> <span>{isTracked ? 'Tracked' : 'Track'}</span>
                 </button>
 
                 <button
@@ -421,9 +421,35 @@ export default function LeadDetailDrawer({ lead, onClose, isTracked = false, onT
                             ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30'
                             : 'bg-slate-200 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 border border-slate-300 dark:border-zinc-700'
                         }`}>
-                          {lead.intent_score >= 70 ? 'Hot' : lead.intent_score >= 40 ? 'Warm' : 'Watching'}
+                          {lead.intent_classification || (lead.intent_score >= 70 ? 'Hot' : lead.intent_score >= 40 ? 'Warm' : 'Watching')}
                         </span>
                       </div>
+
+                      {/* Extracted Metadata Chips */}
+                      {(lead.location_mentioned || lead.budget_mentioned || (lead.urgency_indicators && lead.urgency_indicators.length > 0) || lead.competitor_mentioned) && (
+                        <div className="flex flex-wrap gap-2 pt-1 border-t border-nexa-border/60">
+                          {lead.location_mentioned && (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-sky-500/10 text-sky-400 border border-sky-500/20">
+                              📍 {lead.location_mentioned}
+                            </span>
+                          )}
+                          {lead.budget_mentioned && (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                              💰 {lead.budget_mentioned}
+                            </span>
+                          )}
+                          {lead.urgency_indicators && lead.urgency_indicators.map((urg, uidx) => (
+                            <span key={uidx} className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                              ⚡ {urg}
+                            </span>
+                          ))}
+                          {lead.competitor_mentioned && (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                              ⚔️ vs {lead.competitor_mentioned}
+                            </span>
+                          )}
+                        </div>
+                      )}
 
                       {/* Breakdown Progress Bars */}
                       <div className="space-y-2.5 pt-1">
@@ -587,7 +613,22 @@ export default function LeadDetailDrawer({ lead, onClose, isTracked = false, onT
                           COMPANY INFO
                         </div>
                         <div className="text-slate-900 dark:text-zinc-100 font-bold">
-                          Stage: <span className="font-normal text-slate-700 dark:text-zinc-300">{lead.funding_stage || 'Series B'}</span>
+                          Stage: <span className="font-normal text-slate-700 dark:text-zinc-300">
+                            {(() => {
+                              if (lead.funding_stage && lead.funding_stage !== 'Unknown' && lead.funding_stage !== 'UNKNOWN') {
+                                return lead.funding_stage;
+                              }
+                              if (lead.signal_tags) {
+                                const fTag = lead.signal_tags.find(t => 
+                                  t.category === 'funding' || t.tag.toUpperCase().includes('FUNDING') || t.tag.toUpperCase().includes('SERIES') || t.tag.toUpperCase().includes('SEED')
+                                );
+                                if (fTag) {
+                                  return fTag.tag.split('/')[0].trim();
+                                }
+                              }
+                              return 'Growth Stage';
+                            })()}
+                          </span>
                         </div>
                         <div className="text-slate-900 dark:text-zinc-100 font-bold">
                           Headcount: <span className="font-normal text-slate-700 dark:text-zinc-300">{lead.employee_count ?? 50}</span>
