@@ -116,7 +116,7 @@ export default function PitcherMode({ id, company_name, onClose, inline = false 
               size={22}
               aria-hidden="true"
             />
-            Lazy loading targeted model template...
+            Summarizing buyer signals & intent insights...
           </div>
         ) : (
           <div className="space-y-4">

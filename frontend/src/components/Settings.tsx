@@ -4,40 +4,19 @@ import { fetchIntents, updateIntents, generateICPWithAI, type IntentConfig, type
 
 const DEFAULT_TEMPLATES = [
   {
-    title: 'Tech Recruitment Agency',
-    desc: 'DevOps, Cybersecurity, ML (50-2000 emp)',
-    niche: 'recruitment_agencies',
-    subtype: 'tech_recruitment',
+    title: 'Recruitment Agency ICP',
+    desc: 'Tech recruitment, engineering, ML (50-2000 emp)',
+    niche: 'recruitment',
   },
   {
-    title: 'Executive Search',
-    desc: 'C-Suite, VP Transitions (100-5000 emp)',
-    niche: 'recruitment_agencies',
-    subtype: 'executive_search',
+    title: 'Marketing Agency ICP',
+    desc: 'Growth & performance marketing (20-500 emp)',
+    niche: 'marketing',
   },
   {
-    title: 'Volume / RPO Hiring',
-    desc: 'Mass Hiring, Warehouses (200-10000 emp)',
-    niche: 'recruitment_agencies',
-    subtype: 'volume_rpo',
-  },
-  {
-    title: 'Startup Tech Recruitment',
-    desc: 'Seed/Series A Founders (<100 emp)',
-    niche: 'recruitment_agencies',
-    subtype: 'startup_tech',
-  },
-  {
-    title: 'Healthcare Recruitment',
-    desc: 'Clinical Shortages, Facilities (50-5000 emp)',
-    niche: 'recruitment_agencies',
-    subtype: 'healthcare_recruitment',
-  },
-  {
-    title: 'Sales Recruitment',
-    desc: 'VP Sales, SDR/AE Clusters (50-2000 emp)',
-    niche: 'recruitment_agencies',
-    subtype: 'sales_recruitment',
+    title: 'Appointment Setting ICP',
+    desc: 'B2B SaaS outbound, SDR services (20-500 emp)',
+    niche: 'appointment_setting',
   },
 ];
 
@@ -290,11 +269,11 @@ export default function Settings() {
           </div>
 
           {/* Pre-configured Templates Row */}
-          <div className="space-y-2">
-            <span className="text-[11px] font-bold text-zinc-400 block uppercase tracking-wider">Quick Enterprise Templates:</span>
-            <div className="flex flex-wrap gap-2">
+          <div className="space-y-2.5">
+            <span className="text-[11px] font-bold text-zinc-400 block uppercase tracking-wider">Select Active ICP Niche:</span>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {DEFAULT_TEMPLATES.map((tmpl, idx) => {
-                const isActive = intents?.active_niche === tmpl.niche && (tmpl.subtype ? intents?.active_subtype === tmpl.subtype : true);
+                const isActive = intents?.active_niche === tmpl.niche;
                 return (
                   <button
                     key={idx}
@@ -304,26 +283,27 @@ export default function Settings() {
                       const updated = {
                         ...intents,
                         active_niche: tmpl.niche,
-                        active_subtype: tmpl.subtype,
                       };
                       try {
                         const saved = await updateIntents(updated);
                         setIntents(saved);
                       } catch (e) {
-                        console.error('Failed to set subtype', e);
+                        console.error('Failed to set active niche', e);
                       } finally {
                         setSaving(false);
                       }
                     }}
-                    className={`side-drawer-pill px-3 py-1.5 sm:px-4 sm:py-2 rounded-xl border transition-all text-xs font-semibold flex items-center gap-1.5 sm:gap-2 shadow-2xs text-left ${
+                    className={`side-drawer-pill p-3.5 rounded-xl border transition-all text-xs font-semibold flex flex-col gap-1.5 shadow-2xs text-left cursor-pointer ${
                       isActive 
-                        ? 'border-emerald-500/60 bg-emerald-500/15 text-emerald-400 font-bold' 
+                        ? 'border-emerald-500/60 bg-emerald-500/15 text-emerald-400 font-bold shadow-sm ring-1 ring-emerald-500/30' 
                         : 'border-[var(--nexa-accent)]/30 bg-[var(--nexa-accent-dim)] text-[var(--nexa-accent)] hover:bg-[var(--nexa-accent-glow)]'
                     }`}
                   >
-                    {isActive ? <Check size={12} className="shrink-0 text-emerald-400" /> : <Sparkles size={12} className="shrink-0" />}
-                    <span>{tmpl.title}</span>
-                    <span className="text-[10px] opacity-75 font-normal hidden sm:inline">({tmpl.desc})</span>
+                    <div className="flex items-center justify-between w-full">
+                      <span className="font-bold text-xs sm:text-sm">{tmpl.title}</span>
+                      {isActive ? <Check size={14} className="shrink-0 text-emerald-400" /> : <Sparkles size={14} className="shrink-0 opacity-60" />}
+                    </div>
+                    <span className="text-[11px] opacity-75 font-normal leading-relaxed">{tmpl.desc}</span>
                   </button>
                 );
               })}

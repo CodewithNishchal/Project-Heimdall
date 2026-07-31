@@ -9,6 +9,8 @@ interface LeadDetailDrawerProps {
   onClose: () => void;
   isTracked?: boolean;
   onToggleTrack?: () => void;
+  onSelectLead?: (id: string | null) => void;
+  allLeads?: LeadDetailResponse[];
 }
 
 function getSignalIconAndTheme(signalText: string) {
@@ -61,10 +63,43 @@ function getSignalIconAndTheme(signalText: string) {
   };
 }
 
-export default function LeadDetailDrawer({ lead, onClose, isTracked = false, onToggleTrack }: LeadDetailDrawerProps) {
+export default function LeadDetailDrawer({
+  lead,
+  onClose,
+  isTracked = false,
+  onToggleTrack,
+  onSelectLead,
+  allLeads = [],
+}: LeadDetailDrawerProps) {
   const [activeTab, setActiveTab] = useState<'about' | 'people' | 'signals'>('signals');
   const [copiedEmail, setCopiedEmail] = useState<string | null>(null);
   const [showPitcher, setShowPitcher] = useState(false);
+
+  // Compute navigation indices for ChevronUp / ChevronDown buttons
+  const currentIndex = useMemo(() => {
+    if (!lead || !allLeads || allLeads.length === 0) return -1;
+    const targetKey = String(lead.id || lead.domain || lead.company_name);
+    return allLeads.findIndex((l) => String(l.id || l.domain || l.company_name) === targetKey);
+  }, [lead, allLeads]);
+
+  const hasPrev = currentIndex > 0;
+  const hasNext = currentIndex !== -1 && currentIndex < (allLeads?.length || 0) - 1;
+
+  const handlePrevLead = () => {
+    if (hasPrev && allLeads && onSelectLead) {
+      const prevLead = allLeads[currentIndex - 1];
+      const prevKey = String(prevLead.id || prevLead.domain || prevLead.company_name);
+      onSelectLead(prevKey);
+    }
+  };
+
+  const handleNextLead = () => {
+    if (hasNext && allLeads && onSelectLead) {
+      const nextLead = allLeads[currentIndex + 1];
+      const nextKey = String(nextLead.id || nextLead.domain || nextLead.company_name);
+      onSelectLead(nextKey);
+    }
+  };
 
   // Working Filters & View Controls
   const [behaviorFilter, setBehaviorFilter] = useState<'ALL' | 'FUNDING' | 'HIRING'>('ALL');
@@ -270,10 +305,22 @@ export default function LeadDetailDrawer({ lead, onClose, isTracked = false, onT
             <div className="side-drawer-header px-2.5 sm:px-6 py-2 sm:py-3 border-b border-nexa-border bg-nexa-surface flex items-center justify-between gap-1 sm:gap-4 sticky top-0 z-20 overflow-hidden">
               {/* Navigation Arrows */}
               <div className="flex items-center gap-1 shrink-0">
-                <button className="side-drawer-pill p-1 sm:p-1.5 rounded-lg border border-nexa-border bg-nexa-surface text-zinc-400 hover:text-zinc-100 transition">
+                <button
+                  type="button"
+                  onClick={handlePrevLead}
+                  disabled={!hasPrev}
+                  title="Previous Lead (Up Arrow)"
+                  className="side-drawer-pill p-1 sm:p-1.5 rounded-lg border border-nexa-border bg-nexa-surface text-zinc-400 hover:text-zinc-100 disabled:opacity-30 disabled:cursor-not-allowed transition"
+                >
                   <ChevronUp size={14} />
                 </button>
-                <button className="side-drawer-pill p-1 sm:p-1.5 rounded-lg border border-nexa-border bg-nexa-surface text-zinc-400 hover:text-zinc-100 transition">
+                <button
+                  type="button"
+                  onClick={handleNextLead}
+                  disabled={!hasNext}
+                  title="Next Lead (Down Arrow)"
+                  className="side-drawer-pill p-1 sm:p-1.5 rounded-lg border border-nexa-border bg-nexa-surface text-zinc-400 hover:text-zinc-100 disabled:opacity-30 disabled:cursor-not-allowed transition"
+                >
                   <ChevronDown size={14} />
                 </button>
               </div>

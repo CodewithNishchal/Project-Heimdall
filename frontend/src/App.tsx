@@ -10,6 +10,7 @@ import TrendPanel from './components/TrendPanel';
 import Settings from './components/Settings';
 import SocialPostsView from './components/SocialPostsView';
 import SignalDistribution from './components/SignalDistribution';
+import DocumentMagnifierScan from './components/DocumentMagnifierScan';
 import { fetchLeads, fetchPipelineStatus } from './lib/api';
 import type { LeadDetailResponse } from './types/lead';
 

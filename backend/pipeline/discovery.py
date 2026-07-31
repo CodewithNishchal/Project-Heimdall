@@ -564,7 +564,7 @@ def extract_category(text: str) -> str | None:
 async def fetch_exa_candidates_50(icp_config: dict = None) -> list[dict]:
     """
     Queries Exa AI Neural Search across all niche-specific client queries concurrently.
-    Deduplicates candidates by URL and domain and returns up to 100 combined raw candidates max.
+    Deduplicates candidates by URL and domain and returns up to 150 candidates max.
     """
     import os
     import json
@@ -575,43 +575,19 @@ async def fetch_exa_candidates_50(icp_config: dict = None) -> list[dict]:
     exa_api_key = env_vars.get("EXA_API_KEY") or os.getenv("EXA_API_KEY") or getattr(settings, "EXA_API_KEY", "")
 
     config = load_intent_config()
-    active_niche = config.get("active_niche", "marketing_agencies")
+    active_niche = config.get("active_niche", "recruitment")
     
-    # Select niche query list
-    niche_query_key = f"{active_niche.split('_')[0]}_exa_queries" if "_" in active_niche else "marketing_exa_queries"
-    if active_niche == "appointment_setting":
-        niche_query_key = "appointment_setting_exa_queries"
-    elif active_niche == "recruitment_agencies":
+    # Map active niche to query key
+    niche_query_key = f"{active_niche}_exa_queries"
+    if active_niche not in ["recruitment", "marketing", "appointment_setting"]:
         niche_query_key = "recruitment_exa_queries"
         
     query_objs = config.get(niche_query_key, [])
     if not query_objs:
-        default_q = config.get("exa_query") or "B2B companies growing revenue, expanding team, hiring roles in US 2025 2026"
-        queries = [default_q]
+        default_q = "B2B companies rapidly scaling team, hiring multiple roles, expanding operations in US 2025 2026"
+        queries = [{"query": default_q, "numResults": 25}]
     else:
-        queries = [q.get("query") for q in query_objs if q.get("query")]
-
-    # Dynamically inject active sub-type target industries, prioritized signals, and rules into Exa queries
-    active_subtype = config.get("active_subtype")
-    if active_subtype:
-        subtypes_dict = config.get(f"{active_niche.split('_')[0]}_subtypes", {}) or config.get("recruitment_subtypes", {})
-        st_info = subtypes_dict.get(active_subtype, {})
-        target_inds = st_info.get("target_industries", [])
-        prioritized = st_info.get("prioritized_signals", [])
-        rules_text = st_info.get("rules", "")
-
-        parts = []
-        if target_inds:
-            parts.append("(" + " OR ".join(target_inds) + ")")
-        if prioritized:
-            parts.append("(" + " OR ".join(prioritized[:2]) + ")")
-        if rules_text:
-            parts.append(rules_text)
-
-        if parts:
-            subtype_addon = " ".join(parts)
-            queries = [f"{q} {subtype_addon}" for q in queries]
-            logger.info(f"[Exa AI Discovery] Injected active sub-type '{active_subtype}' context into Exa queries: {subtype_addon[:80]}...")
+        queries = query_objs
 
     if not exa_api_key or "your_" in exa_api_key:
         logger.warning("[Exa AI] API Key missing or invalid. Falling back to local cache if available.")
@@ -628,14 +604,16 @@ async def fetch_exa_candidates_50(icp_config: dict = None) -> list[dict]:
         "x-api-key": exa_api_key
     }
 
-    async def fetch_single_query(client: httpx.AsyncClient, query_str: str) -> list[dict]:
+    async def fetch_single_query(client: httpx.AsyncClient, query_item: dict) -> list[dict]:
+        query_str = query_item.get("query") if isinstance(query_item, dict) else str(query_item)
+        num_res = query_item.get("numResults", 25) if isinstance(query_item, dict) else 25
         payload = {
             "query": query_str,
             "type": "neural",
             "useAutoprompt": False,
             "category": "company",
-            "excludeDomains": ["clutch.co", "upcity.com", "designrush.com", "goodfirms.co", "linkedin.com", "crunchbase.com"],
-            "numResults": 50,
+            "excludeDomains": ["clutch.co", "upcity.com", "designrush.com", "goodfirms.co", "linkedin.com", "crunchbase.com", "g2.com", "capterra.com"],
+            "numResults": num_res,
             "contents": {
                 "text": True,
                 "summary": True
@@ -644,7 +622,11 @@ async def fetch_exa_candidates_50(icp_config: dict = None) -> list[dict]:
         try:
             resp = await client.post(url, headers=headers, json=payload)
             if resp.status_code == 200:
-                return resp.json().get("results", [])
+                results = resp.json().get("results", [])
+                label = query_item.get("label", "General") if isinstance(query_item, dict) else "General"
+                for r in results:
+                    r["_query_label"] = label
+                return results
             else:
                 logger.error(f"[Exa AI Discovery] HTTP Error {resp.status_code} for query '{query_str[:30]}...': {resp.text[:150]}")
                 return []
@@ -654,7 +636,7 @@ async def fetch_exa_candidates_50(icp_config: dict = None) -> list[dict]:
 
     try:
         async with httpx.AsyncClient(timeout=35.0) as client:
-            logger.info(f"[Exa AI Discovery] Executing {len(queries)} client-intent queries concurrently for active niche '{active_niche}'...")
+            logger.info(f"[Exa AI Discovery] Executing {len(queries)} parallel client-intent queries for active niche '{active_niche}'...")
             tasks = [fetch_single_query(client, q) for q in queries]
             query_results = await asyncio.gather(*tasks)
 
@@ -679,28 +661,37 @@ async def fetch_exa_candidates_50(icp_config: dict = None) -> list[dict]:
 
 def apply_deterministic_filter(candidates: list[dict], icp_config: dict = None) -> list[dict]:
     """
-    Applies zero-token regex extraction on text_snippet and evaluates against
-    per-ICP headcount range, category allowlists, and geography limits while preserving rank.
+    Applies zero-token pre-filtering: Seller Filter (Agency Guard) + headcount range & category bounds.
     """
     import os
     import json
-    if not icp_config:
-        config_path = os.path.join(os.path.dirname(__file__), "..", "icp_config.json")
-        if os.path.exists(config_path):
-            with open(config_path, "r", encoding="utf-8") as f:
-                icp_config = json.load(f)
-        else:
-            icp_config = {}
+    from backend.config_manager import load_intent_config
 
-    allowed_cats = [c.lower() for c in icp_config.get("allowed_categories", ["software", "technology", "financial"])]
-    min_hc = icp_config.get("headcount_min", 5)
-    max_hc = icp_config.get("headcount_max", 500)
+    if not icp_config:
+        config = load_intent_config()
+        active_niche = config.get("active_niche", "recruitment")
+        niche_info = config.get("niches", {}).get(active_niche, {})
+        allowed_cats = [c.lower() for c in niche_info.get("target_industries", ["saas", "technology", "software"])]
+        min_hc = niche_info.get("min_employees", 20)
+        max_hc = niche_info.get("max_employees", 2000)
+        exclude_terms = [t.lower() for t in niche_info.get("exclude_terms", [])]
+    else:
+        allowed_cats = [c.lower() for c in icp_config.get("allowed_categories", icp_config.get("target_industries", ["saas", "technology", "software"]))]
+        min_hc = icp_config.get("headcount_min", icp_config.get("min_employees", 20))
+        max_hc = icp_config.get("headcount_max", icp_config.get("max_employees", 2000))
+        exclude_terms = [t.lower() for t in icp_config.get("exclude_terms", [])]
 
     survivors = []
     for rank, item in enumerate(candidates, start=1):
         item_copy = dict(item)
         item_copy["original_rank"] = rank
-        snippet = item_copy.get("text_snippet") or item_copy.get("text") or item_copy.get("summary") or ""
+        snippet = (item_copy.get("text_snippet") or item_copy.get("text") or item_copy.get("summary") or "").lower()
+        title = (item_copy.get("company_name") or item_copy.get("title") or "").lower()
+
+        # Rule 1 — Seller Filter (Agency Guard): Immediate Discard if company is an agency competitor
+        if exclude_terms and any(term in title or term in snippet for term in exclude_terms):
+            logger.info(f"[Agency Guard Reject] Rank #{rank} '{item_copy.get('title')}': Candidate matched agency exclusion term.")
+            continue
 
         extracted_cat = extract_category(snippet)
         parsed_hc = parse_headcount(snippet)
@@ -708,16 +699,14 @@ def apply_deterministic_filter(candidates: list[dict], icp_config: dict = None) 
         item_copy["extracted_category"] = extracted_cat
         item_copy["parsed_headcount"] = parsed_hc
 
-        # 1. Category Check (Allowlist + Fail-Closed)
+        # Category Check
         if extracted_cat:
             cat_lower = extracted_cat.lower()
             if not any(ac in cat_lower for ac in allowed_cats):
                 logger.info(f"[Filter Reject] Rank #{rank} '{item_copy.get('title')}': Category '{extracted_cat}' outside allowlist.")
                 continue
-        else:
-            item_copy["regex_unmatched"] = True
 
-        # 2. Headcount Check
+        # Headcount Check
         if parsed_hc is not None:
             if parsed_hc < min_hc or parsed_hc > max_hc:
                 logger.info(f"[Filter Reject] Rank #{rank} '{item_copy.get('title')}': Headcount {parsed_hc} out of bounds ({min_hc}-{max_hc}).")

@@ -950,6 +950,15 @@ html.light-theme .pitcher-mode-drawer button.bg-nexa-card:hover {
   }
 }
 
+@keyframes counterRotateUpright {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(-360deg);
+  }
+}
+
 @keyframes scrollBlurredNames {
   0% {
     transform: translateY(0%);
@@ -959,12 +968,57 @@ html.light-theme .pitcher-mode-drawer button.bg-nexa-card:hover {
   }
 }
 
+@keyframes laserSweep {
+  0% {
+    top: 10%;
+    opacity: 0.2;
+  }
+  50% {
+    top: 85%;
+    opacity: 1;
+  }
+  100% {
+    top: 10%;
+    opacity: 0.2;
+  }
+}
+
+@keyframes innerOrbit {
+  0% {
+    transform: translate(-50%, -50%) translate(0px, -35px);
+  }
+  25% {
+    transform: translate(-50%, -50%) translate(75px, 0px);
+  }
+  50% {
+    transform: translate(-50%, -50%) translate(0px, 35px);
+  }
+  75% {
+    transform: translate(-50%, -50%) translate(-75px, 0px);
+  }
+  100% {
+    transform: translate(-50%, -50%) translate(0px, -35px);
+  }
+}
+
 .animate-orbit-magnifier {
-  animation: orbitMagnifier 5s linear infinite;
+  animation: orbitMagnifier 6s linear infinite;
+}
+
+.animate-upright-glass {
+  animation: counterRotateUpright 6s linear infinite;
 }
 
 .animate-scroll-blurred {
-  animation: scrollBlurredNames 10s linear infinite;
+  animation: scrollBlurredNames 12s linear infinite;
+}
+
+.animate-laser-sweep {
+  animation: laserSweep 3.5s ease-in-out infinite;
+}
+
+.animate-inner-magnifier {
+  animation: innerOrbit 5.5s ease-in-out infinite;
 }
 
 /* ============================================================

@@ -364,64 +364,57 @@ async def run_pipeline_for_company(
     _persist_lead(lead_id, domain, company_name, lead_payload)
     return {"status": "success", "lead": lead_payload}
 
-async def select_top_5_leads(candidates: list[dict]) -> list[dict]:
+
+async def select_top_10_leads(candidates: list[dict], target_niche: str = None) -> list[dict]:
     """
-    Phase 2 — Fast Ungrounded Gemini 2.5 Flash Gatekeeper.
-    Evaluates candidate objects in batches of up to 25 with full Exa summary/snippet context.
-    Applies active ICP Sub-Type rules, Rule 1 (Seller Filter), and Rule 2 (Job Post Interpretation) to rank TOP 5.
+    Phase 1.5 — Gemini Gatekeeper Selection.
+    Evaluates candidate company objects against active niche ICP rules and Seller Exclusion filters.
+    Ranks candidates by intent signal strength and returns the TOP 10.
     """
     if not candidates:
         return []
 
-    logger.info(f"Selecting top 5 leads from {len(candidates)} candidates using Gemini 2.5 Flash Gatekeeper...")
+    from backend.config_manager import load_intent_config
+    config = load_intent_config()
+    active_niche = target_niche or config.get("active_niche", "recruitment")
+    niche_info = config.get("niches", {}).get(active_niche, {})
+    exclude_terms = niche_info.get("exclude_terms", ["agency", "staffing", "recruitment firm"])
+    niche_rules = niche_info.get("rules", "Target company job post = positive. Agency post = discard.")
 
-    import os
-    import json
-    import asyncio
+    api_key = getattr(settings, "GEMINI_API_KEY", None)
+    if not api_key or "your_" in api_key:
+        logger.warning("[Gemini Gatekeeper] API Key missing. Falling back to dummy top 10 selection.")
+        names = {c.get("company_name", c.get("title", "Unknown")) for c in candidates}
+        return _select_top_5_leads_dummy(names)[:10]
+
     from google import genai
     from google.genai import types
-
-    api_key = settings.GEMINI_API_KEY
-    if not api_key or api_key in ["mock_key_if_empty", ""]:
-        logger.warning("Gemini API key missing, using dummy selection.")
-        return _select_top_5_leads_dummy({c.get("company_name", "Unknown") for c in candidates})
-
-    from backend.config_manager import load_intent_config
-    config_dict = load_intent_config()
-    active_niche = config_dict.get("active_niche", "marketing_agencies")
-    active_subtype = config_dict.get("active_subtype", "tech_recruitment")
     
-    subtypes_dict = config_dict.get("recruitment_subtypes", {})
-    subtype_info = subtypes_dict.get(active_subtype, {})
-    subtype_label = subtype_info.get("label", "General ICP Target")
-    subtype_rules = subtype_info.get("rules", "Prioritize operational expansion and scaling hiring.")
-    exclude_terms = ", ".join(subtype_info.get("exclude_terms", ["service agency", "consultancy", "staffing firm"]))
-
     client = genai.Client(api_key=api_key)
     gen_config = types.GenerateContentConfig(
         temperature=0.1
     )
 
-    async def evaluate_batch(batch_candidates: list[dict], num_to_select: int = 5) -> list[dict]:
+    async def evaluate_batch(batch_candidates: list[dict], num_to_select: int = 10) -> list[dict]:
         candidate_blocks = "\n\n".join(
-            f"Candidate: {c.get('company_name', c.get('title',''))}\n"
-            f"Source URL: {c.get('url','')}\n"
+            f"Candidate [{idx+1}]: {c.get('company_name', c.get('title',''))}\n"
+            f"Domain: {c.get('url','')}\n"
             f"Summary: {c.get('summary','')}\n"
-            f"Snippet: {c.get('text_snippet','')}"
-            for c in batch_candidates
+            f"Snippet: {c.get('text_snippet','')[:600]}"
+            for idx, c in enumerate(batch_candidates)
         )
 
         prompt = f"""You are a Lead Scoring AI and Senior B2B Sales Intelligence Analyst.
 
 TASK:
 Analyze the attached list of {len(batch_candidates)} candidates along with their source evidence text blocks.
-Verify candidates against the Active ICP Niche ('{active_niche}') and Active Sub-Type ('{subtype_label}').
-Evaluate candidates strictly based on their source evidence text blocks, active sub-type focus, and disqualification terms.
+Verify candidates against the Active ICP Niche ('{active_niche}').
+Evaluate candidates strictly based on their source evidence text blocks, active niche focus, and disqualification terms.
 
-ACTIVE ICP SUB-TYPE RULES & FOCUS:
-- Target Sub-Type: {subtype_label}
-- Core Evaluation Rule: {subtype_rules}
-- Explicit Disqualifications: Discard companies matching any of: {exclude_terms}
+ACTIVE ICP NICHE RULES:
+- Active Niche: {active_niche}
+- Evaluation Rules: {niche_rules}
+- Exclusion Terms: Discard companies matching any of: {exclude_terms}
 
 CONTEXTUAL SELLER & JOB POST RULES (STRICT):
 RULE 1 — SELLER FILTER (AGENCY GUARD): If candidate company IS a service provider/agency in our client's space ({exclude_terms}), DISCARD IT IMMEDIATELY (set fits_icp: false).
@@ -430,8 +423,17 @@ RULE 2 — JOB POST INTERPRETATION:
   - Job posts BY an agency = DISCARD (noise).
   - Job posts for internal 'recruiter' or 'talent acquisition' roles = MODERATE signal (building internal capacity).
 
+SIGNAL CATEGORY MAPPING (Assign exactly 1 category):
+- Federal contract wins → EXPANSION
+- M&A / acquisitions → EXPANSION
+- Grants (SBIR, STTR) → FUNDING
+- New VP / C-suite hires → LEADERSHIP
+- Funding / Capital raised → FUNDING
+- Role openings / Team scaling → HIRING
+- Explicit social buying requests → SOCIAL_INTENT
+
 OUTPUT FORMAT:
-Return ONLY a valid JSON array containing exactly the TOP {num_to_select} ranked companies formatted as follows:
+Return ONLY a valid JSON array containing the TOP {num_to_select} ranked companies formatted as follows:
 
 [
   {{
@@ -439,15 +441,13 @@ Return ONLY a valid JSON array containing exactly the TOP {num_to_select} ranked
     "company_name": "Exact Brand Name",
     "domain": "companydomain.com or null if unverified",
     "fits_icp": true,
+    "disqualification_reason": null,
     "primary_signal_category": "FUNDING | HIRING | EXPANSION | LEADERSHIP | SOCIAL_INTENT",
-    "signal_recency": "Estimated days since trigger event as integer"
+    "signal_recency": 14
   }}
 ]
 
-CRITICAL RULES:
-- ONLY SELECT QUALIFIED ICP TARGETS (fits_icp: true): Prioritize ranking companies that strictly match the active sub-type ({subtype_label}). Discard non-matching companies or competitors.
-- Only include a 'domain' if your verification confirms the official website domain. If unverified, return null.
-- Return ONLY raw valid JSON array.
+If candidate is disqualified, include "fits_icp": false and provide "disqualification_reason": "string explaining why it was cut".
 
 CANDIDATES WITH SOURCE EVIDENCE ({len(batch_candidates)} Candidates):
 {candidate_blocks}
@@ -476,12 +476,12 @@ CANDIDATES WITH SOURCE EVIDENCE ({len(batch_candidates)} Candidates):
             logger.error(f"[Gemini Batch Error] Error evaluating batch of {len(batch_candidates)}: {e}")
             return _select_top_5_leads_dummy({c.get("company_name", c.get("title", "Unknown")) for c in batch_candidates})[:num_to_select]
 
-    # Evaluate candidates directly without tool grounding limits
-    logger.info(f"[Fast Gatekeeper] Evaluating {len(candidates)} candidates directly with Gemini 2.5 Flash (Ungrounded)...")
+    # Evaluate candidates directly
+    logger.info(f"[Fast Gatekeeper] Evaluating {len(candidates)} candidates directly with Gemini 2.5 Flash...")
     if len(candidates) <= 25:
-        res = await evaluate_batch(candidates, num_to_select=5)
+        res = await evaluate_batch(candidates, num_to_select=min(10, len(candidates)))
         valid = [r for r in res if r.get("fits_icp") is True]
-        return valid[:5] if valid else res[:5]
+        return valid[:10] if valid else res[:10]
 
     CHUNK_SIZE = 25
     chunks = [candidates[i:i + CHUNK_SIZE] for i in range(0, len(candidates), CHUNK_SIZE)]
@@ -490,55 +490,66 @@ CANDIDATES WITH SOURCE EVIDENCE ({len(batch_candidates)} Candidates):
     chunk_results = []
     for idx, chunk in enumerate(chunks, start=1):
         logger.info(f"[Fast Gatekeeper] Evaluating batch {idx}/{len(chunks)} ({len(chunk)} candidates)...")
-        batch_res = await evaluate_batch(chunk, num_to_select=5)
+        batch_res = await evaluate_batch(chunk, num_to_select=10)
         qualified = [b for b in batch_res if b.get("fits_icp") is True]
         chunk_results.extend(qualified if qualified else batch_res)
 
     only_fits = [c for c in chunk_results if c.get("fits_icp") is True]
     final_pool = only_fits if only_fits else chunk_results
 
-    if len(final_pool) <= 5:
-        return final_pool[:5]
+    if len(final_pool) <= 10:
+        return final_pool[:10]
 
-    logger.info(f"[Fast Gatekeeper] Performing final ranking pass on {len(final_pool)} batch winners...")
-    final_res = await evaluate_batch(final_pool, num_to_select=5)
+    logger.info(f"[Fast Gatekeeper] Performing final ranking pass on {len(final_pool)} batch winners to select Top 10...")
+    final_res = await evaluate_batch(final_pool, num_to_select=10)
     final_valid = [r for r in final_res if r.get("fits_icp") is True]
-    return final_valid[:5] if final_valid else final_res[:5]
+    return final_valid[:10] if final_valid else final_res[:10]
+
+
+async def select_top_20_leads(candidates: list[dict], target_niche: str = None) -> list[dict]:
+    """Alias for select_top_10_leads for backward compatibility."""
+    return await select_top_10_leads(candidates, target_niche=target_niche)
+
+
+async def select_top_5_leads(candidates: list[dict], target_niche: str = None) -> list[dict]:
+    """Alias for select_top_10_leads for backward compatibility."""
+    return await select_top_10_leads(candidates, target_niche=target_niche)
 
 
 def _select_top_5_leads_dummy(companies: set[str]) -> list[dict]:
     """Fallback dummy function"""
-    logger.info(f"Selecting top 5 leads from {len(companies)} candidates using dummy fallback...")
-    top_5 = list(companies)[:5]
-    return [{"company_name": name, "domain": f"{name.lower().replace(' ', '').replace(',', '')}.com", "industry": "B2B Software & Services"} for name in top_5]
+    logger.info(f"Selecting top leads from {len(companies)} candidates using dummy fallback...")
+    top_list = list(companies)[:10]
+    return [{"company_name": name, "domain": f"{name.lower().replace(' ', '').replace(',', '')}.com", "industry": "B2B Software & Services"} for name in top_list]
 
 async def run_batch_pipeline() -> dict:
     """
     Phase 6 — Autonomous batch pipeline.
-    Discovers companies via Exa 50 neural search, applies deterministic regex pre-filtering,
-    runs bounded Gemini gatekeeper (<= 5 bypass / > 5 top 15 -> 5), and processes top leads.
+    Discovers companies via Exa AI neural search, applies deterministic regex pre-filtering & Agency Guard,
+    runs bounded Gemini gatekeeper (Top 20 selection), and processes top leads.
     """
-    logger.info("Starting autonomous batch pipeline with Exa 50 discovery...")
+    logger.info("Starting autonomous batch pipeline with Exa AI discovery...")
 
     from backend.pipeline.discovery import fetch_exa_candidates_50, apply_deterministic_filter
 
-    # Phase 1: Exa 50-Company Discovery
+    # Phase 1: Exa AI Discovery
     raw_candidates = await fetch_exa_candidates_50()
     logger.info(f"Exa AI Discovery returned {len(raw_candidates)} candidate company objects.")
 
-    # Phase 2: Deterministic Pre-Filtering on text_snippet ($0 Tokens) using Active Sub-Type bounds
+    # Phase 2: Deterministic Pre-Filtering on text_snippet ($0 Tokens) using Active Niche bounds
     from backend.config_manager import load_intent_config
     config_dict = load_intent_config()
-    active_subtype = config_dict.get("active_subtype", "tech_recruitment")
-    subtype_dict = config_dict.get("recruitment_subtypes", {}).get(active_subtype, {})
+    active_niche = config_dict.get("active_niche", "recruitment")
+    niche_info = config_dict.get("niches", {}).get(active_niche, {})
     filter_config = {
-        "allowed_categories": subtype_dict.get("target_industries", []),
-        "headcount_min": subtype_dict.get("min_employees", 5),
-        "headcount_max": subtype_dict.get("max_employees", 500)
+        "target_industries": niche_info.get("target_industries", []),
+        "min_employees": niche_info.get("min_employees", 20),
+        "max_employees": niche_info.get("max_employees", 2000),
+        "exclude_terms": niche_info.get("exclude_terms", [])
     }
 
     survivor_candidates = apply_deterministic_filter(raw_candidates, icp_config=filter_config)
-    logger.info(f"Deterministic Filter ({active_subtype}): {len(survivor_candidates)} SURVIVORS passed regex category & headcount rules.")
+    logger.info(f"Deterministic Filter ({active_niche}): {len(survivor_candidates)} SURVIVORS passed regex category, headcount, & Agency Guard rules.")
 
     # Fetch currently active companies from DB to avoid duplicates
     db = SessionLocal()
@@ -551,14 +562,14 @@ async def run_batch_pipeline() -> dict:
     filtered_survivors = [d for d in survivor_candidates if d.get("title") not in active_companies and d.get("company_name") not in active_companies]
     logger.info(f"Filtered to {len(filtered_survivors)} new non-duplicate survivor candidates.")
 
-    # Phase 3: Bounded Gemini Gatekeeper Selection
+    # Phase 3: Bounded Gemini Gatekeeper Selection (Top 20)
     if not filtered_survivors:
         logger.warning("[Pipeline Audit] 0 survivor companies remaining after deterministic filtering and deduplication.")
         return {"companies_processed": 0, "successes": 0, "had_errors": False}
 
-    if len(filtered_survivors) <= 5:
-        logger.info(f"[Gemini Bypass] {len(filtered_survivors)} survivors <= 5. Bypassing Gemini gatekeeper and enriching all survivors directly.")
-        top_5_leads = [
+    if len(filtered_survivors) <= 10:
+        logger.info(f"[Gemini Bypass] {len(filtered_survivors)} survivors <= 10. Bypassing Gemini gatekeeper and enriching all survivors directly.")
+        top_10_leads = [
             {
                 "company_name": c.get("title") or c.get("author") or "Unknown",
                 "domain": c.get("url", "").replace("https://", "").replace("http://", "").strip("/"),
@@ -569,7 +580,7 @@ async def run_batch_pipeline() -> dict:
             for c in filtered_survivors
         ]
     else:
-        logger.info(f"Passing ALL {len(filtered_survivors)} SURVIVORS to Gemini gatekeeper to select Top 5...")
+        logger.info(f"Passing ALL {len(filtered_survivors)} SURVIVORS to Gemini gatekeeper to select Top 10...")
         all_survivors_batch = [
             {
                 "company_name": c.get("title") or c.get("author") or "Unknown",
@@ -580,11 +591,11 @@ async def run_batch_pipeline() -> dict:
             }
             for c in filtered_survivors
         ]
-        top_5_leads = await select_top_5_leads(all_survivors_batch)
+        top_10_leads = await select_top_10_leads(all_survivors_batch, target_niche=active_niche)
 
-    # Phase 4: Entity Resolution (Top 5 Only)
-    top_5_pool = []
-    for lead in top_5_leads:
+    # Phase 4: Entity Resolution (Top 10)
+    top_10_pool = []
+    for lead in top_10_leads:
         c_name = lead.get("company_name")
         from backend.pipeline.enrichment import resolve_domain_via_serper
         from backend.config import settings
@@ -615,14 +626,14 @@ async def run_batch_pipeline() -> dict:
                     exa_url = cand.get("url", exa_url)
                     break
 
-        top_5_pool.append((c_name, domain, firmographics, exa_snippet, exa_url))
+        top_10_pool.append((c_name, domain, firmographics, exa_snippet, exa_url))
     
     success_count = 0
     errors = False
 
     # Phase 3 & 4 & 5 & 6: Sequential Deep Sweep, Synthesis, and DB Persist Per Company
-    for idx, (company_name, domain, firmographics, exa_snippet, exa_url) in enumerate(top_5_pool):
-        logger.info(f"Fetching deep signals for [{idx + 1}/{len(top_5_pool)}]: {company_name}")
+    for idx, (company_name, domain, firmographics, exa_snippet, exa_url) in enumerate(top_10_pool):
+        logger.info(f"Fetching deep signals for [{idx + 1}/{len(top_10_pool)}]: {company_name}")
         try:
             import httpx
             from backend.pipeline.enrichment import fetch_reddit_posts, fetch_twitter_posts
@@ -672,7 +683,7 @@ async def run_batch_pipeline() -> dict:
             logger.error(f"Error fetching signals for {company_name}: {e}")
             signals = []
             
-        logger.info(f"Processing Synthesis for Top [{idx + 1}/{len(top_5_pool)}]: {company_name} with {len(signals)} signals")
+        logger.info(f"Processing Synthesis for Top [{idx + 1}/{len(top_10_pool)}]: {company_name} with {len(signals)} signals")
         try:
             res = await run_pipeline_for_company(
                 company_name, 
@@ -882,13 +893,13 @@ def _heuristic_signal_filter(signals: list[dict]) -> list[dict]:
 
 
 def _get_icp_rejection_reason(firmographics: dict) -> str:
-    """Generates a human-readable ICP rejection reason dynamically based on active sub-type."""
+    """Generates a human-readable ICP rejection reason dynamically based on active niche."""
     from backend.config_manager import load_intent_config
     config_dict = load_intent_config()
-    active_subtype = config_dict.get("active_subtype", "tech_recruitment")
-    subtype_dict = config_dict.get("recruitment_subtypes", {}).get(active_subtype, {})
-    min_emp = subtype_dict.get("min_employees", 5)
-    max_emp = subtype_dict.get("max_employees", 500)
+    active_niche = config_dict.get("active_niche", "recruitment")
+    niche_info = config_dict.get("niches", {}).get(active_niche, {})
+    min_emp = niche_info.get("min_employees", 20)
+    max_emp = niche_info.get("max_employees", 2000)
 
     emp = firmographics.get("employee_count")
     if emp is not None:

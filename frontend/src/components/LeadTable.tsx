@@ -92,6 +92,13 @@ function getFirstSentence(text?: string): string {
   return firstSentence || clean;
 }
 
+function getLeadScore(lead: LeadDetailResponse): number {
+  if (lead.badge === 'filtered' || lead.ai_verdict?.includes('API Error')) {
+    return 0;
+  }
+  return lead.intent_score ?? lead.icp_score ?? 0;
+}
+
 function getSignalBadgeStyle(signalText: string) {
   const lower = signalText.toLowerCase();
 
@@ -280,7 +287,7 @@ export default function LeadTable({
 
       // 4. Score Filter (Hot >= 70, Warm 40-69, Watching < 40)
       let matchesScore = true;
-      const leadScore = lead.icp_score ?? lead.intent_score ?? 0;
+      const leadScore = getLeadScore(lead);
       if (scoreFilter === 'HIGH') matchesScore = leadScore >= 70;
       else if (scoreFilter === 'MEDIUM') matchesScore = leadScore >= 40 && leadScore < 70;
       else if (scoreFilter === 'LOW') matchesScore = leadScore < 40;
@@ -309,8 +316,8 @@ export default function LeadTable({
       return matchesSearch && matchesTier && matchesDate && matchesScore && matchesSignal;
     }).sort((a, b) => {
       // Always score-descending within each bucket. Never surface the weakest lead first.
-      const scoreA = a.icp_score ?? a.intent_score ?? 0;
-      const scoreB = b.icp_score ?? b.intent_score ?? 0;
+      const scoreA = getLeadScore(a);
+      const scoreB = getLeadScore(b);
       if (scoreB !== scoreA) {
         return scoreB - scoreA; // Highest score first
       }
@@ -394,7 +401,11 @@ export default function LeadTable({
 
       {/* Data Grid Card — Nexa Design System Styling */}
       <div className="nexa-card nexa-card-no-hover overflow-hidden flex-1 flex flex-col min-h-0 relative">
-        {isScanning && <HackerScanAnimation targetDomain={searchTerm} />}
+        {(isScanning || isPipelineRunning) && (
+          <div className="absolute inset-0 z-50 flex items-center justify-center bg-white/95 dark:bg-nexa-bg/95 backdrop-blur-md p-4 overflow-y-auto rounded-2xl">
+            <DocumentMagnifierScan />
+          </div>
+        )}
 
         {/* Mobile Horizontal Scroll Hint */}
         <div className="text-[10px] font-bold text-slate-500 dark:text-zinc-400 px-3 py-1 flex items-center justify-between sm:hidden bg-slate-100/60 dark:bg-white/5 border-b border-nexa-border">
@@ -574,7 +585,7 @@ export default function LeadTable({
                           {/* SCORE */}
                           <td className="p-4 text-center">
                             {(() => {
-                              const displayScore = (lead.badge === 'filtered' || lead.ai_verdict?.includes('API Error')) ? 0 : lead.intent_score;
+                              const displayScore = getLeadScore(lead);
                               const scoreColor = displayScore >= 70
                                 ? 'bg-emerald-100 text-emerald-900 border border-emerald-300 dark:bg-emerald-950/80 dark:text-emerald-400 dark:border-emerald-500/40'
                                 : displayScore >= 40
@@ -675,11 +686,10 @@ export default function LeadTable({
                               <button
                                 type="button"
                                 onClick={() => onToggleTrackLead?.(leadKey)}
-                                className={`rounded-xl border p-2 transition shadow-xs ${
-                                  (trackedLeadIds || []).includes(leadKey) || (trackedLeadIds || []).includes(lead.domain) || (trackedLeadIds || []).includes(lead.company_name)
+                                className={`rounded-xl border p-2 transition shadow-xs ${(trackedLeadIds || []).includes(leadKey) || (trackedLeadIds || []).includes(lead.domain) || (trackedLeadIds || []).includes(lead.company_name)
                                     ? 'bg-emerald-500/20 border-emerald-500/40 text-emerald-400 font-bold'
                                     : 'border-slate-200 bg-slate-100 text-slate-400 dark:border-white/10 dark:bg-white/5 dark:text-zinc-500 hover:text-slate-700 dark:hover:text-zinc-200 hover:bg-slate-200 dark:hover:bg-white/10'
-                                }`}
+                                  }`}
                                 title={
                                   (trackedLeadIds || []).includes(leadKey) || (trackedLeadIds || []).includes(lead.domain) || (trackedLeadIds || []).includes(lead.company_name)
                                     ? 'Tracked in Track Leads (Click to untrack)'
@@ -799,6 +809,8 @@ export default function LeadTable({
       {/* Dynamic Slide-Over Side Drawer from Right */}
       <LeadDetailDrawer
         lead={selectedLead}
+        allLeads={filteredLeads}
+        onSelectLead={onSelectLead}
         onClose={() => onSelectLead(null)}
         isTracked={
           selectedLead

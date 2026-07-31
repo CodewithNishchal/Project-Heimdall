@@ -18,12 +18,11 @@ def apply_icp_filters(
 
     from backend.config_manager import load_intent_config
     _config = load_intent_config()
-    active_subtype = _config.get("active_subtype", "tech_recruitment")
-    subtypes_dict = _config.get("recruitment_subtypes", {})
-    subtype_info = subtypes_dict.get(active_subtype, {})
+    active_niche = _config.get("active_niche", "recruitment")
+    niche_info = _config.get("niches", {}).get(active_niche, {})
 
-    min_hc = subtype_info.get("min_employees", 5)
-    max_hc = subtype_info.get("max_employees", 500)
+    min_hc = niche_info.get("min_employees", 20)
+    max_hc = niche_info.get("max_employees", 2000)
 
     # 1. Scale Constraints: Capacity Check
     if employee_count is not None:
@@ -53,8 +52,8 @@ def apply_icp_filters(
             score = min(score, 30)  # Locked internal operations block cap
             fit_label = "Poor"
 
-    # 3. Industry Vertical Alignment (reads from sub-type in intent_config.json for consistency with Gemini)
-    target_list = subtype_info.get("target_industries") or _config.get("target_industries", settings.ICP.TARGET_INDUSTRIES)
+    # 3. Industry Vertical Alignment (reads from active niche in intent_config.json)
+    target_list = niche_info.get("target_industries") or _config.get("target_industries", settings.ICP.TARGET_INDUSTRIES)
     if not any(tgt.lower() in industry.lower() for tgt in target_list):
         penalties += 10  # Out of sector mismatch deduction
         if fit_label != "Poor":

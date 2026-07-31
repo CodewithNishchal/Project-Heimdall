@@ -392,60 +392,39 @@ async def fetch_scrapebadger_twitter(client: httpx.AsyncClient, query: str) -> l
     return []
 
 SUBTYPE_QUERIES_MATRIX = {
-    "startup_tech": {
-        "linkedin": ["excited to announce our seed round", "growing our founding team", "hiring our first engineers"],
-        "twitter": '("seed round" OR "pre-seed" OR "series a") (hiring OR "we\'re hiring" OR "join our team") -"venture capital firm" -"our accelerator program" -"our incubator cohort"',
-        "reddit": ["just raised our seed round hiring", "startup hiring after funding"],
-        "google": '("raised our seed round" OR "closed our pre-seed" OR "growing our founding team") hiring -"venture capital firm" -"accelerator program" -"incubator cohort"',
-        "threads": ["raised seed round hiring engineers", "growing founding team startup hiring"]
+    "recruitment": {
+        "linkedin": ["looking for a recruiting partner", "hiring DevOps engineers", "scaling our engineering team", "welcomes our new VP of Engineering", "raised our Series A hiring", "awarded federal contract hiring"],
+        "twitter": '("looking for a recruiting agency" OR "hiring DevOps" OR "hiring ML engineers" OR "scaling engineering team" OR "new VP of Engineering" OR "series a hiring") -"looking for a job" -"my resume" -"our staffing firm" -"our RPO services"',
+        "reddit": ["scaling engineering team hiring developers", "struggling to hire senior engineers", "raised funding hiring devops engineers"],
+        "google": '("hiring DevOps engineers" OR "new VP of Engineering" OR "raised series A hiring engineers") -"our staffing firm" -"leading RPO provider"',
+        "threads": ["scaling engineering team", "hiring senior engineers"]
     },
-    "tech_recruitment": {
-        "linkedin": ["hiring DevOps engineers", "growing our ML engineering team", "SOC2 compliance hiring"],
-        "twitter": '("hiring DevOps" OR "hiring ML engineers" OR "SOC2 compliance" OR "scaling our engineering team") -"our staffing firm" -"our RPO services" -"leading headhunter firm"',
-        "reddit": ["engineering hiring spike SOC2", "scaling DevOps team hiring"],
-        "google": '("hiring DevOps engineers" OR "growing our ML team" OR "SOC2 compliance hiring") -"our staffing firm" -"leading RPO provider"',
-        "threads": ["hiring DevOps engineers", "scaling engineering SOC2 compliance"]
+    "marketing": {
+        "linkedin": ["looking for a marketing agency", "need help with paid ads", "our CAC is rising", "hiring sales but not marketing", "raised our Series A go-to-market", "launching our new brand"],
+        "twitter": '("looking for a marketing agency" OR "need a growth marketer" OR "CAC rising" OR "paid ads not working" OR "go-to-market strategy" OR "brand launch") -"our marketing agency" -"our growth agency" -"our PPC agency"',
+        "reddit": ["CAC rising paid ads not working", "need growth marketing help SaaS", "raised funding go-to-market strategy"],
+        "google": '("looking for a marketing agency" OR "need a growth marketer" OR "CAC rising" OR "go-to-market strategy") -"our marketing agency" -"our growth agency"',
+        "threads": ["need growth marketing help", "CAC rising paid ads"]
     },
-    "executive_search": {
-        "linkedin": ["hiring our next VP of Engineering", "board announces leadership transition", "searching for our next CEO"],
-        "twitter": '("VP of Engineering search" OR "VP of Sales search" OR "searching for our next CEO" OR "leadership transition") -"executive coaching" -"leadership training program" -"our HR consultancy"',
-        "reddit": ["company searching for new CEO", "VP level hiring announcement"],
-        "google": '("searching for our next CEO" OR "VP Engineering search" OR "board announces leadership transition") -"executive coaching" -"leadership training program"',
-        "threads": ["hiring VP Engineering", "searching for new CEO"]
-    },
-    "volume_rpo": {
-        "linkedin": ["opening our new warehouse hiring", "seasonal hiring announcement", "hiring 100 new positions"],
-        "twitter": '("new warehouse" OR "new distribution center" OR "seasonal hiring event") ("100 positions" OR "mass hiring") -"our staffing agency" -"our temp agency" -"PEO services"',
-        "reddit": ["new warehouse opening jobs", "seasonal hiring event retail"],
-        "google": '("opening a new warehouse" OR "new distribution center" OR "seasonal hiring event") hiring -"our staffing agency" -"PEO services"',
-        "threads": ["opening new warehouse hiring", "seasonal hiring event"]
-    },
-    "healthcare_recruitment": {
-        "linkedin": ["opening our new clinic hiring", "clinical staff shortage", "expanding our hospital network"],
-        "twitter": '("new clinic" OR "new healthcare facility" OR "clinical staff shortage" OR "hospital expansion") hiring -"our staffing agency" -"locum tenens firm" -"medical device sales agency"',
-        "reddit": ["clinical staff shortage hiring", "new hospital facility opening"],
-        "google": '("clinical staff shortage" OR "new healthcare facility" OR "hospital expansion") hiring -"our staffing agency" -"locum tenens firm"',
-        "threads": ["opening new clinic hiring", "clinical staff shortage"]
-    },
-    "sales_recruitment": {
-        "linkedin": ["hiring SDRs and AEs", "welcomes our new VP of Sales", "building our GTM team from scratch"],
-        "twitter": '("hiring SDRs" OR "hiring AEs" OR "new VP of Sales" OR "building our GTM team") -"sales training company" -"sales enablement agency" -"outbound agency services"',
-        "reddit": ["hiring SDR AE cluster", "new VP sales building team"],
-        "google": '("hiring SDRs and AEs" OR "new VP of Sales" OR "building our GTM team") -"sales training company" -"sales enablement agency"',
-        "threads": ["hiring SDRs AEs", "new VP of Sales"]
+    "appointment_setting": {
+        "linkedin": ["looking for an outbound partner", "need more qualified meetings", "our pipeline is dry", "hiring AEs no SDR team", "founder-led sales need pipeline", "raised our Series A hiring AE"],
+        "twitter": '("looking for an appointment setting partner" OR "need more pipeline" OR "cold email not working" OR "founder-led sales" OR "hiring AE") -"our SDR agency" -"our outbound agency" -"our appointment setting agency"',
+        "reddit": ["pipeline dry need more meetings", "founder-led sales scaling outbound", "cold email low response rate SaaS"],
+        "google": '("looking for an appointment setting partner" OR "need more pipeline" OR "founder-led sales no SDR team") -"our SDR agency" -"our outbound agency"',
+        "threads": ["need more qualified meetings", "pipeline dry outbound"]
     }
 }
 
 async def fetch_social_micro_intent(triggers: list[str], topics: list[str]) -> list[dict]:
     from backend.config_manager import load_intent_config
     config = load_intent_config()
-    active_subtype = config.get("active_subtype", "startup_tech")
+    active_niche = config.get("active_niche", "recruitment")
 
     clean_trigs = [t.strip('\'"') for t in triggers if t.strip()] if triggers else []
     clean_tops = [tp.strip('\'"') for tp in topics if tp.strip()] if topics else []
 
-    if active_subtype in SUBTYPE_QUERIES_MATRIX:
-        sub_info = SUBTYPE_QUERIES_MATRIX[active_subtype]
+    if active_niche in SUBTYPE_QUERIES_MATRIX:
+        sub_info = SUBTYPE_QUERIES_MATRIX[active_niche]
         linkedin_query = sub_info["linkedin"][0]
         twitter_query = sub_info["twitter"]
         reddit_query = sub_info["reddit"][0]

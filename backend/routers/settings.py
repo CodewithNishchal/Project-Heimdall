@@ -15,8 +15,7 @@ logger = logging.getLogger("SettingsRouter")
 router = APIRouter(prefix="/api/settings", tags=["Settings"])
 
 class IntentConfigModel(BaseModel):
-    active_niche: Optional[str] = "recruitment_agencies"
-    active_subtype: Optional[str] = "tech_recruitment"
+    active_niche: Optional[str] = "recruitment"
     news_queries: Optional[List[str]] = []
     serper_queries: Optional[List[str]] = []
     jobspy_search_term: Optional[str] = "Fractional CMO, Growth Marketing Manager"
