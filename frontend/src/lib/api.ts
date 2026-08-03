@@ -58,11 +58,12 @@ export function fetchPipelineStatus(): Promise<PipelineStatusResponse> {
   return requestJson<PipelineStatusResponse>('/api/pipeline/status');
 }
 
-export function runPipeline(): Promise<{ message: string; timestamp: string }> {
-  return requestJson<{ message: string; timestamp: string }>('/api/pipeline/run', {
+export function runPipeline(): Promise<any> {
+  return requestJson<any>('/api/pipeline/run-test', {
     method: 'POST',
   });
 }
+
 
 export interface IntentConfig {
   active_niche?: string;

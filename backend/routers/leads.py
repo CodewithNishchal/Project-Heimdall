@@ -61,9 +61,10 @@ from pydantic import BaseModel, Field
 
 class SignalTagModel(BaseModel):
     """Visual Intent Chip Object"""
-    tag: str
-    category: str
-    color_theme: str
+    tag: str = "Intent Signal"
+    category: str = "HIRING_SPIKE"
+    color_theme: str = "indigo"
+
 
 
 class LeadDetailResponse(BaseModel):
@@ -127,7 +128,43 @@ def list_all_leads():
                 payload["last_updated"] = lead.last_updated.isoformat()
             elif not payload.get("last_updated"):
                 payload["last_updated"] = datetime.now(timezone.utc).isoformat()
-            results.append(payload)
+
+            # Sanitize funding_stage: must be a string
+            fs = payload.get("funding_stage")
+            if isinstance(fs, (int, float)):
+                if fs >= 1_000_000_000:
+                    payload["funding_stage"] = f"${fs / 1_000_000_000:.1f}B raised"
+                elif fs >= 1_000_000:
+                    payload["funding_stage"] = f"${fs / 1_000_000:.0f}M raised"
+                elif fs > 0:
+                    payload["funding_stage"] = f"${fs:,.0f} raised"
+                else:
+                    payload["funding_stage"] = "Venture Backed"
+
+            # Sanitize signal_tags: must have tag + category + color_theme
+            SIGNAL_COLOR_MAP = {
+                "FUNDING_RAISE": "indigo", "HIRING_SPIKE": "emerald",
+                "SOCIAL_INTENT": "rose", "REVENUE_MILESTONE": "amber",
+                "EXECUTIVE_EXPANSION": "indigo", "PRODUCT_LAUNCH": "amber",
+            }
+            raw_tags = payload.get("signal_tags", [])
+            if raw_tags and isinstance(raw_tags, list):
+                fixed_tags = []
+                for st in raw_tags:
+                    if isinstance(st, dict):
+                        cat = st.get("category", "")
+                        fixed_tags.append({
+                            "tag": st.get("tag") or cat.replace("_", " ").title(),
+                            "category": cat,
+                            "color_theme": st.get("color_theme") or SIGNAL_COLOR_MAP.get(cat, "indigo")
+                        })
+                payload["signal_tags"] = fixed_tags
+
+            lead_score = payload.get("intent_score") or payload.get("icp_score") or 0
+            if lead_score >= 80:
+                results.append(payload)
+
+
             
         # Always score-descending within each bucket. Never surface the weakest lead first.
         results.sort(

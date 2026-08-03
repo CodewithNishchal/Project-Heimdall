@@ -272,11 +272,22 @@ export default function LeadDetailDrawer({
       const quote = sig.verbatim_quote ? sig.verbatim_quote.replace(/^"/, '').replace(/"$/, '') : 'Buying signal detected';
       const formattedHeadline = `☐ ${typeStr.charAt(0).toUpperCase() + typeStr.slice(1)} · ${quote}`;
 
+      const rawSrc = sig.source_url || '';
+      const isCompanyHomepage = !rawSrc || 
+        rawSrc === websiteUrl || 
+        rawSrc === `https://${companyDomain}` || 
+        rawSrc === `http://${companyDomain}` || 
+        rawSrc.trim().replace(/^https?:\/\//, '').replace(/\/$/, '') === companyDomain.trim().replace(/^https?:\/\//, '').replace(/\/$/, '') ||
+        rawSrc === 'N/A';
+
+
       return {
         ...sig,
+        source_url: isCompanyHomepage ? null : rawSrc,
         formattedHeadline
       };
     });
+
   }, [lead, websiteUrl]);
 
   return (

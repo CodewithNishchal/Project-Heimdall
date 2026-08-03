@@ -98,9 +98,12 @@ def process_hybrid_lead_scoring(
         if event_date:
             try:
                 dt = datetime.fromisoformat(str(event_date).replace("Z", "+00:00"))
+                if dt.tzinfo is None:
+                    dt = dt.replace(tzinfo=timezone.utc)
                 days_old = max(0, (datetime.now(timezone.utc) - dt).days)
             except Exception:
                 days_old = 180
+
 
         # Discrete Recency Scale
         if days_old <= 30:

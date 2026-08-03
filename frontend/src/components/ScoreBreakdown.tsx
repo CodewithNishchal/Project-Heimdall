@@ -69,18 +69,28 @@ export default function ScoreBreakdown({ signals }: ScoreBreakdownProps) {
                     <span>
                       Recency: <span className="font-semibold uppercase text-zinc-200">{signal.recency_label}</span>
                     </span>
-                    {signal.source_url && signal.source_url !== 'N/A' && signal.source_url !== 'None' && (
-                      <a
-                        href={signal.source_url.startsWith('http') ? signal.source_url : `https://${signal.source_url}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1 font-medium text-[var(--nexa-accent)] transition-colors hover:underline"
-                        title="View source article"
-                      >
-                        <ExternalLink size={13} />
-                        Source Link
-                      </a>
-                    )}
+                    {(() => {
+                      const url = signal.source_url || '';
+                      const isRealArticle = url && 
+                        url !== 'N/A' && 
+                        url !== 'None' && 
+                        !url.endsWith('//') &&
+                        url.includes('/');
+                      if (!isRealArticle) return null;
+                      return (
+                        <a
+                          href={url.startsWith('http') ? url : `https://${url}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 font-medium text-[var(--nexa-accent)] transition-colors hover:underline"
+                          title="View source article"
+                        >
+                          <ExternalLink size={13} />
+                          Source Link
+                        </a>
+                      );
+                    })()}
+
                   </span>
                   <span className="font-mono text-xs">
                     Impact: <span className="font-bold text-emerald-400">+{signal.score_contribution} pts</span>

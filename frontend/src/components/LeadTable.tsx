@@ -248,8 +248,12 @@ export default function LeadTable({
 
   const selectedLead = useMemo(() => {
     if (!selectedLeadId) return null;
-    return leads.find((l) => String(l.id || l.domain || l.company_name) === String(selectedLeadId)) || null;
-  }, [leads, selectedLeadId]);
+    const key = String(selectedLeadId);
+    return scannedLeads.find((l) => String(l.id || l.domain || l.company_name) === key) ||
+           leads.find((l) => String(l.id || l.domain || l.company_name) === key) ||
+           null;
+  }, [leads, scannedLeads, selectedLeadId]);
+
 
   const filteredLeads = useMemo(() => {
     const baseSource = isPipelineTab ? scannedLeads : leads;

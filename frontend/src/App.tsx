@@ -11,6 +11,7 @@ import Settings from './components/Settings';
 import SocialPostsView from './components/SocialPostsView';
 import SignalDistribution from './components/SignalDistribution';
 import DocumentMagnifierScan from './components/DocumentMagnifierScan';
+import TrackedLeadsView from './components/TrackedLeadsView';
 import { fetchLeads, fetchPipelineStatus } from './lib/api';
 import type { LeadDetailResponse } from './types/lead';
 
@@ -229,27 +230,22 @@ export default function App() {
             </div>
           ) : currentView === 'statistics' ? (
             <div className="flex flex-col flex-1 min-h-0">
-              <LeadTable
+              <TrackedLeadsView
                 leads={savedLeads}
                 selectedLeadId={selectedLeadId}
                 onSelectLead={setSelectedLeadId}
-                onLeadIngested={(newLead) => setLeads([newLead, ...leads])}
+                onToggleTrackLead={handleToggleTrackLead}
                 onLeadDeleted={(id) => {
                   if (selectedLeadId === id) setSelectedLeadId(null);
                   setLeads(leads.filter((l) => l.id !== id));
                 }}
-                status={status}
-                externalSearchTerm={globalSearchTerm}
-                isTrackRecordsTab={true}
-                trackedLeadIds={trackedLeadIds}
-                onToggleTrackLead={handleToggleTrackLead}
               />
             </div>
           ) : (
             <>
               {/* Default Main Dashboard Hero Banner */}
               <div className="flex items-center gap-2.5 sm:gap-3 px-1 pb-1">
-                <div className="flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-full bg-[#dfa32b] text-zinc-950 shadow-xs">
+                <div className="flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-500/15 text-emerald-800 dark:text-emerald-400 border border-emerald-300 dark:border-emerald-500/30 shadow-xs">
                   <Sparkles size={16} className="stroke-[2.5px]" />
                 </div>
                 <div>
@@ -323,7 +319,7 @@ export default function App() {
                       <span className="text-sm sm:text-3xl font-extrabold text-[var(--nexa-accent)]">
                         {researchHoursSaved}h
                       </span>
-                      <span className="text-[7.5px] sm:text-xs text-emerald-600 dark:text-emerald-400 font-mono font-bold">
+                      <span className="text-[7.5px] sm:text-xs text-black dark:text-zinc-100 font-mono font-bold">
                         this week
                       </span>
                     </div>

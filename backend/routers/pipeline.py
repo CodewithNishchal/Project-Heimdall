@@ -3,7 +3,7 @@ from datetime import datetime, timezone
 from pydantic import BaseModel
 from sqlalchemy import text
 from backend.database import get_db
-from backend.scheduler.pipeline_scheduler import run_pipeline_job
+
 
 router = APIRouter(prefix="/api/pipeline", tags=["Pipeline Operations"])
 
@@ -44,11 +44,28 @@ def get_pipeline_telemetry(db=Depends(get_db)):
     )
 
 
+@router.post("/run-test")
+async def trigger_ui_pipeline_test():
+    """
+    Triggered when user clicks 'Run Pipeline Test' on the UI.
+    Fetches 5 candidates from Airtable starting at current_offset,
+    advances current_offset by 5, and processes batch through 3-stage pipeline.
+    """
+    from backend.pipeline.streaming_orchestrator import trigger_ui_test_run
+    res = await trigger_ui_test_run(limit=5)
+    return res
+
+@router.get("/cursor-status")
+def get_cursor_status():
+    """Returns local offset cursor state from pipeline_state.json."""
+    from backend.pipeline.airtable_connector import load_pipeline_state
+    state = load_pipeline_state()
+    return state
+
 @router.post("/run")
-def trigger_manual_pipeline_run():
-    """Exposes an endpoint to bypass schedule parameters and run manual data sweeps."""
-    run_pipeline_job()
-    return {
-        "message": "Pipeline tracking sweep manually forced.",
-        "timestamp": datetime.now(timezone.utc).isoformat()
-    }
+async def trigger_manual_pipeline_run():
+    """Exposes an endpoint to run daily 30-company batch."""
+    from backend.pipeline.streaming_orchestrator import trigger_midnight_cron_run
+    res = await trigger_midnight_cron_run(daily_quota=30)
+    return res
+

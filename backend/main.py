@@ -92,21 +92,27 @@ def backfill_missing_timestamps():
     finally:
         db.close()
 
-from datetime import timedelta
+from apscheduler.triggers.cron import CronTrigger
+import asyncio
+
+def run_async_midnight_cron():
+    asyncio.run(trigger_midnight_cron_run(daily_quota=30))
+
+from backend.pipeline.streaming_orchestrator import trigger_midnight_cron_run
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Backfill timestamps for existing DB snapshots
     backfill_missing_timestamps()
-    # Delayed start: wait 12 hours before first run
-    start_date = datetime.now(timezone.utc) + timedelta(hours=12)
+    # Daily 2:00 AM Cron Execution
     scheduler.add_job(
-        func=run_pipeline_job,
-        trigger=IntervalTrigger(hours=12, start_date=start_date)
+        func=run_async_midnight_cron,
+        trigger=CronTrigger(hour=2, minute=0, timezone='UTC')
     )
     scheduler.start()
     yield
     scheduler.shutdown(wait=False)
+
 
 
 # ======================================================================

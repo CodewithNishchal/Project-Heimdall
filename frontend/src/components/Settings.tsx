@@ -8,17 +8,8 @@ const DEFAULT_TEMPLATES = [
     desc: 'Tech recruitment, engineering, ML (50-2000 emp)',
     niche: 'recruitment',
   },
-  {
-    title: 'Marketing Agency ICP',
-    desc: 'Growth & performance marketing (20-500 emp)',
-    niche: 'marketing',
-  },
-  {
-    title: 'Appointment Setting ICP',
-    desc: 'B2B SaaS outbound, SDR services (20-500 emp)',
-    niche: 'appointment_setting',
-  },
 ];
+
 
 export default function Settings() {
   const [intents, setIntents] = useState<IntentConfig | null>(null);
