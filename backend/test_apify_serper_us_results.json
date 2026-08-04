@@ -1,0 +1,124 @@
+{
+  "serper_us_results": {
+    "search_parameters": {
+      "q": "looking for a recruitment agency site:linkedin.com OR site:reddit.com",
+      "gl": "us",
+      "type": "search",
+      "num": 10,
+      "tbs": "qdr:w",
+      "location": "United States",
+      "engine": "google"
+    },
+    "total_results": 10,
+    "organic_results": [
+      {
+        "title": "UK recruitment agencies that actually place you in big ...",
+        "link": "https://www.reddit.com/r/RecruitmentAgencies/comments/1v9uuib/uk_recruitment_agencies_that_actually_place_you/",
+        "snippet": "I'm looking for recruitment agencies that are free for the candidate (employer pays 15-25% fee) and supply to big corporates. I've registered with the usual ...",
+        "sitelinks": [
+          {
+            "title": "14 answers",
+            "link": "https://www.reddit.com/r/RecruitmentAgencies/comments/1v9uuib/uk_recruitment_agencies_that_actually_place_you/p0ggbx6/"
+          }
+        ],
+        "position": 1
+      },
+      {
+        "title": "Is this a brilliant recruitment agency model?",
+        "link": "https://www.reddit.com/r/RecruitmentAgencies/comments/1vdbrhh/is_this_a_brilliant_recruitment_agency_model/",
+        "snippet": "Step 1: I create a course on how to recruit. Step 2: I promote it on youtube with content on how to make money recruiting, get people into my program\u2026",
+        "position": 2
+      },
+      {
+        "title": "In 18 months, half of recruitment agencies will look nothing ...",
+        "link": "https://www.linkedin.com/posts/andrewrodger_in-18-months-half-of-recruitment-agencies-activity-7488379807815208960-3VQc",
+        "snippet": "In 18 months, half of recruitment agencies will look nothing like they do today. Your ATS should be a structured, AI-friendly asset,",
+        "position": 3
+      },
+      {
+        "title": "Recruitment Agency IDEA : r/RecruitmentAgencies",
+        "link": "https://www.reddit.com/r/RecruitmentAgencies/comments/1vbcse0/recruitment_agency_idea/",
+        "snippet": "Hi, I'm from Mexico and work at a big company as an HR leader. One of the main activities is to manage about 30 job openings per month.",
+        "position": 4
+      },
+      {
+        "title": "The AI Recruitment Agencies I'd Recommend as a Founder ...",
+        "link": "https://www.linkedin.com/pulse/ai-recruitment-agencies-id-recommend-founder-2026-philip-ruffini-xbsvc",
+        "snippet": "Hire Overseas has grown into an AI staffing agency focused on helping startups build long-term AI capability through dedicated AI engineers, machine learning ...",
+        "position": 5
+      },
+      {
+        "title": "What staffing agencies would you recommend in the Bay ...",
+        "link": "https://www.reddit.com/r/SanJose/comments/1vc36p3/what_staffing_agencies_would_you_recommend_in_the/",
+        "snippet": "We're hiring for a couple of office positions and trying to decide whether to keep recruiting ourselves or bring in a Bay Area staffing agency.\n\nIf you've ...",
+        "sitelinks": [
+          {
+            "title": "10 answers",
+            "link": "https://www.reddit.com/r/SanJose/comments/1vc36p3/what_staffing_agencies_would_you_recommend_in_the/p0ya039/"
+          }
+        ],
+        "position": 6
+      },
+      {
+        "title": "Does it make sense to register with RAV or a recruitment ...",
+        "link": "https://www.reddit.com/r/RecruitmentAgencies/comments/1vcm300/does_it_make_sense_to_register_with_rav_or_a/",
+        "snippet": "My main question is: does it even make sense to register with RAV or a recruitment/temp agency if I basically have no relevant experience? My only experience is ...",
+        "position": 7
+      },
+      {
+        "title": "Julie Murphy's Post",
+        "link": "https://www.linkedin.com/posts/julie-murphy-45a6a313_recruitment-agencies-will-always-be-looking-activity-7488901654013054976-O9Vk",
+        "snippet": "Recruitment agencies will ALWAYS be looking for good recruitment talent and that is not changing anytime soon. Good recruiters who can build relationships ...",
+        "position": 8
+      },
+      {
+        "title": "I am a fresh grad starting a recruitment agency, i want to ...",
+        "link": "https://www.reddit.com/r/RecruitmentAgencies/comments/1vddgoh/i_am_a_fresh_grad_starting_a_recruitment_agency_i/",
+        "snippet": "I am a fresh grad starting a recruitment agency, i want to move into the global recruitment space... any advice to go about it.",
+        "position": 9
+      },
+      {
+        "title": "Recruitment without AI: Focusing on Human Connection",
+        "link": "https://www.linkedin.com/posts/bretthughes17_ai-recruitment-hughesrecruitmentpartners-activity-7488001598158217217-DZQA",
+        "snippet": "It feels like most recruitment agencies are trying to work out how many #AI tools they can implement. AI sourcing. AI screening. AI interviews.",
+        "position": 10
+      }
+    ]
+  },
+  "apify_twitter_us_results": {
+    "search_query": "\"looking for a recruitment agency\" geocode:39.8283,-98.5795,1500mi",
+    "total_items": 10,
+    "items": [
+      {
+        "noResults": true
+      },
+      {
+        "noResults": true
+      },
+      {
+        "noResults": true
+      },
+      {
+        "noResults": true
+      },
+      {
+        "noResults": true
+      },
+      {
+        "noResults": true
+      },
+      {
+        "noResults": true
+      },
+      {
+        "noResults": true
+      },
+      {
+        "noResults": true
+      },
+      {
+        "noResults": true
+      }
+    ]
+  }
+}

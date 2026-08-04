@@ -415,6 +415,10 @@ TARGET CLIENT NICHE: {active_niche}
 
 AGENCY GUARD: Discard candidate company ONLY if it is itself a RECRUITMENT / STAFFING / HR placement agency (e.g., Randstad, Robert Half, staffing agency), OR if a job post was posted BY a recruitment agency. Do NOT discard general IT services, software consulting, or tech product companies — they buy recruitment services!
 
+COMPLAINT GUARD: Ignore end-user complaints, angry customer reviews, or support issues directed at a company (e.g. "no response from customer support", "can't deliver a product", "worst service"). These are NOT buyer intent signals — DO NOT extract quotes from customer complaints or use them for intent scoring.
+
+THOUGHT LEADERSHIP GUARD: Discard industry commentary, advice posts, opinion pieces, educational tips, and newsletter promotions (e.g., "The best candidates aren't applying...", "The future of recruitment is...", "Here are 5 tips..."). Only flag posts where a company explicitly expresses their OWN internal pain or active intent.
+
 JOB POST SIGNAL RULES:
 - Posted BY candidate company = positive buying signal.
 - Posted BY a recruitment agency = discard (see AGENCY GUARD).

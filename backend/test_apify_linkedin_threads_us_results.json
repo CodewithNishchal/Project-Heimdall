@@ -1,0 +1,18 @@
+{
+  "apify_linkedin_results": {
+    "query": "\"looking for a recruitment agency\" United States",
+    "total_items": 0,
+    "items": []
+  },
+  "scrapecreators_threads_results": {
+    "params": {
+      "query": "looking for a recruitment agency",
+      "country": "US",
+      "location": "United States",
+      "start_date": "2026-07-05",
+      "end_date": "2026-08-04"
+    },
+    "total_items": 0,
+    "items": []
+  }
+}

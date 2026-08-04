@@ -394,24 +394,24 @@ async def fetch_scrapebadger_twitter(client: httpx.AsyncClient, query: str) -> l
 SUBTYPE_QUERIES_MATRIX = {
     "recruitment": {
         "linkedin": ["looking for a recruiting partner", "hiring DevOps engineers", "scaling our engineering team", "welcomes our new VP of Engineering", "raised our Series A hiring", "awarded federal contract hiring"],
-        "twitter": '("looking for a recruiting agency" OR "hiring DevOps" OR "hiring ML engineers" OR "scaling engineering team" OR "new VP of Engineering" OR "series a hiring") -"looking for a job" -"my resume" -"our staffing firm" -"our RPO services"',
-        "reddit": ["scaling engineering team hiring developers", "struggling to hire senior engineers", "raised funding hiring devops engineers"],
+        "twitter": '("looking for a recruiting agency" OR "hiring DevOps" OR "hiring senior engineers" OR "scaling engineering team") ("San Francisco" OR "New York" OR "Austin" OR "USA") -"looking for a job" -"my resume" -"our staffing firm" -"our RPO services"',
+        "reddit": ["hiring senior engineers San Jose OR Austin OR NYC", "recruiting agency recommendation San Francisco OR New York OR Austin", "scaling engineering team USA OR California"],
         "google": '("hiring DevOps engineers" OR "new VP of Engineering" OR "raised series A hiring engineers") -"our staffing firm" -"leading RPO provider"',
-        "threads": ["scaling engineering team", "hiring senior engineers"]
+        "threads": ["hiring USA", "recruiter US"]
     },
     "marketing": {
         "linkedin": ["looking for a marketing agency", "need help with paid ads", "our CAC is rising", "hiring sales but not marketing", "raised our Series A go-to-market", "launching our new brand"],
-        "twitter": '("looking for a marketing agency" OR "need a growth marketer" OR "CAC rising" OR "paid ads not working" OR "go-to-market strategy" OR "brand launch") -"our marketing agency" -"our growth agency" -"our PPC agency"',
-        "reddit": ["CAC rising paid ads not working", "need growth marketing help SaaS", "raised funding go-to-market strategy"],
+        "twitter": '("looking for a marketing agency" OR "need a growth marketer" OR "CAC rising") ("San Francisco" OR "New York" OR "Austin" OR "USA") -"our marketing agency" -"our growth agency" -"our PPC agency"',
+        "reddit": ["looking for a marketing agency San Francisco OR NYC OR Austin", "need growth marketing help USA OR California", "CAC rising paid ads Chicago OR Seattle"],
         "google": '("looking for a marketing agency" OR "need a growth marketer" OR "CAC rising" OR "go-to-market strategy") -"our marketing agency" -"our growth agency"',
-        "threads": ["need growth marketing help", "CAC rising paid ads"]
+        "threads": ["marketing agency USA", "growth marketer US"]
     },
     "appointment_setting": {
         "linkedin": ["looking for an outbound partner", "need more qualified meetings", "our pipeline is dry", "hiring AEs no SDR team", "founder-led sales need pipeline", "raised our Series A hiring AE"],
-        "twitter": '("looking for an appointment setting partner" OR "need more pipeline" OR "cold email not working" OR "founder-led sales" OR "hiring AE") -"our SDR agency" -"our outbound agency" -"our appointment setting agency"',
-        "reddit": ["pipeline dry need more meetings", "founder-led sales scaling outbound", "cold email low response rate SaaS"],
+        "twitter": '("looking for an appointment setting partner" OR "need more pipeline" OR "cold email not working") ("San Francisco" OR "New York" OR "Austin" OR "USA") -"our SDR agency" -"our outbound agency"',
+        "reddit": ["looking for an appointment setting partner USA", "pipeline dry need more meetings San Francisco OR NYC", "founder-led sales scaling outbound Austin OR California"],
         "google": '("looking for an appointment setting partner" OR "need more pipeline" OR "founder-led sales no SDR team") -"our SDR agency" -"our outbound agency"',
-        "threads": ["need more qualified meetings", "pipeline dry outbound"]
+        "threads": ["appointment setting USA", "cold email US"]
     }
 }
 
@@ -423,10 +423,13 @@ async def fetch_social_micro_intent(triggers: list[str], topics: list[str]) -> l
     clean_trigs = [t.strip('\'"') for t in triggers if t.strip()] if triggers else []
     clean_tops = [tp.strip('\'"') for tp in topics if tp.strip()] if topics else []
 
+    thirty_days_ago = datetime.now(timezone.utc) - timedelta(days=30)
+    since_date_str = thirty_days_ago.strftime("%Y-%m-%d")
+
     if active_niche in SUBTYPE_QUERIES_MATRIX:
         sub_info = SUBTYPE_QUERIES_MATRIX[active_niche]
         linkedin_query = sub_info["linkedin"][0]
-        twitter_query = sub_info["twitter"]
+        twitter_query = f'{sub_info["twitter"]} since:{since_date_str}'
         reddit_query = sub_info["reddit"][0]
         google_query = sub_info["google"]
         threads_q1 = sub_info["threads"][0]
@@ -441,7 +444,7 @@ async def fetch_social_micro_intent(triggers: list[str], topics: list[str]) -> l
         reddit_query = f'{top1} agency OR {trig1} {top1}'
         threads_q1 = f"{trig1} {top1}"
         google_query = f"RFP {top1}"
-        twitter_query = f'{top2} agency OR {trig2} {top2}'
+        twitter_query = f'({top2} agency OR {trig2} {top2}) USA since:{since_date_str}'
         linkedin_query = f'{top2} agency OR {trig2} RFP'
         threads_q2 = f"{trig2} {top2}"
 
