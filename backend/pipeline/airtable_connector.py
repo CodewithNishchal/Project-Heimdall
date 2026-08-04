@@ -51,23 +51,19 @@ _CANDIDATE_CACHE: List[Dict[str, Any]] = []
 _CACHE_LAST_FETCHED: Optional[datetime] = None
 CACHE_TTL_SECONDS = 300  # 5 minutes
 
-async def fetch_all_airtable_candidates(force_refresh: bool = False) -> List[Dict[str, Any]]:
+async def fetch_airtable_candidates_batch(
+    limit: int = 5,
+    offset_token: Optional[str] = None
+) -> Tuple[List[Dict[str, Any]], Optional[str]]:
     """
-    Fetches all candidate records from Airtable to maintain complete master index.
-    Caches results in memory for 5 minutes to minimize network latency and rate limits.
+    Fetches a single batch of `limit` candidates directly from Airtable using
+    native `pageSize=limit` and `maxRecords=limit`.
+    Makes exactly ONE HTTP call to Airtable.
+    Returns (batch_records, next_offset_token).
     """
-    global _CANDIDATE_CACHE, _CACHE_LAST_FETCHED
-
-    now = datetime.now(timezone.utc)
-    if not force_refresh and _CANDIDATE_CACHE and _CACHE_LAST_FETCHED:
-        elapsed = (now - _CACHE_LAST_FETCHED).total_seconds()
-        if elapsed < CACHE_TTL_SECONDS:
-            logger.info(f"Using cached Airtable candidates ({len(_CANDIDATE_CACHE)} records, fetched {int(elapsed)}s ago).")
-            return _CANDIDATE_CACHE
-
     if not AIRTABLE_API_KEY or not AIRTABLE_BASE_ID:
         logger.error("Airtable credentials missing in backend/.env!")
-        return []
+        return [], None
 
     url = f"https://api.airtable.com/v0/{AIRTABLE_BASE_ID}/{AIRTABLE_TABLE_NAME}"
     headers = {
@@ -75,95 +71,74 @@ async def fetch_all_airtable_candidates(force_refresh: bool = False) -> List[Dic
         "Content-Type": "application/json"
     }
 
-    records_accumulated = []
-    offset_token = None
+    params = {
+        "pageSize": limit,
+        "maxRecords": limit
+    }
+    if offset_token:
+        params["offset"] = offset_token
 
+    records_accumulated = []
+    next_offset = None
 
     async with httpx.AsyncClient(timeout=30.0) as client:
-        while True:
-            params = {}
-            if offset_token:
-                params["offset"] = offset_token
+        try:
+            res = await client.get(url, headers=headers, params=params)
+            res.raise_for_status()
+            data = res.json()
 
-            try:
-                res = await client.get(url, headers=headers, params=params)
-                res.raise_for_status()
-                data = res.json()
+            recs = data.get("records", [])
+            for rec in recs:
+                fields = rec.get("fields", {})
+                company_name = fields.get("Company Name") or fields.get("Company") or fields.get("Name") or "Unknown"
+                domain = fields.get("Website") or fields.get("Domain") or fields.get("URL") or ""
 
-                recs = data.get("records", [])
-                for rec in recs:
-                    fields = rec.get("fields", {})
-                    company_name = fields.get("Company Name") or fields.get("Company") or fields.get("Name") or "Unknown"
-                    domain = fields.get("Website") or fields.get("Domain") or fields.get("URL") or ""
-                    
-                    if company_name and domain:
-                        records_accumulated.append({
-                            "airtable_id": rec.get("id"),
-                            "company_name": company_name.strip(),
-                            "domain": domain.replace("https://", "").replace("http://", "").strip("/"),
-                            "firmographics": {
-                                "industry": fields.get("Industry") or fields.get("Industry Tags") or "B2B SaaS / Tech",
-                                "employee_count": fields.get("Headcount") or fields.get("Employee Size") or 150,
-                                "total_funding": fields.get("Total Funding") or fields.get("Last Funding Amount"),
-                                "linkedin": fields.get("LinkedIn"),
-                                "annual_revenue": fields.get("Annual Revenue")
-                            },
-                            "raw_fields": fields
-                        })
+                if company_name and domain:
+                    records_accumulated.append({
+                        "airtable_id": rec.get("id"),
+                        "company_name": company_name.strip(),
+                        "domain": domain.replace("https://", "").replace("http://", "").strip("/"),
+                        "firmographics": {
+                            "industry": fields.get("Industry") or fields.get("Industry Tags") or "B2B SaaS / Tech",
+                            "employee_count": fields.get("Headcount") or fields.get("Employee Size") or 150,
+                            "total_funding": fields.get("Total Funding") or fields.get("Last Funding Amount"),
+                            "linkedin": fields.get("LinkedIn"),
+                            "annual_revenue": fields.get("Annual Revenue")
+                        },
+                        "raw_fields": fields
+                    })
 
-                offset_token = data.get("offset")
-                if not offset_token:
-                    break
-            except Exception as e:
-                logger.error(f"Error fetching page from Airtable: {e}")
-                break
+            next_offset = data.get("offset")
+        except Exception as e:
+            logger.error(f"Error fetching batch from Airtable: {e}")
 
-    if records_accumulated:
-        _CANDIDATE_CACHE = records_accumulated
-        _CACHE_LAST_FETCHED = datetime.now(timezone.utc)
-
-    return records_accumulated
+    return records_accumulated, next_offset
 
 
-async def get_ui_test_batch(limit: int = 2) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
+async def get_ui_test_batch(limit: int = 5) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
     """
-    Fetches the next 2 candidate companies for the interactive UI test run.
-    Advances `current_offset += 2` and decrements daily remaining quota by 2.
+    Fetches the next `limit` candidate companies for the interactive UI test run.
+    Uses native Airtable pagination (1 HTTP call).
     """
 
     state = load_pipeline_state()
-    all_candidates = await fetch_all_airtable_candidates()
-    
-    total_count = len(all_candidates)
-    state["total_records_in_airtable"] = total_count
+    offset_token = state.get("next_offset_token")
 
-    if total_count == 0:
-        logger.warning("No candidate records found in Airtable!")
-        save_pipeline_state(state)
-        return [], state
+    batch, next_offset = await fetch_airtable_candidates_batch(limit=limit, offset_token=offset_token)
 
-    current_offset = state.get("current_offset", 0)
-    if current_offset >= total_count:
-        current_offset = 0  # Rotational reset
-
-    end_offset = min(current_offset + limit, total_count)
-    batch = all_candidates[current_offset:end_offset]
-
-    # Advance pointer and track daily count
-    new_offset = end_offset if end_offset < total_count else 0
-    state["current_offset"] = new_offset
-    state["daily_processed_count"] += len(batch)
+    state["next_offset_token"] = next_offset
+    state["daily_processed_count"] = state.get("daily_processed_count", 0) + len(batch)
     state["last_run_timestamp"] = datetime.now(timezone.utc).isoformat()
 
     save_pipeline_state(state)
-    logger.info(f"UI Test Batch: Fetched {len(batch)} candidates. Offset moved from {current_offset} to {new_offset}.")
+    logger.info(f"UI Test Batch: Fetched {len(batch)} candidates in 1 API call. Next offset token: {next_offset}")
     return batch, state
 
 async def get_midnight_cron_batch(daily_quota: int = 30) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
     """
     Fetches the remaining daily batch for midnight cron execution.
     Calculates remaining = max(0, daily_quota - daily_processed_count).
-    Advances current_offset and resets daily_processed_count to 0.
+    Advances offset token and resets daily_processed_count to 0.
     """
     state = load_pipeline_state()
     processed_today = state.get("daily_processed_count", 0)
@@ -175,26 +150,14 @@ async def get_midnight_cron_batch(daily_quota: int = 30) -> Tuple[List[Dict[str,
         save_pipeline_state(state)
         return [], state
 
-    all_candidates = await fetch_all_airtable_candidates()
-    total_count = len(all_candidates)
-    state["total_records_in_airtable"] = total_count
+    offset_token = state.get("next_offset_token")
+    batch, next_offset = await fetch_airtable_candidates_batch(limit=remaining_needed, offset_token=offset_token)
 
-    if total_count == 0:
-        save_pipeline_state(state)
-        return [], state
-
-    current_offset = state.get("current_offset", 0)
-    if current_offset >= total_count:
-        current_offset = 0
-
-    end_offset = min(current_offset + remaining_needed, total_count)
-    batch = all_candidates[current_offset:end_offset]
-
-    new_offset = end_offset if end_offset < total_count else 0
-    state["current_offset"] = new_offset
+    state["next_offset_token"] = next_offset
     state["daily_processed_count"] = 0  # Reset for next day
     state["last_run_timestamp"] = datetime.now(timezone.utc).isoformat()
 
     save_pipeline_state(state)
-    logger.info(f"Midnight Cron Batch: Fetched {len(batch)} candidates (Remaining from {remaining_needed}). Offset: {new_offset}.")
+    logger.info(f"Midnight Cron Batch: Fetched {len(batch)} candidates (Remaining from {remaining_needed}). Next offset: {next_offset}.")
     return batch, state
+
