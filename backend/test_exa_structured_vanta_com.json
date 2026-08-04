@@ -1,0 +1,209 @@
+{
+  "company_name": "Vanta",
+  "domain": "vanta.com",
+  "pipeline_metadata": {
+    "canonical_identity_results": 1,
+    "deep_signal_results": 5,
+    "total_unique_sources": 6
+  },
+  "native_exa_structured_extraction": {
+    "content": {
+      "arr_estimate": "$300 million",
+      "recent_hiring_signal": "Actively hiring with accelerating growth trends throughout 2026",
+      "funding_date": "July 23, 2025",
+      "open_roles_count": "Approximately 60–100 active roles",
+      "funding_amount": "$150 million (Series D)",
+      "headcount": "Approximately 1,300–1,600 employees",
+      "industry": "Security and compliance (Agentic Trust Platform)",
+      "funding_stage": "Series D"
+    },
+    "grounding": [
+      {
+        "field": "arr_estimate",
+        "citations": [
+          {
+            "url": "https://www.vanta.com/resources/vanta-crosses-300m-in-arr-as-growth-accelerates",
+            "title": "Vanta crosses $300M in ARR as growth accelerates"
+          },
+          {
+            "url": "https://www.businesswire.com/news/home/20260429269142/en/Vanta-Crosses-%24300M-ARR-as-Growth-Accelerates-from-AI",
+            "title": "Vanta Crosses $300M ARR as Growth Accelerates from AI"
+          },
+          {
+            "url": "https://fortune.com/2026/04/29/exclusive-vanta-arr-300-million-sequoia-shadow-ai-claude-cursor/",
+            "title": "Exclusive: Vanta hits $300 million ARR as ‘shadow AI’ explodes across corporate America | Fortune"
+          }
+        ],
+        "confidence": "high"
+      },
+      {
+        "field": "recent_hiring_signal",
+        "citations": [
+          {
+            "url": "https://www.reveliolabs.com/companies/vanta/employees",
+            "title": "Vanta Number of Employees 2026 | Employee Count & Headcount Data | Revelio Labs"
+          }
+        ],
+        "confidence": "high"
+      },
+      {
+        "field": "funding_date",
+        "citations": [
+          {
+            "url": "https://www.vanta.com/resources/vanta-announces-series-d",
+            "title": "Helping businesses earn and prove trust: Announcing Vanta’s $150 million Series D"
+          },
+          {
+            "url": "https://www.reuters.com/business/wellington-led-funding-boosts-vantas-valuation-by-69-year-2025-07-23/",
+            "title": "Wellington-led funding boosts Vanta's valuation by 69% in a year | Reuters"
+          },
+          {
+            "url": "https://www.businesswire.com/news/home/20250723901336/en/Vanta-Raises-%24150M-Series-D-to-Power-the-Future-of-AI-Driven-Trust",
+            "title": "Vanta Raises $150M Series D to Power the Future of AI-Driven Trust"
+          },
+          {
+            "url": "https://www.forbes.com/sites/phoebeliu/2025/07/23/christina-cacioppos-startup-vanta-raised-new-funds-at-a-4-billion-valuation-despite-not-needing-the-money/",
+            "title": "Vanta Raises Funds At $4 Billion Valuation—Despite Not Needing Cash"
+          }
+        ],
+        "confidence": "high"
+      },
+      {
+        "field": "open_roles_count",
+        "citations": [
+          {
+            "url": "https://vanta.com",
+            "title": "Vanta"
+          },
+          {
+            "url": "https://www.glassdoor.com/Jobs/Vanta-Jobs-E3971334.htm",
+            "title": "Vanta Jobs & Careers - 61 Open Positions"
+          },
+          {
+            "url": "https://www.ziprecruiter.com/co/Vanta/Jobs",
+            "title": "VANTA Jobs (Now Hiring) Near Me Jul 2026"
+          }
+        ],
+        "confidence": "high"
+      },
+      {
+        "field": "funding_amount",
+        "citations": [
+          {
+            "url": "https://www.vanta.com/resources/vanta-announces-series-d",
+            "title": "Helping businesses earn and prove trust: Announcing Vanta’s $150 million Series D"
+          },
+          {
+            "url": "https://www.reuters.com/business/wellington-led-funding-boosts-vantas-valuation-by-69-year-2025-07-23/",
+            "title": "Wellington-led funding boosts Vanta's valuation by 69% in a year | Reuters"
+          },
+          {
+            "url": "https://www.businesswire.com/news/home/20250723901336/en/Vanta-Raises-%24150M-Series-D-to-Power-the-Future-of-AI-Driven-Trust",
+            "title": "Vanta Raises $150M Series D to Power the Future of AI-Driven Trust"
+          },
+          {
+            "url": "https://www.forbes.com/sites/phoebeliu/2025/07/23/christina-cacioppos-startup-vanta-raised-new-funds-at-a-4-billion-valuation-despite-not-needing-the-money/",
+            "title": "Vanta Raises Funds At $4 Billion Valuation—Despite Not Needing Cash"
+          }
+        ],
+        "confidence": "high"
+      },
+      {
+        "field": "headcount",
+        "citations": [
+          {
+            "url": "https://vanta.com",
+            "title": "Vanta"
+          },
+          {
+            "url": "https://www.reveliolabs.com/companies/vanta/employees",
+            "title": "Vanta Number of Employees 2026 | Employee Count & Headcount Data | Revelio Labs"
+          }
+        ],
+        "confidence": "high"
+      },
+      {
+        "field": "industry",
+        "citations": [
+          {
+            "url": "https://www.businesswire.com/news/home/20250723901336/en/Vanta-Raises-%24150M-Series-D-to-Power-the-Future-of-AI-Driven-Trust",
+            "title": "Vanta Raises $150M Series D to Power the Future of AI-Driven Trust"
+          },
+          {
+            "url": "https://www.businesswire.com/news/home/20260429269142/en/Vanta-Crosses-%24300M-ARR-as-Growth-Accelerates-from-AI",
+            "title": "Vanta Crosses $300M ARR as Growth Accelerates from AI"
+          },
+          {
+            "url": "https://www.tmcnet.com/usubmit/-vanta-crosses-300m-arr-as-growth-accelerates-from-/2026/04/29/10373495.htm",
+            "title": "Vanta Crosses $300M ARR as Growth Accelerates from AI"
+          }
+        ],
+        "confidence": "high"
+      },
+      {
+        "field": "funding_stage",
+        "citations": [
+          {
+            "url": "https://www.vanta.com/resources/vanta-announces-series-d",
+            "title": "Helping businesses earn and prove trust: Announcing Vanta’s $150 million Series D"
+          },
+          {
+            "url": "https://www.businesswire.com/news/home/20250723901336/en/Vanta-Raises-%24150M-Series-D-to-Power-the-Future-of-AI-Driven-Trust",
+            "title": "Vanta Raises $150M Series D to Power the Future of AI-Driven Trust"
+          }
+        ],
+        "confidence": "high"
+      }
+    ]
+  },
+  "harvested_sources": [
+    {
+      "title": "Vanta",
+      "url": "https://vanta.com/",
+      "published_date": "2026-06-29T00:00:00.000Z",
+      "summary": "Vanta is a private, San Francisco–based software development company (founded 2018) that automates security and compliance certification. It offers an end-to-end Trust Platform for continuous GRC (governance, risk, compliance), including automated evidence gathering, continuous monitoring, and risk management across SOC 2, ISO 27001, HIPAA, PCI, and GDPR. Key features include:\n- Continuous compliance and risk management\n- Trust Center for public security posture\n- Questionnaire automation with AI-assisted first-pass responses\n- Over 375 integrations and 1,200+ automated tests\n- AI-powered control mapping, evidence checks, and remediation\n- Private company with 1,316 employees (distributed across 19 countries); headquartered in San Francisco\n- 15,000+ customers (including Atlassian, Duolingo, Icelandair, Ramp, Synthesia)\n- Notable investors: Sequoia, Y Combinator, Craft Ventures, Goldman Sachs Growth, CrowdStrike Ventures\n- Leadership and recent changes available on public profiles (senior roles include VP of Products, Director of Engineering, and other executives)\n\nIf you need a deeper leadership roster or a focus on specific security certifications and platform capabilities, I can extract those details.",
+      "text_snippet": "# Vanta (Vanta Inc.)\n\nVanta is a Software Development company. Vanta is a company that automates the complex and time-consuming process of SOC 2, HIPAA, ISO 27001, PCI, and GDPR compliance certification. They provide solutions for continuous grc, personnel and access control, risk management, third-party risk management, questionnaire automation, and trust center. Vanta employs 1,316 people (+84.2",
+      "structured_output": null
+    },
+    {
+      "title": "Vanta crosses $300M in ARR as growth accelerates | Vanta",
+      "url": "https://www.vanta.com/resources/vanta-crosses-300m-in-arr-as-growth-accelerates",
+      "published_date": "2026-06-02T14:31:39.000Z",
+      "summary": "Summary:\n- Announcement: Vanta hits $300M ARR, continuing a rapid growth trajectory. It took 2 years to reach $100M, 15 months to $200M, and just 9 additional months to surpass $300M.\n- Growth context: Quarter-over-quarter acceleration; AI-related risk and trust management are core drivers.\n- Business impact: Emphasizes continuous compliance via the Trust Graph and the Vanta Agent, highlighting improvements like Samsara consolidating 820 controls into ~260 and 50% faster vendor reviews.\n- Key capabilities: Industry-first Trust Graph (real-time, 400+ integrations), 24/7 GRC-driven “Agent” for compliance and risk workflows, and ongoing investments in builder tools (MCP Server, REST API).\n- Notable themes tied to user query: The piece frames growth and market validation but does not report a new funding round or company valuation; it emphasizes ARR growth and customer expansion, with references to AI-driven risk and trust as strategic drivers. It mentions customers like Snowflake and Samsara as proof points.\n\nIf you’re specifically after a funding round, valuation, and hiring activity:\n- This article does not announce a new funding round or valuation, and it does not provide hiring details. It focuses on ARR milestones, AI-driven risk management, and product-capability enhancements.",
+      "text_snippet": "Vanta crosses $300M in ARR as growth accelerates | Vanta\n\nApril 29, 2026\n\n# Vanta crosses $300M in ARR as growth accelerates\n\nWritten by\n\nChristina Cacioppo\n\nCEO & Founder\n\nReviewed by\n\nNo items found.\n\n| Accelerating security solutions for small businesses ‍ Tagore offers strategic services to small businesses. | A partnership that can scale ‍ Tagore prioritized finding a managed compliance partn",
+      "structured_output": null
+    },
+    {
+      "title": "Vanta Crosses $300M ARR as Growth Accelerates from AI",
+      "url": "https://www.businesswire.com/news/home/20260429269142/en/Vanta-Crosses-%24300M-ARR-as-Growth-Accelerates-from-AI",
+      "published_date": "2026-04-29T00:00:00.000Z",
+      "summary": "Summary:\n- Vanta reports over $300 million ARR, up 63% YoY and tripling since 2024, driven by AI and Risk offerings.\n- The company’s growth is accelerating with its Agentic Trust Platform, including the Vanta Agent and Trust Graph, and serves 16,000+ organizations (e.g., Atlassian, Samsara, Snowflake; startups like Harvey, Lovable, Cursor).\n- Key product highlights:\n  - Vanta Agent: 24/7 GRC engineer that automates and coordinates security/compliance work, continuous monitoring, tailored remediation, and vendor assessments.\n  - Trust Graph: integrated, 400+ deep integrations that map tests, evidence, and risks to support a continuous security posture.\n  - Third Party Risk Management (TPRM): automates full vendor risk lifecycle, speeds assessments by up to 50%, and ties findings to 35+ compliance frameworks and audit workflows.\n- Market context cited: 70% of companies have shadow AI; LLMs are 52% more likely to be high risk in Vanta’s assessments.\n- Company positioning: pursuing “Agentic Trust” by shifting from point-in-time checks to continuous monitoring and proof of security postures.\n- Note: The press release focuses on ARR growth, product acceleration, and AI-driven risk capabilities; it does not mention recent funding rounds or specific hiring announcements in this excerpt.\n\nIf you’re looking for:\n- Funding round details or valuation: not provided in this release.\n- Hiring or roles: not specified here.\n- Exact ARR figures by period or more granular growth metrics: provided as surpassing $300M ARR with 63% YoY growth.",
+      "text_snippet": "Vanta Crosses $300M ARR as Growth Accelerates from AI\n\nApr 29, 2026 8:00 AM Eastern Daylight Time\n\n# Vanta Crosses $300M ARR as Growth Accelerates from AI\n\nShare\n\n---\n\nGrowing 63% YoY and tripling annual recurring revenue in two years\n\n253% increase in Vanta Agent daily users over the last three quarters\n\nVanta, the leading Agentic Trust Platform, today announced that the company has surpassed $30",
+      "structured_output": null
+    },
+    {
+      "title": "Exclusive: Vanta hits $300 million ARR as ‘shadow AI’ explodes across corporate America | Fortune",
+      "url": "https://fortune.com/2026/04/29/exclusive-vanta-arr-300-million-sequoia-shadow-ai-claude-cursor/",
+      "published_date": "2026-04-29T09:56:09.000Z",
+      "summary": "Summary:\n- Fortune reports that Vanta, a security and compliance platform, reached $300 million in annual recurring revenue (ARR) in 2026, signaling strong growth amid widespread “shadow AI” use across corporate America.\n- The piece highlights rapid demand for Vanta’s capabilities as employees increasingly use AI tools (e.g., ChatGPT, Claude) and security teams struggle to monitor usage.\n- Vanta is led by CEO Christina Cacioppo and backed by a multi-billion-dollar valuation of the company’s broader research and platform activities; the article frames the trajectory as a blockbuster year for the startup.\n- The article does not provide a detailed funding round or valuation figures beyond ARR milestones, nor does it specify hiring roles or a formal press release; it emphasizes ARR growth and market demand for security/compliance in an AI-enabled enterprise.\n\nKey takeaways aligned to your query:\n- ARR: Vanta has reached ~$300 million ARR.\n- Funding/valuation: Article notes corporate-scale growth and a high-visibility funding/valuation profile but does not publish a new round details in the excerpt.\n- Hiring: No specific hiring roles or headcount figures are listed in the provided content.\n- Press release: No separate press release is cited; the story presents exclusive reporting on growth metrics and market context.",
+      "text_snippet": "Exclusive: Vanta hits $300 million ARR as ‘shadow AI’ explodes across corporate America | Fortune\n\n# Trendingnow\n\n# 1\n\nJensen Huang says ‘a lot’ of six-figure jobs in plumbing and construction will soon be unlocked because someone needs to build new AI centers\n\n# 2\n\nThe labor market could become so backward that the economy will have to shed jobs to keep unemployment steady\n\n# 3\n\nBars, bowling all",
+      "structured_output": null
+    },
+    {
+      "title": "Vanta Number of Employees 2026 | Employee Count & Headcount Data | Revelio Labs",
+      "url": "https://www.reveliolabs.com/companies/vanta/employees",
+      "published_date": "2026-06-30T14:35:24.000Z",
+      "summary": "Summary for query: Vanta recent funding round valuation hiring roles ARR growth press release\n\n- The page provides current headcount and workforce data for Vanta as of March 2026 (1,608 employees), with a 176.3% growth since 2023.\n- Hiring activity: 404 active job postings in 2026, up 114.4% from 2025.\n- Location and structure: U.S. accounts for 69% of employees; top groups are Engineering (44.1%), Finance/Operations (38.2%), and Sales/Marketing (17.7%). Median tenure is 1.1 years; average salary around $163.7k.\n- Growth trend: Headcount rose from 582 in 2023 to 1,608 in 2026, with quarterly increases in 2025–2026.\n- Notable: The page is a Revelio Labs workforce snapshot, not a funding round or valuation press release. It does not report any funding round details, valuations, or ARR figures.\n- If you need funding round specifics, valuation, or ARR growth data, this page does not provide them; you may want to check Vanta’s press releases or investor relations disclosures for: latest funding round date, amount, post-money valuation, and resulting hires or organizational impact.",
+      "text_snippet": "Vanta Number of Employees 2026 | Employee Count & Headcount Data | Revelio Labs\n\n# How many employees work at Vanta?\n\nVanta, Inc. has approximately 1,608 total employees worldwide as of March 2026, according to Revelio Labs workforce intelligence data. Vanta’s total headcount has grown 176.3% from 582 employees in 2023 to 1,608 in 2026.\n\nData source: Revelio Labs\n\nCoverage: Global workforce, 2023–",
+      "structured_output": null
+    },
+    {
+      "title": "Helping businesses earn and prove trust: Announcing Vanta’s $150 million Series D",
+      "url": "https://www.vanta.com/resources/vanta-announces-series-d",
+      "published_date": "2025-07-25T15:26:43.000Z",
+      "summary": "Vanta announces a $150 million Series D, valuing the company at $4.15 billion. The round underscores progress toward its mission: helping businesses earn and prove trust by transforming trust from a blocker into a growth lever. Since its 2018 SOC 2 automation roots, Vanta has expanded to continuous trust with new products (Compliance Roadmap, Policy Builder, Vendor Discovery) and aims to support over 12,000 companies in scaling security and GRC. The release highlights:\n- Financing milestone validating growth and mission\n- Focus on continuous trust beyond point-in-time compliance\n- Early customers like Clay saving time and reducing risk/costs\n- Strategic value for partners and customers seeking rapid, scalable compliance\n\nRequested details:\n- Funding: Series D of $150M\n- Valuation: $4.15B\n- Growth/product milestones: new automation and continuous trust tools (Compliance Roadmap, Policy Builder, Vendor Discovery)\n- Customer impact: time and cost savings, faster go-to-market for startups\n\nIf you need, I can pull exact quotes or extract investor names and any stated ARR targets or hiring plans from the full press release.",
+      "text_snippet": "Helping businesses earn and prove trust: Announcing Vanta’s $150 million Series D\n\nJuly 23, 2025\n\n# Helping businesses earn and prove trust: Announcing Vanta’s $150 million Series D\n\nWritten by\n\nChristina Cacioppo\n\nCEO & Founder\n\nReviewed by\n\nNo items found.\n\n| Accelerating security solutions for small businesses ‍ Tagore offers strategic services to small businesses. | A partnership that can scal",
+      "structured_output": null
+    }
+  ]
+}

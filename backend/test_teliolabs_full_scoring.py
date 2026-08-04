@@ -1,0 +1,300 @@
+import asyncio
+import json
+import os
+import sys
+import logging
+from dotenv import load_dotenv
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+load_dotenv(os.path.join(os.path.dirname(__file__), ".env"))
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
+logger = logging.getLogger("TestTeliolabsScoring")
+
+from backend.pipeline.scorer import analyze_lead_intent_with_llm, sanitize_exa_payload_for_llm
+
+# Input JSON Payload provided by user
+INPUT_EXA_PAYLOAD = {
+  "company_name": "Teliolabs Communications",
+  "domain": "teliolabs.com",
+  "pipeline_metadata": {
+    "canonical_identity_results": 1,
+    "deep_signal_results": 5,
+    "total_unique_sources": 6
+  },
+  "native_exa_structured_extraction": {
+    "content": {
+      "open_roles_count": "10+ actively listed roles as of August 2026",
+      "headcount": "Approx. 180-200 employees (estimated from revenue per employee)",
+      "industry": "Information Technology / IT Services (AI, IoT, Telecom, Cloud)",
+      "funding_stage": "Angel",
+      "arr_estimate": "$15,800,000",
+      "funding_date": "April 05, 2022",
+      "funding_amount": "$133K",
+      "recent_hiring_signal": "Significant leadership appointments including Piyush Sarwal as Chief Technology & AI Officer (June 2026) and Dr. Tabish Asifi as Industry Advisor for GCC"
+    },
+    "grounding": [
+      {
+        "field": "open_roles_count",
+        "citations": [
+          {
+            "url": "https://teliolabs.com/job-openings/",
+            "title": "Jobs | Career Opportunities - Teliolabs Communications Inc."
+          }
+        ],
+        "confidence": "high"
+      },
+      {
+        "field": "headcount",
+        "citations": [
+          {
+            "url": "https://prospeo.io/c/teliolabs-communications-revenue",
+            "title": "Teliolabs Communications Revenue, Funding & Valuation"
+          }
+        ],
+        "confidence": "low"
+      },
+      {
+        "field": "industry",
+        "citations": [
+          {
+            "url": "https://www.cbinsights.com/company/teliolabs-communications",
+            "title": "Teliolabs Communications - Products, Competitors, Financials, Employees, Headquarters Locations"
+          },
+          {
+            "url": "https://tracxn.com/d/companies/teliolabs/__A5jlsxylx7XC-KZ4gBTBcDPqYNbZvL33V4eko8ouGrg",
+            "title": "TelioLabs - 2026 Company Profile, Team, Funding, Competitors & Financials - Tracxn"
+          },
+          {
+            "url": "https://www.expresscomputer.in/news/teliolabs-appoints-piyush-sarwal-as-chief-technology-ai-officer/135873/",
+            "title": "TelioLabs appoints Piyush Sarwal as Chief Technology & ..."
+          }
+        ],
+        "confidence": "high"
+      },
+      {
+        "field": "funding_stage",
+        "citations": [
+          {
+            "url": "https://tracxn.com/d/companies/teliolabs/__A5jlsxylx7XC-KZ4gBTBcDPqYNbZvL33V4eko8ouGrg",
+            "title": "TelioLabs - 2026 Company Profile, Team, Funding, Competitors & Financials - Tracxn"
+          }
+        ],
+        "confidence": "high"
+      },
+      {
+        "field": "arr_estimate",
+        "citations": [
+          {
+            "url": "https://prospeo.io/c/teliolabs-communications-revenue",
+            "title": "Teliolabs Communications Revenue, Funding & Valuation"
+          }
+        ],
+        "confidence": "medium"
+      },
+      {
+        "field": "funding_date",
+        "citations": [
+          {
+            "url": "https://tracxn.com/d/companies/teliolabs/__A5jlsxylx7XC-KZ4gBTBcDPqYNbZvL33V4eko8ouGrg",
+            "title": "TelioLabs - 2026 Company Profile, Team, Funding, Competitors & Financials - Tracxn"
+          }
+        ],
+        "confidence": "high"
+      },
+      {
+        "field": "funding_amount",
+        "citations": [
+          {
+            "url": "https://tracxn.com/d/companies/teliolabs/__A5jlsxylx7XC-KZ4gBTBcDPqYNbZvL33V4eko8ouGrg",
+            "title": "TelioLabs - 2026 Company Profile, Team, Funding, Competitors & Financials - Tracxn"
+          }
+        ],
+        "confidence": "high"
+      },
+      {
+        "field": "recent_hiring_signal",
+        "citations": [
+          {
+            "url": "https://teliolabs.com/press-release/",
+            "title": "Press Release - Teliolabs Communications Inc."
+          },
+          {
+            "url": "https://teliolabs.com/live-press-release/",
+            "title": "Live Press Release - Teliolabs Communications Inc."
+          },
+          {
+            "url": "https://www.expresscomputer.in/news/teliolabs-appoints-piyush-sarwal-as-chief-technology-ai-officer/135873/",
+            "title": "TelioLabs appoints Piyush Sarwal as Chief Technology & ..."
+          }
+        ],
+        "confidence": "high"
+      }
+    ]
+  },
+  "harvested_sources": [
+    {
+      "title": "Teliolabs Communications",
+      "url": "https://teliolabs.com/",
+      "published_date": "2026-06-15T00:00:00.000Z",
+      "summary": "Teliolabs Communications is a privately held IT services and IT consulting company founded in 2020 and headquartered in South San Francisco, CA, with a presence in the UK and a distributed global workforce (India, UAE, UK, US). The company focuses on accelerating IT and digital transformation using AI-driven solutions, offering strategy, consulting, digital solutions, technology, and operations services to enterprises and telecom operators. Key offerings include AI-powered ecosystems (TelioQuantAI, TelioEV), intelligent automation, data analytics, and predictive/autonomous operations to improve efficiency, customer experiences, and digital transformation.\n\nCompany profile highlights:\n- Industry: IT Services and IT Consulting\n- Headquarters: South San Francisco, United States\n- Founded: 2020\n- Size: ~140 employees\n- Global presence: United States, United Kingdom, India, United Arab Emirates\n- Services: AI-driven digital transformation, strategy, consulting, digital solutions, cloud, IoT, OSS/BSS, ML/AI, fintech, enterprise technology\n- Notable initiatives: TelioQuantAI and TelioEV for AI-powered automation and insights\n- Contact: info@teliolabs.com; +1 415 805 7417\n- LinkedIn presence: ~19.5k followers\n\nLeadership (representative roles):\n- Amit Singh — Founder & Managing Director\n- Prashant Singh — Director of Business Development\n- Asha Rao Thota — VP & CDO\n- Vijay Babu Boyina — VP Finance\n- Dileep Kumar, Abha Singh, Ranjitha M — Directors/Executive leadership\n\nCore emphasis for the user query:\n- Company profile and leadership\n- Services focused on telecom and digital transformation\n- AI-driven and predictive automation capabilities.",
+      "text_snippet": "# Teliolabs Communications (Teliolabs Communication Private Limited.)\n\nTeliolabs Communications is a IT Services and IT Consulting company. Teliolabs provides end-to-end technology solutions to simplify human lives and accelerate digital transformation using a lean strategy and cutting-edge technologies. Teliolabs Communications employs 140 people (+10.6% YoY, +19 people), founded in 2020. Headqua",
+      "structured_output": None
+    },
+    {
+      "title": "Jobs | Career Opportunities - Teliolabs Communications Inc.",
+      "url": "https://teliolabs.com/job-openings/",
+      "published_date": "2025-02-10T07:47:18.000Z",
+      "summary": "Summary:\n- The page lists current job openings at Teliolabs Communications Inc., spanning Information Technology roles with various contract and full-time positions.\n- Locations include India (Bengaluru, Gurgaon, Hyderabad, Noida, PAN India), Dubai, Manila, Germany, and remote options.\n- Sample roles: Oracle BRM Developer, Front End Developer – Web, Junior Perl Developer, OSM Developer, BRM Data Migration, AI/ML Data Scientist, Data Engineer, Data Platform Architect, IT Field Engineer, and Siebel Order Management Developer. Language: English common; some roles specify German.\n- Experience ranges from about 3 to 15+ years. Employment types include Full Time and Contract.\n- Additional company links provided: Teliolabs main site, Digital Transformation Services, and QuantAI.\n\nNotes in relation to user query:\n- The page is a career opportunities hub, not a press release. There is no funding or valuation information on this page.\n- If you’re seeking recent funding, valuation, or press releases, this page does not contain that content; you may want to check the News/Press sections or corporate announcements on the main site or business news portals. The “QuantAI” link might relate to a product/initiative, and the “Digital Transformation Services” page may provide service context.",
+      "text_snippet": "Jobs | Career Opportunities - Teliolabs Communications Inc.\n\nSearch\n\nFilter by\n\nAll Job CategoryAll Job CategoryInformation Technology\n\nAll Job TypeAll Job TypeContractFull Time\n\nAll Job LocationAll Job LocationBengaluruDubaiGermanyGurgaonHyderabadIndiaJapanKnightsbridge Office Park BryanstonMalaysiaManilaNoidaOnsite Middile EastPAN IndiaPhillipinesPuneRemoteRemote Location\n\nAll LanguagesAll Langu",
+      "structured_output": None
+    },
+    {
+      "title": "Teliolabs Communications Revenue, Funding & Valuation",
+      "url": "https://prospeo.io/c/teliolabs-communications-revenue",
+      "published_date": None,
+      "summary": "- Funding: Teliolabs Communications has never raised funding (no funding reported).\n- Valuation: Estimated valuation around $50.4 million based on reported annual revenue ($15.8M) and industry averages; this is a notional estimate, not a disclosed figure.\n- Revenue and size: Revenue reported at $15.8 million; 101-200 employees; revenue per employee about $86k.\n- Leadership and hires: Multiple named executives (e.g., Amit Singh, Ranjitha Chandra, Monica Saxena, Asha Rao Thota, Manpreet Hill, Prashant Singh, Telio Ev, Anagh Pandey) listed as leadership or staff; no explicit open roles shown on the page.\n- Growth and activity: The page highlights capabilities in AI-driven IT services, digital transformation, and related tech areas; no recent press release or funding round is provided.\n- How to follow up: For updates on funding rounds, valuations, and open positions, check the company site (teliolabs.com) and reputable news sources or press releases. The listed contact formats and phone number can be used to inquire about current openings.",
+      "text_snippet": "Teliolabs Communications Revenue, Funding & Valuation\n\n# Teliolabs Communications Revenue\n\nIT Services and IT Consulting • South San Francisco, California, United States • 101-200 Employees\n\nView Financials And Employees At Teliolabs Communications\n\n$\n\nTeliolabs Communications revenue & valuation\n\n| Annual revenue | $15,800,000 |\n| --- | --- |\n| Revenue per employee | $86,000 |\n| Estimated valuati",
+      "structured_output": None
+    },
+    {
+      "title": "Teliolabs Communications - Products, Competitors, Financials, Employees, Headquarters Locations",
+      "url": "https://www.cbinsights.com/company/teliolabs-communications",
+      "published_date": "2021-01-12T13:25:41.000Z",
+      "summary": "Summary:\n- Teliolabs Communications focuses on digital transformation and technology services across AI/ML, IoT, Telecom, and EV charging. Key offerings include business process automation, IT automation, DevOps, and cybersecurity.\n- Industries served: telecommunications, finance, insurance, energy, and utilities. \n- Founded in 2020; headquartered in South San Francisco, CA (611 Gateway Blvd Blvd Suite 120, 94080).\n- Latest news highlights a 5G OSS/BSS market growth context (not specific to funding, valuation, or a Teliolabs funding event). No recent funding round, valuation figure, or hiring/open roles information provided on the page.\n- For funding/valuation/hiring specifics, a direct press release or company filings would be needed, as this page does not contain them.",
+      "text_snippet": "Teliolabs Communications - Products, Competitors, Financials, Employees, Headquarters Locations\n\n## Founded Year\n\n2020\n\n## About Teliolabs Communications\n\nTeliolabs Communications provides digital transformation and technology solutions across various sectors including AI/ML, IoT, Telecom, and EV charging. The company offers services such as business process automation, IT automation, DevOps, and ",
+      "structured_output": None
+    },
+    {
+      "title": "TelioLabs - 2026 Company Profile, Team, Funding, Competitors & Financials - Tracxn",
+      "url": "https://tracxn.com/d/companies/teliolabs/__A5jlsxylx7XC-KZ4gBTBcDPqYNbZvL33V4eko8ouGrg",
+      "published_date": "2023-05-11T14:39:59.000Z",
+      "summary": "TelioLabs (seed-stage IoT/AI development and DevOps services) has a recent funding history totaling $133k across 3 rounds, with the last round in April 2022 (Angel) and post-money valuations listed in Tracxn as of that date. Current key metrics:\n- Location: San Francisco, USA; Registered Indian entity TELIOLABS COMMUNICATION PRIVATE LIMITED (Dec 2020).\n- Founders/Leadership: Amit Singh (CEO, Founder) and Jeevan Pandey (Co-Founder); board includes Amit Singh and independent member Abha Singh.\n- Funding timeline: Three angel rounds (latest Apr 5, 2022) with investors including Guvvala Venkata Subba Reddy and others. Reported total funding: $133K.\n- Growth indicators: Employee count ~195 (as of May 2026); annual revenue reported as ₹10–₹50 Cr (Mar 31, 2025).\n- Competitors: Notably IBM, UST, Hewlett Packard Enterprise (Tracxn lists ~124k+ active competitors overall; TelioLabs ranks 3932nd among them).\n- Notable items: Tracxn page shows some data gaps (blocked resources, some masked financials), and the profile is subject to updates.\n\nWhat you asked for (latest funding, valuation, hiring/open roles, growth, and press/news):\n- Funding/valuation: Last disclosed funding round in Apr 2022 (Angel) with post-money valuation shown in the profile; exact current valuation and latest rounds beyond Apr 2022 aren’t listed in the provided extract.\n- Hiring/open roles: The profile mentions an employee base (195 as of May 31, 2026) but does not provide specific open roles or a careers page.\n- Growth: Employee growth to ~195 by 2026; revenue range ₹10–₹50 Cr as of Mar 31, 2025. No detailed revenue trajectory or growth milestones beyond these figures.\n- Press/news: The provided content does not include press releases or news items about TelioLabs.\n\nIf you want, I can:\n- Highlight any explicit open roles if you provide a link or more content from TelioLabs’ careers page.\n- Attempt to pull the latest press releases or funding news from other sources to supplement the Tracxn profile.\n- Summarize that TelioLabs is a seed-stage firm with limited disclosed funding after 2022 and growing headcount, competing with large IT/AI players.",
+      "text_snippet": "TelioLabs - 2026 Company Profile, Team, Funding, Competitors & Financials - Tracxn\n\nYour browser was unable to load all of Tracxn resources. They may have been blocked by your firewall, proxy or browser configuration. Press Ctrl+F5 or Ctrl+Shift+R to have your browser try again and if that doesn't work, click here to retry or mail us at hi@tracxn.com\n\nInternal Server Error\n\n# TelioLabs - Company P",
+      "structured_output": None
+    },
+    {
+      "title": "TelioLabs appoints Piyush Sarwal as Chief Technology & AI Officer - Express Computer",
+      "url": "https://www.expresscomputer.in/news/teliolabs-appoints-piyush-sarwal-as-chief-technology-ai-officer/135873/",
+      "published_date": "2026-06-10T10:04:31.000Z",
+      "summary": "TelioLabs has appointed Dr. Piyush Sarwal as Chief Technology & AI Officer, signaling a strategic emphasis on AI, cloud-native/SaaS, and enterprise-grade AI platforms. Key points:\n- Piyush Sarwal brings 27+ years in telecom and IT, including prior roles at IBM (CTO/Distinguished Engineer) and Oracle Communications (VP of Product Strategy & Architecture).\n- He will lead TelioQuantAI, TelioLabs’ enterprise AI and automation platform, and oversee product management, strategic direction, and the AI technical roadmap.\n- Based in Dallas, TX, he will oversee global geographies (Asia, USA, UK, Europe, ME, etc.).\n- TelioLabs describes itself as a deep-tech company across telecom, BFSI, AI, IoT, cloud, and digital transformation, offering services to enterprises worldwide.\n- Leadership quote highlights a unified approach to tech strategy and AI-driven growth.\n\nNote: The article focuses on the new CTO appointment and the strategic role of TelioQuantAI; it does not report on funding rounds, valuation, or open roles. If you need specifics on funding or current job openings, I can search for the latest press releases or investor filings.",
+      "text_snippet": "TelioLabs appoints Piyush Sarwal as Chief Technology & AI Officer - Express Computer\n\nExpress Computer\n\nHome» News» TelioLabs appoints Piyush Sarwal as Chief Technology & AI Officer\n\n# TelioLabs appoints Piyush Sarwal as Chief Technology & AI Officer\n\nNews Artificial Intelligence AI\n\nhttps://cdn1.expresscomputer.in/wp-content/uploads/2026/06/10153355/Piyush_Sarwal_TelioLabs.jpg\n\n34\n\nTelioLabs, a n",
+      "structured_output": None
+    }
+  ]
+}
+
+async def run_end_to_end_scoring_test():
+    print("\n" + "=" * 75)
+    print("🚀 EXA -> GEMINI/HYBRID SCORING PIPELINE END-TO-END TEST")
+    print(f"Company Target: {INPUT_EXA_PAYLOAD['company_name']} ({INPUT_EXA_PAYLOAD['domain']})")
+    print("=" * 75 + "\n")
+
+    # 1. Sanitize payload for LLM (Stripping Exa internal metadata and grounding arrays)
+    sanitized = sanitize_exa_payload_for_llm(INPUT_EXA_PAYLOAD)
+    print(f"1️⃣  Payload Sanitization Complete!")
+    print(f"   • Omitted Exa diagnostic metadata & grounding citation arrays.")
+    print(f"   • Extracted {len(sanitized.get('structured_facts', {}))} structured facts.")
+    print(f"   • Formatted {len(sanitized.get('evidence_sources', []))} evidence sources.\n")
+
+    # 2. Format Source-Indexed Text Block ([S0], [S1], [S2]...) with Top 10 Lines Max & No Raw URLs
+    raw_sources = INPUT_EXA_PAYLOAD.get("harvested_sources", [])
+    
+    # Deduplicate sources with overlapping summaries/snippets
+    sources = []
+    seen_fingerprints = set()
+    for s in raw_sources:
+        sum_t = (s.get("summary") or s.get("text_snippet") or "").strip().lower()
+        fp = sum_t[:100]
+        if fp and fp in seen_fingerprints:
+            continue
+        if fp:
+            seen_fingerprints.add(fp)
+        sources.append(s)
+
+    indexed_text_block = ""
+
+    def extract_top_10_lines(text_content: str) -> str:
+        if not text_content:
+            return ""
+        lines = [line.strip() for line in text_content.split("\n") if line.strip()]
+        top_lines = lines[:10]  # Max 10 lines
+        joined = "\n".join(top_lines)
+        return joined[:350]     # Max 350 characters
+
+    for idx, src in enumerate(sources):
+        source_id = f"S{idx}"
+        title = src.get("title", "Article")
+        pub_date = src.get("published_date") or src.get("publishedDate") or "N/A"
+        
+        # Strictly extract top 10 lines without URLs
+        summary_top_10 = extract_top_10_lines(src.get("summary", ""))
+        snippet_top_10 = extract_top_10_lines(src.get("text_snippet") or src.get("text") or "")
+
+        indexed_text_block += f"\n--- [{source_id}] {title} | Date: {pub_date} ---\n"
+        if summary_top_10:
+            indexed_text_block += f"SUMMARY (Top 10 lines):\n{summary_top_10}\n"
+        if snippet_top_10 and snippet_top_10 != summary_top_10:
+            indexed_text_block += f"SNIPPET (Top 10 lines):\n{snippet_top_10}\n"
+
+    # Prepend structured facts to the text block
+    facts_block = json.dumps(sanitized.get("structured_facts", {}), indent=2)
+    full_evidence_text = f"=== EXA NATIVE STRUCTURED FACTS ===\n{facts_block}\n\n=== INDEXED EVIDENCE SOURCES ===\n{indexed_text_block}"
+
+    print("2️⃣  Executing LLM Intent Analysis & Quote-Validated Hybrid Scoring...")
+    firmographics = {
+        "headcount": 180,
+        "industry": "Information Technology / IT Services",
+        "company_segment": "Scale-up"
+    }
+
+    scored_result = await analyze_lead_intent_with_llm(
+        company_name=INPUT_EXA_PAYLOAD["company_name"],
+        cleaned_html=full_evidence_text,
+        firmographics=firmographics,
+        icp_fit_label="Strong",
+        raw_signals=sources  # Crucial: Passes raw sources array for index-to-URL mapper!
+    )
+
+    raw_gemini = scored_result.pop("raw_gemini_output", {})
+
+    output_payload = {
+        "raw_gemini_output": raw_gemini,
+        "final_scored_output": scored_result
+    }
+
+    print("\n" + "=" * 75)
+    print("📊 COMPLETE FINAL OUTPUT JSON (RAW GEMINI + HYBRID SCORED)")
+    print("=" * 75 + "\n")
+    print(json.dumps(output_payload, indent=2, ensure_ascii=False))
+
+    # Save final JSON output
+    out_file = os.path.join(os.path.dirname(__file__), "test_teliolabs_final_scored_output.json")
+    with open(out_file, "w", encoding="utf-8") as f:
+        json.dump(output_payload, f, indent=2, ensure_ascii=False)
+
+    token_info = raw_gemini.get("gemini_token_usage", {})
+    raw_meta = {}
+    if isinstance(token_info, dict):
+        p_toks = token_info.get("prompt_tokens", "N/A")
+        c_toks = token_info.get("completion_tokens", "N/A")
+        th_toks = token_info.get("thinking_tokens", "N/A")
+        t_toks = token_info.get("total_tokens", "N/A")
+        raw_meta = token_info.get("raw_usage_metadata", {})
+    else:
+        p_toks, c_toks, th_toks, t_toks = "N/A", "N/A", "N/A", token_info
+
+    print("\n" + "=" * 75)
+    print("📈 GEMINI TOKEN USAGE AUDIT SUMMARY")
+    print("=" * 75)
+    print(f"  • Prompt Tokens:     {p_toks}")
+    print(f"  • Completion Tokens: {c_toks}")
+    print(f"  • Thinking Tokens:   {th_toks}")
+    print(f"  • Total Tokens:      {t_toks}")
+    print("\n🔍 RAW GEMINI API usageMetadata OBJECT:")
+    print(json.dumps(raw_meta, indent=2, default=str))
+    print("=" * 75)
+    print(f"\n✅ Complete final output saved to: {out_file}\n")
+
+if __name__ == "__main__":
+    asyncio.run(run_end_to_end_scoring_test())

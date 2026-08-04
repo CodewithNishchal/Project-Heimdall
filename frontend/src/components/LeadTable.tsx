@@ -183,11 +183,17 @@ export default function LeadTable({
     return count;
   }, [selectedTier, dateFilter, scoreFilter, signalFilter]);
 
+  const [noLeadsAlert, setNoLeadsAlert] = useState<{
+    isOpen: boolean;
+    processedCount: number;
+    message: string;
+  } | null>(null);
+
   const handleRunPipeline = async () => {
     setIsPipelineRunning(true);
     try {
       const existingIds = new Set(leads.map((l) => String(l.id || l.domain || l.company_name)));
-      await runPipeline();
+      const res = await runPipeline();
       const freshLeads = await fetchLeads();
 
       if (onLeadIngested && freshLeads.length > 0) {
@@ -196,6 +202,16 @@ export default function LeadTable({
 
       // Determine the 5 new/fresh pipeline results
       const newItems = freshLeads.filter((l) => !existingIds.has(String(l.id || l.domain || l.company_name)));
+      
+      const qualifiedCount = res?.qualified_count ?? 0;
+      if (qualifiedCount === 0 || (newItems.length === 0 && (!res?.qualified_leads || res.qualified_leads.length === 0))) {
+        setNoLeadsAlert({
+          isOpen: true,
+          processedCount: res?.processed_count || 5,
+          message: `Scanned ${res?.processed_count || 5} candidate companies in this batch, but all leads had intent scores below 80 and were disqualified.`
+        });
+      }
+
       const itemsToStore = newItems.length >= 5 ? newItems.slice(0, 5) : (newItems.length > 0 ? newItems : freshLeads.slice(0, 5));
 
       if (setScannedLeads) {
@@ -830,6 +846,52 @@ export default function LeadTable({
           }
         }}
       />
+
+      {/* Custom Glassmorphic Alert Box for Disqualified Batch */}
+      {noLeadsAlert?.isOpen && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/75 backdrop-blur-md animate-in fade-in duration-200 p-4">
+          <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-amber-500/30 bg-zinc-950/95 p-6 shadow-2xl shadow-amber-950/50 text-left backdrop-blur-2xl">
+            {/* Ambient background glow */}
+            <div className="absolute -top-12 -right-12 h-32 w-32 rounded-full bg-amber-500/15 blur-2xl pointer-events-none" />
+            
+            <div className="flex items-start gap-4">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-400">
+                <Workflow className="h-6 w-6" />
+              </div>
+              <div className="flex-1">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-base font-bold tracking-tight text-zinc-100">
+                    No Qualified Leads in Batch
+                  </h3>
+                  <button
+                    type="button"
+                    onClick={() => setNoLeadsAlert(null)}
+                    className="rounded-lg p-1 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200 transition"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+                <p className="mt-2 text-xs leading-relaxed text-zinc-300">
+                  {noLeadsAlert.message}
+                </p>
+                <div className="mt-4 rounded-xl bg-zinc-900/90 border border-zinc-800 p-3 text-xs text-zinc-400">
+                  <strong className="text-zinc-200 block mb-0.5">💡 Disqualification Rule:</strong>
+                  Only leads scoring <span className="text-amber-400 font-bold">80 or above</span> pass qualification. Scores below 80 are automatically discarded.
+                </div>
+                <div className="mt-5 flex justify-end">
+                  <button
+                    type="button"
+                    onClick={() => setNoLeadsAlert(null)}
+                    className="rounded-xl bg-amber-500 hover:bg-amber-400 text-zinc-950 px-5 py-2 text-xs font-bold tracking-wide transition shadow-md shadow-amber-500/20"
+                  >
+                    Dismiss Alert
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

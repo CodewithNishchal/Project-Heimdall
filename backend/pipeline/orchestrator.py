@@ -204,16 +204,16 @@ async def run_pipeline_for_company(
     # Phase 4.5: Top-N Score-First Selection with 2-Pass Category Reservation (Max N=4)
     selected_signals = _select_top_n_category_reservation(raw_signals, max_n=4)
 
-    # Combine text with integer indices [POST_INDEX: n] and per-source character bounding
+    # Combine text with integer indices [S0], [S1]... matching Gemini prompt SOURCE INDEX format
     cleaned_html_parts = []
     for idx, s in enumerate(selected_signals):
         raw_t = s.get("raw_text") or s.get("text") or s.get("summary") or ""
         src = s.get("source_api") or s.get("source_type") or "Social"
         text = _clean_and_truncate_per_source(raw_t, src)
-        cleaned_html_parts.append(f"[POST_INDEX: {idx}]\n{text}")
+        cleaned_html_parts.append(f"--- [S{idx}] ---\n{text}")
     cleaned_html = "\n\n---\n\n".join(cleaned_html_parts)
 
-    # Phase 5: Fast intent classification using Groq
+    # Phase 5: Intent classification using Gemini 2.5 Flash
     from backend.pipeline.scorer import analyze_lead_intent_with_llm
     
     scored_data = {}
@@ -359,6 +359,7 @@ async def run_pipeline_for_company(
         "dns_audit": dns_res,
         "contacts": contacts,
         "last_updated": datetime.now(timezone.utc).isoformat(),
+        "gemini_token_usage": scored_data.get("gemini_token_usage", {})
     }
 
     _persist_lead(lead_id, domain, company_name, lead_payload)

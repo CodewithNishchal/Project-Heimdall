@@ -55,7 +55,7 @@ async def process_single_company(
 
         async with httpx.AsyncClient(timeout=30.0) as client:
             # -----------------------------------------------------------------
-            # EXA AI: COMPANY PROFILE & INTENT EVIDENCE (FIELD FILTERED)
+            # EXA AI: REFINED 2-CALL ARCHITECTURE (CANONICAL IDENTITY + DEEP FRESH SIGNALS)
             # -----------------------------------------------------------------
             if EXA_API_KEY:
                 exa_headers = {
@@ -63,34 +63,93 @@ async def process_single_company(
                     "content-type": "application/json",
                     "x-api-key": EXA_API_KEY
                 }
-                exa_payload = {
-                    "query": f"{company_name} {domain} company profile headcount funding valuation ARR hiring open positions 2025 2026",
+
+                # 1. Canonical Identity Call (Self-reported site facts)
+                identity_payload = {
+                    "query": f"{company_name} company profile leadership services products",
                     "type": "neural",
                     "category": "company",
-                    "numResults": 3,
+                    "numResults": 2,
+                    "includeDomains": [domain] if domain else [],
                     "contents": {"text": True, "summary": True}
                 }
+
+                # 2. Deep Fresh Signal Call (Structured extraction + maxAgeHours)
+                company_schema = {
+                    "type": "object",
+                    "properties": {
+                        "headcount": {"type": "string"},
+                        "industry": {"type": "string"},
+                        "funding_stage": {"type": "string"},
+                        "funding_amount": {"type": "string"},
+                        "funding_date": {"type": "string"},
+                        "arr_estimate": {"type": "string"},
+                        "open_roles_count": {"type": "string"},
+                        "recent_hiring_signal": {"type": "string"}
+                    },
+                    "required": ["headcount", "industry"]
+                }
+
+                signal_payload = {
+                    "query": f"{company_name} recent funding valuation hiring open roles growth press release news",
+                    "type": "deep",
+                    "maxAgeHours": 168,
+                    "numResults": 3,
+                    "excludeDomains": ["clutch.co", "upcity.com", "designrush.com", "goodfirms.co"],
+                    "contents": {"text": True, "summary": True},
+                    "outputSchema": company_schema
+                }
+
                 try:
-                    res1 = await client.post("https://api.exa.ai/search", json=exa_payload, headers=exa_headers)
+                    # Call 1: Canonical
+                    res1 = await client.post("https://api.exa.ai/search", json=identity_payload, headers=exa_headers)
                     if res1.status_code == 200:
-                        company_results = res1.json().get("results", [])
-                        for item in company_results:
+                        for item in res1.json().get("results", []):
                             src_id = f"S{source_counter}"
                             source_counter += 1
-                            t_title = item.get("title", "Company Profile")
+                            t_title = item.get("title", "Canonical Profile")
                             t_url = item.get("url", f"https://{domain}")
                             summary = item.get("summary", "")
                             snippet = item.get("text", "")
-
                             url_index_map[src_id] = t_url
-                            # Field Filter: Pass essential summary + short 300-char snippet only
-                            combined_raw_text += f"\n--- [{src_id}] COMPANY EVIDENCE: {t_title} ({t_url}) ---\n"
+
+                            combined_raw_text += f"\n--- [{src_id}] CANONICAL IDENTITY: {t_title} ({t_url}) ---\n"
                             if summary:
                                 combined_raw_text += f"SUMMARY: {summary}\n"
                             if snippet:
-                                combined_raw_text += f"PROFILE HIGHLIGHTS: {snippet[:300]}\n"
+                                combined_raw_text += f"DETAILS: {snippet[:500]}\n"
+
+                    # Call 2: Deep Signals
+                    res2 = await client.post("https://api.exa.ai/search", json=signal_payload, headers=exa_headers)
+                    if res2.status_code != 200:
+                        # Fallback if camelCase parameter key is output_schema
+                        signal_payload["output_schema"] = signal_payload.pop("outputSchema", company_schema)
+                        res2 = await client.post("https://api.exa.ai/search", json=signal_payload, headers=exa_headers)
+
+                    if res2.status_code == 200:
+                        data2 = res2.json()
+                        for item in data2.get("results", []):
+                            src_id = f"S{source_counter}"
+                            source_counter += 1
+                            t_title = item.get("title", "Signal Mention")
+                            t_url = item.get("url", "")
+                            summary = item.get("summary", "")
+                            snippet = item.get("text", "")
+                            url_index_map[src_id] = t_url
+
+                            combined_raw_text += f"\n--- [{src_id}] FRESH SIGNAL EVIDENCE: {t_title} ({t_url}) ---\n"
+                            if summary:
+                                combined_raw_text += f"SUMMARY: {summary}\n"
+                            if snippet:
+                                combined_raw_text += f"SIGNAL HIGHLIGHTS: {snippet[:500]}\n"
+
+                        # Inject Exa Structured Output if available
+                        structured_out = data2.get("output")
+                        if structured_out:
+                            combined_raw_text += f"\n--- EXA STRUCTURED FACTS ---\n{json.dumps(structured_out)}\n"
+
                 except Exception as e:
-                    logger.error(f"Exa company profile search error for {company_name}: {e}")
+                    logger.error(f"Exa search error for {company_name}: {e}")
 
 
         if not combined_raw_text:
@@ -98,133 +157,28 @@ async def process_single_company(
             return None
 
         # ---------------------------------------------------------------------
-        # STAGE 2: MISTRAL AI SIGNAL EXTRACTION WITH COMPACT KEYS
+        # STAGE 2 & 3: UNIFIED GEMINI 2.5 FLASH INTENT SYNTHESIS & HYBRID SCORING
         # ---------------------------------------------------------------------
-        mistral_system_prompt = """You are a Senior B2B Sales Intelligence Analyst for Tech Recruitment.
+        from backend.pipeline.scorer import analyze_lead_intent_with_llm
 
-CONTEXT:
-Analyze the provided multi-source evidence and extract high-value recruitment intent signals.
-
-SIGNAL EXTRACTION CATEGORIES:
-1. 'SOCIAL_INTENT': Explicit buyer asks.
-2. 'HIRING_SPIKE': Active hiring surges or open hard-to-fill tech roles.
-3. 'FUNDING_RAISE': Recent venture funding or debt financing.
-4. 'REVENUE_MILESTONE': ARR milestones ($10M+, $50M+, $100M+ ARR).
-5. 'EXECUTIVE_EXPANSION': C-suite or VP hires.
-6. 'PRODUCT_LAUNCH': Major platform, AI model, or enterprise product launches.
-
-STRICT COMPACT SCHEMA RULES:
-- Use compact keys for signals: "t" for signal_type, "q" for verbatim_quote, "s" for source ID (e.g. "S1", "S2"), "d" for event_date (YYYY-MM-DD).
-- 'q' (verbatim_quote) MUST BE AN EXACT WORD-FOR-WORD SUBSTRING of the evidence text. Zero paraphrasing!
-- 's' MUST match the source tag ID (e.g., "S1", "S2").
-
-COMPACT JSON OUTPUT FORMAT:
-{
-  "company_name": "Exact Brand Name",
-  "intent_score": 85,
-  "tier": "HOT",
-  "ai_verdict": "Executive summary pitch hook...",
-  "adjacent_hiring_gap": boolean,
-  "signal_tags": [{"category": "FUNDING_RAISE"}, {"category": "HIRING_SPIKE"}],
-  "signals": [
-    {
-      "t": "FUNDING_RAISE",
-      "q": "exact word for word quote",
-      "s": "S2",
-      "d": "YYYY-MM-DD"
-    }
-  ]
-}"""
-
-        mistral_user_prompt = f"""Target Company: {company_name}
-Target Domain: {domain}
-
-MULTI-SOURCE INDEXED EVIDENCE:
-{combined_raw_text[:10000]}
-
-Analyze the evidence and output strictly valid compact JSON matching the required schema."""
-
-        mistral_headers = {
-            "Authorization": f"Bearer {MISTRAL_API_KEY}",
-            "Content-Type": "application/json",
-            "Accept": "application/json"
-        }
-
-        token_str = "Unknown"
-        raw_mistral_json = None
-
-        candidate_models = ["mistral-small-latest", "mistral-large-latest", "open-mistral-7b"]
-
-        async with httpx.AsyncClient(timeout=45.0) as client:
-            for model_name in candidate_models:
-                mistral_payload = {
-                    "model": model_name,
-                    "response_format": {"type": "json_object"},
-                    "messages": [
-                        {"role": "system", "content": mistral_system_prompt},
-                        {"role": "user", "content": mistral_user_prompt}
-                    ],
-                    "temperature": 0.1
-                }
-                try:
-                    res_m = await client.post("https://api.mistral.ai/v1/chat/completions", json=mistral_payload, headers=mistral_headers)
-                    if res_m.status_code == 200:
-                        m_data = res_m.json()
-                        content = m_data["choices"][0]["message"]["content"]
-                        usage = m_data.get("usage", {})
-                        p_tok = usage.get("prompt_tokens", 0)
-                        c_tok = usage.get("completion_tokens", 0)
-                        t_tok = usage.get("total_tokens", 0)
-                        token_str = f"Prompt: {p_tok} | Output: {c_tok} | Total: {t_tok}"
-                        raw_mistral_json = json.loads(content)
-                        break
-                    else:
-                        logger.warning(f"Mistral model {model_name} status {res_m.status_code}: {res_m.text}")
-                except Exception as err:
-                    logger.warning(f"Mistral call error for {company_name} on {model_name}: {err}")
-
-        if not raw_mistral_json:
-            return None
-
-        # Normalize raw_mistral_json if Mistral returned a list instead of dict
-        if isinstance(raw_mistral_json, list):
-            if len(raw_mistral_json) > 0 and isinstance(raw_mistral_json[0], dict) and "company_name" in raw_mistral_json[0]:
-                raw_mistral_json = raw_mistral_json[0]
-            else:
-                raw_mistral_json = {"company_name": company_name, "signals": raw_mistral_json}
-        elif not isinstance(raw_mistral_json, dict):
-            return None
-
-        # Unpack compact keys back into standard keys
-        unpacked_signals = []
-        for sig in raw_mistral_json.get("signals", []):
-            if not isinstance(sig, dict):
-                continue
-            quote = sig.get("q") or sig.get("verbatim_quote") or ""
-            sig_type = sig.get("t") or sig.get("signal_type") or "HIRING_SPIKE"
-            event_date = sig.get("d") or sig.get("event_date") or datetime.now(timezone.utc).isoformat()
-            src_tag = sig.get("s") or sig.get("source_url") or "S1"
-            
-            full_url = url_index_map.get(src_tag, src_tag if src_tag.startswith("http") else "")
-
-            unpacked_signals.append({
-                "signal_type": sig_type,
-                "verbatim_quote": quote,
-                "source_url": full_url,
-                "event_date": event_date
+        raw_signals_list = []
+        for src_id, full_url in url_index_map.items():
+            raw_signals_list.append({
+                "url": full_url,
+                "title": f"Source {src_id}",
+                "text": combined_raw_text
             })
 
-        raw_mistral_json["signals"] = unpacked_signals
-
-        # ---------------------------------------------------------------------
-        # STAGE 3: CODEBASE MATH ENGINE (`scorer.py`) & UI PAYLOAD ALIGNMENT
-        # ---------------------------------------------------------------------
-        math_result = process_hybrid_lead_scoring(
-            raw_source_text=combined_raw_text,
-            raw_extracted_payload=raw_mistral_json,
+        math_result = await analyze_lead_intent_with_llm(
+            company_name=company_name,
+            cleaned_html=combined_raw_text,
             firmographics=firmographics,
-            icp_fit_label="Strong"
+            icp_fit_label="Strong",
+            raw_signals=raw_signals_list
         )
+
+        gemini_tokens = math_result.get("gemini_token_usage", {})
+        token_str = f"Prompt: {gemini_tokens.get('prompt_tokens', 0)} | Output: {gemini_tokens.get('completion_tokens', 0)} | Total: {gemini_tokens.get('total_tokens', 0)}" if isinstance(gemini_tokens, dict) else str(gemini_tokens)
 
         now_iso = datetime.now(timezone.utc).isoformat()
         try:
@@ -302,7 +256,7 @@ Analyze the evidence and output strictly valid compact JSON matching the require
         }
 
         final_score = full_lead_payload.get("intent_score", 0)
-        logger.info(f"✅ {company_name} ({domain}) scored {final_score} ({full_lead_payload.get('tier')} / {full_lead_payload.get('intent_classification')}) | 🍷 Mistral Tokens: [{token_str}]")
+        logger.info(f"✅ {company_name} ({domain}) scored {final_score} ({full_lead_payload.get('tier')} / {full_lead_payload.get('intent_classification')}) | ♊ Gemini Tokens: [{token_str}]")
 
         return full_lead_payload
 

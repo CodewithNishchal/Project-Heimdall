@@ -1,0 +1,164 @@
+{
+  "raw_gemini_output": {
+    "company_name": "Teliolabs Communications",
+    "industry": "IT Services and IT Consulting",
+    "company_segment": "Global Professional Services Tech Company",
+    "intent_score": 75,
+    "intent_classification": "HOT",
+    "one_line_reason": "Teliolabs Communications is an IT services company experiencing significant employee growth and employs an internal Senior Technical Recruiter, indicating ongoing and potentially complex hiring needs.",
+    "why_now": "The company has grown its employee count by 20% last year and maintains a global presence, suggesting a continuous demand for talent acquisition support. The presence of a Senior Technical Recruiter highlights an existing internal recruitment function that may require augmentation or specialized external services.",
+    "adjacent_hiring_gap": false,
+    "signal_tags": [
+      {
+        "tag": "Employee Growth",
+        "category": "HIRING"
+      },
+      {
+        "tag": "Internal Recruiter Role",
+        "category": "HIRING"
+      },
+      {
+        "tag": "Global Presence",
+        "category": "EXPANSION"
+      }
+    ],
+    "signals": [
+      {
+        "signal_type": "Employee Growth",
+        "verbatim_quote": "Teliolabs Communications employs 140 people (+10.6% YoY, +19 people)",
+        "source_post_index": 0,
+        "event_date": null,
+        "is_grant": false
+      },
+      {
+        "signal_type": "Employee Growth",
+        "verbatim_quote": "Teliolabs grew their employee count by 20% last year.",
+        "source_post_index": 2,
+        "event_date": null,
+        "is_grant": false
+      },
+      {
+        "signal_type": "Internal Recruiter Role",
+        "verbatim_quote": "Senior Technical Recruiter",
+        "source_post_index": 2,
+        "event_date": null,
+        "is_grant": false
+      },
+      {
+        "signal_type": "Global Presence",
+        "verbatim_quote": "Headquartered in South San Francisco, California, United States, with presence in United Kingdom. Its workforce is distributed across India, United Kingdom, United Arab Emirates, and United States.",
+        "source_post_index": 0,
+        "event_date": null,
+        "is_grant": false
+      }
+    ],
+    "ai_verdict": "Teliolabs Communications, an IT services company, is a hot lead due to significant employee growth (20% last year) and the presence of an internal Senior Technical Recruiter. This indicates a clear and ongoing need for recruitment services, potentially for specialized roles or to support their global expansion. Outreach should focus on how external recruitment solutions can complement their existing internal team and accelerate hiring for their distributed workforce.",
+    "gemini_token_usage": {
+      "prompt_tokens": 1513,
+      "completion_tokens": 666,
+      "thinking_tokens": 0,
+      "total_tokens": 3050,
+      "raw_usage_metadata": {
+        "cached_content_token_count": null,
+        "candidates_token_count": 666,
+        "prompt_token_count": 1513,
+        "total_token_count": 3050
+      }
+    }
+  },
+  "final_scored_output": {
+    "company_name": "Teliolabs Communications",
+    "industry": "IT Services and IT Consulting",
+    "company_segment": "Global Professional Services Tech Company",
+    "intent_score": 100,
+    "intent_classification": "HOT",
+    "one_line_reason": "Teliolabs Communications is an IT services company experiencing significant employee growth and employs an internal Senior Technical Recruiter, indicating ongoing and potentially complex hiring needs.",
+    "signal_freshness": 100,
+    "tier": "High",
+    "icp_fit": "Strong",
+    "adjacent_hiring_gap": false,
+    "signals": [
+      {
+        "signal_type": "Employee Growth",
+        "verbatim_quote": "Teliolabs Communications employs 140 people (+10.6% YoY, +19 people)",
+        "quote_validated": true,
+        "similarity_score": 100.0,
+        "source_url": "https://teliolabs.com/",
+        "recency_label": "3-6 months",
+        "days_old": 180,
+        "score_contribution": 17.5
+      },
+      {
+        "signal_type": "Employee Growth",
+        "verbatim_quote": "Teliolabs grew their employee count by 20% last year.",
+        "quote_validated": true,
+        "similarity_score": 100.0,
+        "source_url": "https://growjo.com/company/Teliolabs",
+        "recency_label": "3-6 months",
+        "days_old": 180,
+        "score_contribution": 17.5
+      },
+      {
+        "signal_type": "Internal Recruiter Role",
+        "verbatim_quote": "Senior Technical Recruiter",
+        "quote_validated": true,
+        "similarity_score": 100.0,
+        "source_url": "https://growjo.com/company/Teliolabs",
+        "recency_label": "3-6 months",
+        "days_old": 180,
+        "score_contribution": 17.5
+      },
+      {
+        "signal_type": "Global Presence",
+        "verbatim_quote": "Headquartered in South San Francisco, California, United States, with presence in United Kingdom. Its workforce is distributed across India, United Kingdom, United Arab Emirates, and United States.",
+        "quote_validated": true,
+        "similarity_score": 100.0,
+        "source_url": "https://teliolabs.com/",
+        "recency_label": "3-6 months",
+        "days_old": 180,
+        "score_contribution": 17.5
+      }
+    ],
+    "why_now": "The company has grown its employee count by 20% last year and maintains a global presence, suggesting a continuous demand for talent acquisition support. The presence of a Senior Technical Recruiter highlights an existing internal recruitment function that may require augmentation or specialized external services.",
+    "signal_tags": [
+      {
+        "tag": "Employee Growth",
+        "category": "HIRING",
+        "color_theme": "emerald"
+      },
+      {
+        "tag": "Internal Recruiter Role",
+        "category": "HIRING",
+        "color_theme": "emerald"
+      },
+      {
+        "tag": "Global Presence",
+        "category": "EXPANSION",
+        "color_theme": "amber"
+      }
+    ],
+    "gemini_token_usage": {
+      "prompt_tokens": 1513,
+      "completion_tokens": 666,
+      "thinking_tokens": 0,
+      "total_tokens": 3050,
+      "raw_usage_metadata": {
+        "cached_content_token_count": null,
+        "candidates_token_count": 666,
+        "prompt_token_count": 1513,
+        "total_token_count": 3050
+      }
+    },
+    "scoring_breakdown": {
+      "base_ai_score": 75,
+      "multi_category_bonus": 10.0,
+      "adjacent_hiring_bonus": 0.0,
+      "signal_categories_detected": [
+        "HIRING",
+        "EXPANSION"
+      ],
+      "final_math_score": 100
+    },
+    "ai_verdict": "Teliolabs Communications, an IT services company, is a hot lead due to significant employee growth (20% last year) and the presence of an internal Senior Technical Recruiter. This indicates a clear and ongoing need for recruitment services, potentially for specialized roles or to support their global expansion. Outreach should focus on how external recruitment solutions can complement their existing internal team and accelerate hiring for their distributed workforce."
+  }
+}
