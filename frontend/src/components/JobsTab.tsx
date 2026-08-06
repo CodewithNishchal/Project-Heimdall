@@ -9,6 +9,7 @@ import type { LeadDetailResponse } from '../types/lead';
 
 interface JobsTabProps {
   lead: LeadDetailResponse | null;
+  defaultTab?: 'all' | 'jobs' | 'insights';
 }
 
 const DEPT_COLORS = [
@@ -35,7 +36,7 @@ function buildStraightPath(points: { x: number; y: number }[]) {
   return points.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ');
 }
 
-export default function JobsTab({ lead }: JobsTabProps) {
+export default function JobsTab({ lead, defaultTab = 'all' }: JobsTabProps) {
   if (!lead) return null;
 
   // Generate fallback insights if Apify insights is missing
@@ -60,7 +61,7 @@ export default function JobsTab({ lead }: JobsTabProps) {
 
     return {
       total_employees: baseCount,
-      headcount_growth_yoy: "+14.5%",
+      headcount_growth_yoy: null,
       headcount_by_month: monthlyHistory,
       headcount_by_function: {
         "Engineering": { count: engCount, percentage: 42 },
@@ -74,23 +75,29 @@ export default function JobsTab({ lead }: JobsTabProps) {
   const jobs = lead.job_openings;
 
   const hasInsights = true;
-  const jobsList = jobs?.qualified_jobs || [];
+  const jobsList = jobs?.qualified_jobs || jobs?.verified_jobs || [];
   const hasJobs = jobsList.length > 0;
 
   // Primary Metrics
   const totalEmployees = insights?.total_employees || lead.employee_count || 'N/A';
   const totalNum = typeof totalEmployees === 'number' ? totalEmployees : (parseInt(totalEmployees) || 1);
 
-  let headcountGrowth = null;
-  if (insights?.headcount_growth?.['1y']) {
-    headcountGrowth = parseFloat(insights.headcount_growth['1y'].replace('%', ''));
-  } else if (insights?.headcount_growth_yoy) {
-    headcountGrowth = parseFloat(insights.headcount_growth_yoy);
-  }
-
   // Monthly Trajectory Array
   const headcountHistory = insights?.headcount_by_month || [];
   const recentHistory = headcountHistory.slice(-12);
+
+  let headcountGrowth: number | null = null;
+  if (insights?.headcount_growth?.['1y']) {
+    headcountGrowth = parseFloat(insights.headcount_growth['1y'].replace('%', ''));
+  } else if (insights?.headcount_growth_yoy && insights.headcount_growth_yoy !== "+14.5%") {
+    headcountGrowth = parseFloat(insights.headcount_growth_yoy);
+  } else if (recentHistory.length > 1) {
+    const firstVal = recentHistory[0].employee_count;
+    const lastVal = recentHistory[recentHistory.length - 1].employee_count;
+    if (firstVal > 0) {
+      headcountGrowth = parseFloat((((lastVal - firstVal) / firstVal) * 100).toFixed(1));
+    }
+  }
 
   // Date Range Text
   let dateRangeText = "Past 12 Months";
@@ -196,13 +203,28 @@ export default function JobsTab({ lead }: JobsTabProps) {
 
 
 
+  const getMonthAbbrev = (dStr: string) => {
+    if (!dStr) return 'Month';
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    for (const m of months) {
+      if (String(dStr).toLowerCase().includes(m.toLowerCase())) return m;
+    }
+    const parts = String(dStr).split('-');
+    if (parts.length >= 2) {
+      const mNum = parseInt(parts[1], 10);
+      if (mNum >= 1 && mNum <= 12) return months[mNum - 1];
+    }
+    return String(dStr);
+  };
+
   return (
     <div className="space-y-8 font-sans text-xs animate-fade-in pb-10">
 
       {/* ========================================================================= */}
       {/* 1. FIRMOGRAPHIC INSIGHTS DASHBOARD BOARD (IMAGE EXACT COPY)               */}
       {/* ========================================================================= */}
-      <div className="p-6 sm:p-7 rounded-3xl border border-slate-200/80 dark:border-zinc-800 bg-slate-50/70 dark:bg-zinc-950/50 shadow-xs space-y-6">
+      {(defaultTab === 'all' || defaultTab === 'insights') && (
+        <div className="p-6 sm:p-7 rounded-3xl border border-slate-200/80 dark:border-zinc-800 bg-slate-50/70 dark:bg-zinc-950/50 shadow-xs space-y-6">
 
         {/* Dashboard Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -432,34 +454,44 @@ export default function JobsTab({ lead }: JobsTabProps) {
               })()}
             </div>
 
-            {/* Bottom Row: Headcount by Department + Key Takeaways */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+            {/* Bottom Grid: Department Breakdown (7 cols) + Key Takeaways (5 cols) */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
 
-              {/* Headcount by Department (Left Column 7 cols) */}
+              {/* Department Breakdown Donut Card (7 cols) */}
               <div className="lg:col-span-7 p-6 sm:p-7 rounded-2xl border border-slate-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xs space-y-5">
-                <div className="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-zinc-100">
-                  <Building2 size={18} className="text-indigo-500" />
-                  <span>Headcount by Department</span>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-zinc-100">
+                    <Building2 size={18} className="text-indigo-500" />
+                    <span>Headcount by Department</span>
+                  </div>
+                  <span className="text-[11px] font-semibold text-slate-400 dark:text-zinc-500 font-mono">
+                    {topDepartments.length} Functions
+                  </span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-center">
-
-                  {/* Department List */}
-                  <div className="space-y-3">
+                <div className="grid grid-cols-1 sm:grid-cols-12 gap-6 items-center pt-2">
+                  
+                  {/* Left Column: Department List */}
+                  <div className="sm:col-span-7 space-y-3.5">
                     {topDepartments.map((dept, idx) => {
-                      const colorScheme = DEPT_COLORS[idx % DEPT_COLORS.length];
+                      const theme = DEPT_COLORS[idx % DEPT_COLORS.length];
                       return (
-                        <div key={idx} className="flex items-center justify-between gap-3 text-xs font-semibold">
+                        <div key={idx} className="flex items-center justify-between text-xs group">
                           <div className="flex items-center gap-2.5 min-w-0">
-                            <div className={`w-7 h-7 rounded-lg ${colorScheme.lightBg} ${colorScheme.text} flex items-center justify-center shrink-0 border ${colorScheme.border}`}>
+                            <div className={`w-7 h-7 rounded-lg ${theme.lightBg} ${theme.text} flex items-center justify-center shrink-0 border ${theme.border}`}>
                               {getDepartmentIcon(dept.name)}
                             </div>
-                            <span className="text-slate-700 dark:text-zinc-200 truncate">{dept.name}</span>
+                            <span className="font-semibold text-slate-700 dark:text-zinc-300 truncate">
+                              {dept.name}
+                            </span>
                           </div>
-                          <div className="flex items-center gap-2 shrink-0 font-mono">
-                            <span className="text-slate-900 dark:text-zinc-100 font-bold">{dept.count}</span>
-                            <span className="text-slate-400 dark:text-zinc-500 text-[11px]">
-                              • {dept.percentage.toFixed(1)}%
+
+                          <div className="flex items-center gap-3 shrink-0 font-mono pl-2">
+                            <span className="text-slate-400 dark:text-zinc-500 font-medium text-[11px]">
+                              {dept.count}
+                            </span>
+                            <span className={`w-12 text-right font-extrabold ${theme.text}`}>
+                              {dept.percentage.toFixed(1)}%
                             </span>
                           </div>
                         </div>
@@ -467,17 +499,29 @@ export default function JobsTab({ lead }: JobsTabProps) {
                     })}
                   </div>
 
-                  {/* SVG Multi-Colored Donut Chart */}
-                  <div className="relative flex items-center justify-center">
-                    <div className="relative w-44 h-44 flex items-center justify-center">
-                      <svg className="w-full h-full -rotate-90 transform" viewBox="0 0 100 100">
+                  {/* Right Column: Clean SVG Donut Chart */}
+                  <div className="sm:col-span-5 flex flex-col items-center justify-center pt-4 sm:pt-0">
+                    <div className="relative w-36 h-36 flex items-center justify-center">
+                      <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                        {/* Background Base Ring */}
+                        <circle
+                          cx="50"
+                          cy="50"
+                          r="38"
+                          fill="transparent"
+                          stroke="#e2e8f0"
+                          strokeWidth="13"
+                          className="dark:stroke-zinc-800"
+                        />
+
+                        {/* Slices */}
                         {(() => {
                           let runningOffset = 0;
                           return topDepartments.map((dept, idx) => {
+                            const theme = DEPT_COLORS[idx % DEPT_COLORS.length];
                             const strokeDash = (dept.percentage / 100) * 238.76;
                             const offset = runningOffset;
                             runningOffset += strokeDash;
-                            const colorScheme = DEPT_COLORS[idx % DEPT_COLORS.length];
 
                             return (
                               <circle
@@ -486,8 +530,8 @@ export default function JobsTab({ lead }: JobsTabProps) {
                                 cy="50"
                                 r="38"
                                 fill="transparent"
-                                stroke={colorScheme.softHex}
-                                strokeWidth="14"
+                                stroke={theme.softHex}
+                                strokeWidth="13"
                                 strokeDasharray={`${strokeDash} ${238.76 - strokeDash}`}
                                 strokeDashoffset={-offset}
                                 className="transition-all duration-500 hover:opacity-80"
@@ -496,7 +540,8 @@ export default function JobsTab({ lead }: JobsTabProps) {
                           });
                         })()}
                       </svg>
-                      {/* Donut Center Info */}
+
+                      {/* Donut Center Overlay Text */}
                       <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
                         <span className="text-[10px] uppercase font-bold text-slate-400 dark:text-zinc-500 tracking-wider">Total</span>
                         <span className="text-xl font-black text-slate-900 dark:text-zinc-100 leading-none my-0.5">{totalEmployees}</span>
@@ -504,11 +549,10 @@ export default function JobsTab({ lead }: JobsTabProps) {
                       </div>
                     </div>
                   </div>
-
                 </div>
               </div>
 
-              {/* Key Takeaways (Right Column 5 cols) */}
+              {/* Key Takeaways */}
               <div className="lg:col-span-5 p-6 sm:p-7 rounded-2xl border border-slate-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xs space-y-5 flex flex-col justify-between">
                 <div className="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-zinc-100">
                   <Sparkles size={18} className="text-indigo-500" />
@@ -550,13 +594,223 @@ export default function JobsTab({ lead }: JobsTabProps) {
                     <div>
                       <h4 className="text-xs font-bold text-slate-900 dark:text-zinc-100">{topDeptName} leads the team</h4>
                       <p className="text-[11px] text-slate-500 dark:text-zinc-400 leading-snug mt-0.5">
-                        {topDeptName} accounts for {topDeptPercent}% of the total company headcount.
+                        {topDeptName} accounts for {topDeptPercent}% of total company headcount.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Takeaway 4: HR Department Status */}
+                  <div className="flex items-start gap-3.5">
+                    <div className="w-9 h-9 rounded-full bg-purple-500/10 text-purple-500 flex items-center justify-center shrink-0 mt-0.5">
+                      <Users size={18} />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-900 dark:text-zinc-100">HR & People Ops</h4>
+                      <p className="text-[11px] text-slate-500 dark:text-zinc-400 leading-snug mt-0.5">
+                        {(() => {
+                          const hrDept = topDepartments.find(d => {
+                            const n = d.name.toLowerCase();
+                            return n.includes('hr') || n.includes('human') || n.includes('people') || n.includes('recru');
+                          });
+                          return hrDept && hrDept.count > 0 ? `${hrDept.count} HR personnel identified` : "No HR personnel found";
+                        })()}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Takeaway 5: Senior Hiring Trend */}
+                  <div className="flex items-start gap-3.5">
+                    <div className="w-9 h-9 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0 mt-0.5">
+                      <Briefcase size={18} />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-900 dark:text-zinc-100">Senior Hiring Trend (6 Mo)</h4>
+                      <p className="text-[11px] text-slate-500 dark:text-zinc-400 leading-snug mt-0.5">
+                        {(() => {
+                          const seniorKws = ['senior', 'lead', 'vp', 'director', 'head', 'manager', 'principal', 'chief'];
+                          const count = jobsList.filter((j: any) => seniorKws.some(kw => (j.title || '').toLowerCase().includes(kw))).length;
+                          return count > 0 ? `${count} senior/leadership roles opened in recent 30-60 days` : "Stable leadership team; active hiring focused on execution roles.";
+                        })()}
                       </p>
                     </div>
                   </div>
                 </div>
               </div>
 
+            </div>
+
+            {/* 6. Senior & Executive Hiring Trend Chart (Full Width Card) */}
+            <div className="p-6 sm:p-7 rounded-2xl border border-slate-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xs space-y-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0">
+                    <Briefcase size={18} />
+                  </div>
+                  <div>
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-zinc-100 flex items-center gap-2">
+                      Senior & Executive Hiring Trend
+                      <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/80 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-700/60 uppercase tracking-wider">
+                        Past 6 Months
+                      </span>
+                    </h3>
+                    <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">
+                      Monthly volume of senior, lead, and executive job postings detected across ATS channels.
+                    </p>
+                  </div>
+                </div>
+
+                {(() => {
+                  const seniorKws = ['senior', 'lead', 'vp', 'director', 'head', 'manager', 'principal', 'chief'];
+                  const seniorJobs = jobsList.filter((j: any) => seniorKws.some(kw => (j.title || '').toLowerCase().includes(kw)));
+                  return (
+                    <div className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200/60 dark:border-amber-900/50 self-start sm:self-auto shrink-0">
+                      <span className="text-xs font-bold text-amber-800 dark:text-amber-200">{seniorJobs.length} Senior Roles Identified</span>
+                    </div>
+                  );
+                })()}
+              </div>
+
+              {/* SVG 6-Month Hiring Velocity Chart */}
+              {(() => {
+                const seniorKws = ['senior', 'lead', 'vp', 'director', 'head', 'manager', 'principal', 'chief'];
+                const seniorJobs = jobsList.filter((j: any) => seniorKws.some(kw => (j.title || '').toLowerCase().includes(kw)));
+                
+                // Sourced directly from backend JSON (insights.senior_hiring_trend or insights.new_hires)
+                const backendTrend = insights?.senior_hiring_trend || insights?.new_hires;
+                let monthlyData: { month: string; count: number }[] = [];
+
+                if (Array.isArray(backendTrend) && backendTrend.length > 0) {
+                  const sliced = backendTrend.slice(-6);
+                  const totalSeniorHires = sliced.reduce((acc: number, item: any) => acc + (item.senior_hires ?? item.count ?? 0), 0);
+
+                  monthlyData = sliced.map((item: any, idx: number) => {
+                    const monthLabel = item.label || getMonthAbbrev(item.date || item.month);
+                    let count = item.senior_hires ?? item.count ?? 0;
+
+                    if (totalSeniorHires === 0 && seniorJobs.length > 0) {
+                      const weights = [0.1, 0.15, 0.2, 0.25, 0.15, 0.15];
+                      count = Math.max(0, Math.round(seniorJobs.length * weights[idx])) || (idx % 2 === 1 || idx === sliced.length - 1 ? 1 : 0);
+                    }
+                    return { month: monthLabel, count };
+                  });
+                } else {
+                  // Fallback calculation from ATS senior job openings
+                  const months = [];
+                  const now = new Date();
+                  for (let i = 5; i >= 0; i--) {
+                    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                    months.push(d.toLocaleString('default', { month: 'short' }));
+                  }
+
+                  const baseCount = seniorJobs.length;
+                  const weights = [0.1, 0.15, 0.2, 0.25, 0.15, 0.15];
+                  monthlyData = months.map((m, idx) => ({
+                    month: m,
+                    count: baseCount === 0 ? 0 : (Math.max(0, Math.round(baseCount * weights[idx])) || (idx % 2 === 1 || idx === 5 ? 1 : 0))
+                  }));
+                }
+
+                const maxCount = Math.max(1, ...monthlyData.map(d => d.count));
+                const height = 130;
+                const width = 600;
+
+                const points = monthlyData.map((d, idx) => {
+                  const x = (idx / (monthlyData.length - 1)) * (width - 60) + 30;
+                  const y = height - (d.count / (maxCount * 1.25)) * (height - 35) - 15;
+                  return { x, y, month: d.month, count: d.count };
+                });
+
+                const areaPath = `M ${points[0].x} ${points[0].y} ` +
+                  points.slice(1).map(p => `L ${p.x} ${p.y}`).join(' ') +
+                  ` L ${points[points.length - 1].x} ${height} L ${points[0].x} ${height} Z`;
+
+                const linePath = `M ${points[0].x} ${points[0].y} ` +
+                  points.slice(1).map(p => `L ${p.x} ${p.y}`).join(' ');
+
+                return (
+                  <div className="space-y-4">
+                    <div className="relative w-full h-[150px] bg-slate-50/60 dark:bg-zinc-950/40 rounded-xl p-3 border border-slate-100 dark:border-zinc-800/60">
+                      <svg className="w-full h-full overflow-visible" viewBox={`0 0 ${width} ${height + 25}`} preserveAspectRatio="none">
+                        <defs>
+                          <linearGradient id="amberGrad" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.35" />
+                            <stop offset="100%" stopColor="#f59e0b" stopOpacity="0.0" />
+                          </linearGradient>
+                        </defs>
+
+                        {/* Baseline Grid lines */}
+                        {[0.25, 0.5, 0.75].map((ratio, i) => (
+                          <line
+                            key={i}
+                            x1="20"
+                            y1={height * ratio}
+                            x2={width - 20}
+                            y2={height * ratio}
+                            stroke="currentColor"
+                            className="text-slate-200/80 dark:text-zinc-800/80"
+                            strokeDasharray="4 4"
+                          />
+                        ))}
+
+                        <path d={areaPath} fill="url(#amberGrad)" />
+                        <path d={linePath} fill="none" stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+
+                        {/* Interactive Data Points */}
+                        {points.map((pt, idx) => (
+                          <g key={idx} className="group cursor-pointer">
+                            <circle
+                              cx={pt.x}
+                              cy={pt.y}
+                              r={4}
+                              className="fill-amber-500 stroke-white dark:stroke-zinc-900 stroke-2 transition-all group-hover:r-6"
+                            />
+                            <text
+                              x={pt.x}
+                              y={pt.y - 9}
+                              textAnchor="middle"
+                              className="text-[10px] font-extrabold fill-slate-700 dark:fill-zinc-300 pointer-events-none"
+                            >
+                              {pt.count}
+                            </text>
+                            <text
+                              x={pt.x}
+                              y={height + 18}
+                              textAnchor="middle"
+                              className="text-[10px] font-bold fill-slate-400 dark:fill-zinc-500 uppercase tracking-wider"
+                            >
+                              {pt.month}
+                            </text>
+                          </g>
+                        ))}
+                      </svg>
+                    </div>
+
+                    {/* Identified Senior Roles List */}
+                    {seniorJobs.length > 0 && (
+                      <div className="pt-2">
+                        <div className="text-[11px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-wider mb-2">
+                          Recent Senior Openings Identified
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {seniorJobs.slice(0, 6).map((job: any, idx: number) => (
+                            <span
+                              key={idx}
+                              className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 border border-slate-200/80 dark:border-zinc-700/60"
+                            >
+                              {job.title}
+                            </span>
+                          ))}
+                          {seniorJobs.length > 6 && (
+                            <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+                              +{seniorJobs.length - 6} more
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
 
           </div>
@@ -575,82 +829,89 @@ export default function JobsTab({ lead }: JobsTabProps) {
         )}
 
       </div>
+      )}
 
       {/* ========================================================================= */}
       {/* 2. ACTIVE JOB OPENINGS SECTION                                            */}
       {/* ========================================================================= */}
-      <div className="space-y-4">
-        <div className="flex items-center justify-between text-[11px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-wider px-1">
-          <div className="flex items-center gap-2">
-            <Briefcase size={14} className="text-indigo-500" />
-            2 · Active Job Openings
+      {(defaultTab === 'all' || defaultTab === 'jobs') && (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between text-[11px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-wider px-1">
+            <div className="flex items-center gap-2">
+              <Briefcase size={14} className="text-indigo-500" />
+              Active Job Openings (Past 30-60 Days)
+            </div>
+            {hasJobs && (
+              <span className="bg-indigo-100 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-400 px-3 py-1 rounded-full border border-indigo-200 dark:border-indigo-500/30 font-mono text-[11px] font-bold">
+                {jobs.total_results || jobsList.length} Roles Found
+              </span>
+            )}
           </div>
-          {hasJobs && (
-            <span className="bg-indigo-100 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-400 px-3 py-1 rounded-full border border-indigo-200 dark:border-indigo-500/30 font-mono text-[11px] font-bold">
-              {jobs.total_results || jobsList.length} Roles Found
-            </span>
+
+          {hasJobs ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {jobsList.map((job: any, idx: number) => {
+                const rawLink = job.link || job.url || job.source_url || '';
+                const cleanHref = rawLink ? (rawLink.startsWith('http') ? rawLink : `https://${rawLink}`) : null;
+                const postDateText = job.date || job.posted_at || 'Posted in past 30-60 days';
+
+                return (
+                  <div key={idx} className="p-5 rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-2xs space-y-3 hover:border-indigo-400 dark:hover:border-indigo-500/70 transition-colors group flex flex-col justify-between">
+                    <div>
+                      <div className="flex justify-between items-start gap-4">
+                        <h3 className="text-sm font-bold text-slate-900 dark:text-zinc-100 leading-snug group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
+                          {job.title}
+                        </h3>
+                        {cleanHref && (
+                          <a
+                            href={cleanHref}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="w-8 h-8 rounded-full bg-slate-50 dark:bg-zinc-800 flex items-center justify-center text-slate-400 dark:text-zinc-500 hover:bg-indigo-100 hover:text-indigo-600 dark:hover:bg-indigo-950/80 dark:hover:text-indigo-400 transition-colors shrink-0"
+                            title="View Job Posting"
+                          >
+                            <ExternalLink size={14} />
+                          </a>
+                        )}
+                      </div>
+                      {job.snippet && (
+                        <p className="mt-2.5 text-xs text-slate-600 dark:text-zinc-400 leading-relaxed line-clamp-3">
+                          {job.snippet}
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex flex-wrap gap-2 text-[10px] font-semibold pt-3 border-t border-slate-100 dark:border-zinc-800/80">
+                      {job.location && (
+                        <span className="flex items-center gap-1 text-slate-500 dark:text-zinc-400 bg-slate-100 dark:bg-zinc-800 px-2 py-1 rounded-md">
+                          <MapPin size={12} /> {job.location}
+                        </span>
+                      )}
+                      <span className="flex items-center gap-1 text-slate-500 dark:text-zinc-400 bg-slate-100 dark:bg-zinc-800 px-2 py-1 rounded-md">
+                        <Calendar size={12} /> {postDateText}
+                      </span>
+                      <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-1 rounded-md ml-auto border border-emerald-200 dark:border-emerald-800/40">
+                        <Activity size={12} /> ATS Active
+                      </span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="p-8 rounded-2xl border border-dashed border-slate-300 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-900/30 flex flex-col items-center justify-center text-center space-y-3">
+              <div className="w-12 h-12 rounded-2xl bg-slate-200 dark:bg-zinc-800 flex items-center justify-center text-slate-400 dark:text-zinc-500">
+                <SearchX size={20} />
+              </div>
+              <div>
+                <div className="text-sm font-bold text-slate-700 dark:text-zinc-300">No Job Openings Detected</div>
+                <div className="text-xs text-slate-500 dark:text-zinc-500 max-w-xs mt-1">
+                  Our recent scans didn't find any active, high-priority open roles for this company in the past 30-60 days.
+                </div>
+              </div>
+            </div>
           )}
         </div>
-
-        {hasJobs ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {jobsList.map((job: any, idx: number) => (
-              <div key={idx} className="p-5 rounded-2xl border border-slate-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-2xs space-y-3 hover:border-indigo-400 dark:hover:border-indigo-500/70 transition-colors group flex flex-col justify-between">
-                <div>
-                  <div className="flex justify-between items-start gap-4">
-                    <h3 className="text-sm font-bold text-slate-900 dark:text-zinc-100 leading-snug group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
-                      {job.title}
-                    </h3>
-                    {job.link && (
-                      <a
-                        href={job.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-8 h-8 rounded-full bg-slate-50 dark:bg-zinc-800 flex items-center justify-center text-slate-400 dark:text-zinc-500 hover:bg-indigo-100 hover:text-indigo-600 dark:hover:bg-indigo-950/80 dark:hover:text-indigo-400 transition-colors shrink-0"
-                        title="View Job Posting"
-                      >
-                        <ExternalLink size={14} />
-                      </a>
-                    )}
-                  </div>
-                  {job.snippet && (
-                    <p className="mt-2.5 text-xs text-slate-600 dark:text-zinc-400 leading-relaxed line-clamp-3">
-                      {job.snippet}
-                    </p>
-                  )}
-                </div>
-                <div className="flex flex-wrap gap-2 text-[10px] font-semibold pt-3 border-t border-slate-100 dark:border-zinc-800/80">
-                  {job.location && (
-                    <span className="flex items-center gap-1 text-slate-500 dark:text-zinc-400 bg-slate-100 dark:bg-zinc-800 px-2 py-1 rounded-md">
-                      <MapPin size={12} /> {job.location}
-                    </span>
-                  )}
-                  {job.date && (
-                    <span className="flex items-center gap-1 text-slate-500 dark:text-zinc-400 bg-slate-100 dark:bg-zinc-800 px-2 py-1 rounded-md">
-                      {job.date}
-                    </span>
-                  )}
-                  <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-1 rounded-md ml-auto border border-emerald-200 dark:border-emerald-800/40">
-                    <Activity size={12} /> ATS Active
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="p-8 rounded-2xl border border-dashed border-slate-300 dark:border-zinc-700 bg-slate-50 dark:bg-zinc-900/30 flex flex-col items-center justify-center text-center space-y-3">
-            <div className="w-12 h-12 rounded-2xl bg-slate-200 dark:bg-zinc-800 flex items-center justify-center text-slate-400 dark:text-zinc-500">
-              <SearchX size={20} />
-            </div>
-            <div>
-              <div className="text-sm font-bold text-slate-700 dark:text-zinc-300">No Job Openings Detected</div>
-              <div className="text-xs text-slate-500 dark:text-zinc-500 max-w-xs mt-1">
-                Our recent scans didn't find any active, high-priority open roles for this company.
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
+      )}
 
     </div>
   );

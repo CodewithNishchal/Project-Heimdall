@@ -1,11 +1,49 @@
 import asyncio
 import json
 import os
+import re
 import uuid
 import logging
 import httpx
 from typing import List, Dict, Any, Optional
 from datetime import datetime, timezone
+
+
+def extract_revenue_from_exa_text(text: str, structured_out: Optional[dict] = None) -> Optional[str]:
+    if structured_out and isinstance(structured_out, dict):
+        content = structured_out.get("content") if isinstance(structured_out.get("content"), dict) else structured_out
+        rev_val = content.get("arr_estimate") or content.get("annual_revenue") or content.get("revenueAnnual")
+
+        if isinstance(rev_val, (int, float)) and rev_val > 0:
+            if rev_val >= 1_000_000_000:
+                return f"${rev_val / 1_000_000_000:.1f}B"
+            elif rev_val >= 1_000_000:
+                return f"${rev_val / 1_000_000:.1f}M"
+            else:
+                return f"${rev_val:,.0f}"
+        elif isinstance(rev_val, str) and rev_val.strip():
+            m = re.search(r'\$([\d\.]+\s*[MKB]?)', rev_val)
+            if m:
+                return f"~${m.group(1).strip()}"
+            return rev_val.strip()
+
+    if not text:
+        return None
+
+    patterns = [
+        r'(?i)(?:annual\s+revenue|revenue|arr)\s*(?:of|is|=|:)?\s*~\s*\$?\s*([\d\.]+\s*[MKB]|\$[\d\.]+\s*[MKB]?)',
+        r'(?i)\$\s*([\d\.]+\s*[MKB])\s*(?:annual\s+revenue|arr|revenue)',
+        r'(?i)(?:annual\s+revenue|revenue|arr)\s*(?:of|is|=|:)?\s*\$?\s*([\d\.]+\s*-\s*\$?[\d\.]+\s*[MKB]|\$?[\d\.]+\s*[MKB]?)',
+        r'(?i)USD\s+([\d,]+)'
+    ]
+    for pat in patterns:
+        m = re.search(pat, text)
+        if m:
+            val = m.group(1).strip()
+            if not val.startswith("$") and not val.startswith("USD"):
+                return f"~${val}"
+            return val
+    return None
 from dotenv import load_dotenv
 
 load_dotenv(os.path.join(os.path.dirname(__file__), "..", ".env"))
@@ -201,6 +239,7 @@ async def process_single_company(
         combined_raw_text = ""
         url_index_map = {}
         source_counter = 1
+        structured_out = None
 
         async with httpx.AsyncClient(timeout=30.0) as client:
             # -----------------------------------------------------------------
@@ -368,6 +407,8 @@ async def process_single_company(
                 "color_theme": SIGNAL_COLOR_MAP.get(cat, "indigo")
             })
 
+        extracted_rev = extract_revenue_from_exa_text(combined_raw_text, structured_out=structured_out) or firmographics.get("annual_revenue")
+
         full_lead_payload = {
             **math_result,
             "id": str(uuid.uuid4()),
@@ -375,6 +416,7 @@ async def process_single_company(
             "company_name": company_name,
             "employee_count": firmographics.get("employee_count") or 150,
             "funding_stage": funding_stage,
+            "annual_revenue": extracted_rev,
             "signal_tags": enriched_signal_tags,
             "badge": "new_today",
             "confidence": {
@@ -453,6 +495,7 @@ def save_lead_to_db(lead_payload: Dict[str, Any]) -> None:
             existing.industry = lead_payload.get("industry")
             existing.employee_count = lead_payload.get("employee_count")
             existing.funding_stage = str(lead_payload.get("funding_stage"))
+            existing.annual_revenue = lead_payload.get("annual_revenue")
             existing.intent_score = lead_payload.get("intent_score", 0)
             existing.tier = lead_payload.get("tier")
             existing.icp_fit = lead_payload.get("icp_fit")
@@ -474,6 +517,7 @@ def save_lead_to_db(lead_payload: Dict[str, Any]) -> None:
                 industry=lead_payload.get("industry"),
                 employee_count=lead_payload.get("employee_count"),
                 funding_stage=str(lead_payload.get("funding_stage")),
+                annual_revenue=lead_payload.get("annual_revenue"),
                 intent_score=lead_payload.get("intent_score", 0),
                 signal_freshness=100,
                 tier=lead_payload.get("tier"),

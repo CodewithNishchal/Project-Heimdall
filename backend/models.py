@@ -27,6 +27,7 @@ class LeadSnapshot(Base):
     signal_tags = Column(JSON, nullable=True, default=list)
     ai_verdict = Column(Text, nullable=True)
     company_linkedin_id = Column(String, nullable=True)
+    annual_revenue = Column(String, nullable=True)
     company_insights = Column(JSON, nullable=True)
     job_openings = Column(JSON, nullable=True)
     full_payload = Column(JSON, nullable=True)

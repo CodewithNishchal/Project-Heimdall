@@ -462,7 +462,7 @@ OUTPUT JSON SCHEMA:
       "is_grant": false
     }}
   ],
-  "ai_verdict": "Concise 2-sentence summary detailing verified intent triggers and outreach strategy."
+  "ai_verdict": "Comprehensive 3-sentence summary giving overall picture/findings of the company and explicitly answering: 'Is this a good business/company to reach out to for the recruitment service?'"
 }}"""
 
                 user_prompt = f"""Analyze candidate company: {company_name}

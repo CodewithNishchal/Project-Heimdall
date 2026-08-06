@@ -34,6 +34,7 @@ try:
             conn.execute(text("ALTER TABLE lead_snapshots ADD COLUMN IF NOT EXISTS company_segment VARCHAR(255) DEFAULT 'Growth Scale-up';"))
             conn.execute(text("ALTER TABLE lead_snapshots ADD COLUMN IF NOT EXISTS why_now TEXT DEFAULT 'Verified public buying intent triggers detected.';"))
             conn.execute(text("ALTER TABLE lead_snapshots ADD COLUMN IF NOT EXISTS signal_tags JSONB DEFAULT '[]'::jsonb;"))
+            conn.execute(text("ALTER TABLE lead_snapshots ADD COLUMN IF NOT EXISTS annual_revenue TEXT;"))
             conn.execute(text("ALTER TABLE social_posts ADD COLUMN IF NOT EXISTS summary TEXT;"))
         else:
             try:
@@ -50,6 +51,10 @@ try:
                 pass
             try:
                 conn.execute(text("ALTER TABLE social_posts ADD COLUMN summary TEXT;"))
+            except Exception:
+                pass
+            try:
+                conn.execute(text("ALTER TABLE lead_snapshots ADD COLUMN annual_revenue TEXT;"))
             except Exception:
                 pass
         conn.commit()

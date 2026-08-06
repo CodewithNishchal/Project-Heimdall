@@ -25,6 +25,12 @@ def run_migration():
             print(f"⚠️ Could not add company_insights: {e}")
             
         try:
+            conn.execute(text("ALTER TABLE lead_snapshots ADD COLUMN IF NOT EXISTS annual_revenue TEXT;"))
+            print("✅ Added annual_revenue column")
+        except Exception as e:
+            print(f"⚠️ Could not add annual_revenue: {e}")
+
+        try:
             conn.execute(text("ALTER TABLE lead_snapshots ADD COLUMN job_openings JSONB;"))
             print("✅ Added job_openings column")
         except Exception as e:

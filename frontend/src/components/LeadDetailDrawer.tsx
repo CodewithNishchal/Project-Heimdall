@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ExternalLink, Building2, Users, DollarSign, Globe, Target, Bookmark, Mail, Sparkles, Copy, Check, Flame, Zap, ChevronUp, ChevronDown, Compass, FileText, Signal, Filter, MapPin, Calendar, Briefcase, Link as LinkIcon, MessageSquare, Megaphone, TrendingUp, Bell, Info, Activity } from 'lucide-react';
+import { X, ExternalLink, Building2, Users, DollarSign, Globe, Target, Bookmark, Mail, Sparkles, Copy, Check, Flame, Zap, ChevronUp, ChevronDown, Compass, FileText, Signal, Filter, MapPin, Calendar, Briefcase, Link as LinkIcon, MessageSquare, Megaphone, TrendingUp, Bell, Info, Activity, LineChart } from 'lucide-react';
 import type { LeadDetailResponse } from '../types/lead';
 import PitcherMode from './PitcherMode';
 import JobsTab from './JobsTab';
@@ -72,7 +72,7 @@ export default function LeadDetailDrawer({
   onSelectLead,
   allLeads = [],
 }: LeadDetailDrawerProps) {
-  const [activeTab, setActiveTab] = useState<'about' | 'people' | 'signals' | 'jobs'>('signals');
+  const [activeTab, setActiveTab] = useState<'about' | 'people' | 'signals' | 'jobs' | 'insights'>('signals');
   const [copiedEmail, setCopiedEmail] = useState<string | null>(null);
   const [showPitcher, setShowPitcher] = useState(false);
 
@@ -152,8 +152,9 @@ export default function LeadDetailDrawer({
     return list;
   }, [lead, websiteUrl, behaviorFilter, sortOrder]);
 
-  const signalsCount = lead && Array.isArray(lead.signals) ? lead.signals.length : 3;
-  const contactsCount = lead && Array.isArray(lead.contacts) ? lead.contacts.length : 2;
+  const signalsCount = lead && Array.isArray(lead.signals) ? lead.signals.length : 0;
+  const contactsCount = lead && Array.isArray(lead.contacts) ? lead.contacts.length : 0;
+  const jobsCount = lead?.job_openings?.verified_jobs?.length ?? lead?.job_openings?.qualified_jobs?.length ?? (Array.isArray(lead?.job_openings) ? lead.job_openings.length : 0);
 
   // Compute dynamic ICP Fit label (>75 Strong, 50-75 Partial, <50 Poor)
   const icpFitLabel = useMemo(() => {
@@ -435,6 +436,7 @@ export default function LeadDetailDrawer({
 
             {/* 3. Sub-Tab Navigation Bar (Horizontal Scrollable on Mobile) */}
             <div className="side-drawer-tabs px-3 sm:px-6 py-2 border-b border-nexa-border bg-nexa-surface flex items-center gap-1.5 sm:gap-2 text-xs font-semibold overflow-x-auto no-scrollbar scroll-smooth whitespace-nowrap">
+              {/* 1. Finding Summary */}
               <button
                 onClick={() => setActiveTab('about')}
                 className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition shrink-0 ${
@@ -443,18 +445,10 @@ export default function LeadDetailDrawer({
                     : 'side-drawer-tab-inactive text-zinc-400 hover:text-zinc-100'
                 }`}
               >
-                <FileText size={14} /> About
+                <FileText size={14} /> Finding Summary
               </button>
-              <button
-                onClick={() => setActiveTab('people')}
-                className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition shrink-0 ${
-                  activeTab === 'people'
-                    ? 'side-drawer-tab-active bg-nexa-card text-zinc-100 shadow-xs font-bold border border-nexa-border'
-                    : 'side-drawer-tab-inactive text-zinc-400 hover:text-zinc-100'
-                }`}
-              >
-                <Users size={14} /> People <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-nexa-surface text-zinc-300 font-mono">{contactsCount}</span>
-              </button>
+
+              {/* 2. Signals */}
               <button
                 onClick={() => setActiveTab('signals')}
                 className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition shrink-0 ${
@@ -465,6 +459,20 @@ export default function LeadDetailDrawer({
               >
                 <Signal size={14} /> Signals <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-indigo-950 text-indigo-300 border border-indigo-500/30 font-mono font-bold">{signalsCount}</span>
               </button>
+
+              {/* 3. Company Insights */}
+              <button
+                onClick={() => setActiveTab('insights')}
+                className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition shrink-0 ${
+                  activeTab === 'insights'
+                    ? 'side-drawer-tab-active bg-nexa-card text-zinc-100 shadow-xs font-bold border border-nexa-border'
+                    : 'side-drawer-tab-inactive text-zinc-400 hover:text-zinc-100'
+                }`}
+              >
+                <LineChart size={14} /> Company Insights
+              </button>
+
+              {/* 4. Jobs */}
               <button
                 onClick={() => setActiveTab('jobs')}
                 className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition shrink-0 ${
@@ -473,12 +481,19 @@ export default function LeadDetailDrawer({
                     : 'side-drawer-tab-inactive text-zinc-400 hover:text-zinc-100'
                 }`}
               >
-                <Briefcase size={14} /> Jobs
-                {lead?.job_openings?.verified_jobs?.length > 0 && (
-                  <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-emerald-950 text-emerald-400 border border-emerald-500/30 font-mono font-bold">
-                    {lead.job_openings.verified_jobs.length}
-                  </span>
-                )}
+                <Briefcase size={14} /> Jobs <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-emerald-950 text-emerald-400 border border-emerald-500/30 font-mono font-bold">{jobsCount}</span>
+              </button>
+
+              {/* 5. Decision Makers */}
+              <button
+                onClick={() => setActiveTab('people')}
+                className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition shrink-0 ${
+                  activeTab === 'people'
+                    ? 'side-drawer-tab-active bg-nexa-card text-zinc-100 shadow-xs font-bold border border-nexa-border'
+                    : 'side-drawer-tab-inactive text-zinc-400 hover:text-zinc-100'
+                }`}
+              >
+                <Users size={14} /> Decision Makers <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-purple-950 text-purple-300 border border-purple-500/30 font-mono font-bold">{contactsCount}</span>
               </button>
             </div>
 
@@ -490,9 +505,14 @@ export default function LeadDetailDrawer({
                 <PitcherMode id={lead.id} company_name={companyName} onClose={() => setShowPitcher(false)} inline={true} />
               )}
 
-              {/* ===== TAB: JOBS & INSIGHTS ===== */}
+              {/* ===== TAB: COMPANY INSIGHTS ===== */}
+              {activeTab === 'insights' && (
+                <JobsTab lead={lead} defaultTab="insights" />
+              )}
+
+              {/* ===== TAB: JOBS ===== */}
               {activeTab === 'jobs' && (
-                <JobsTab lead={lead} />
+                <JobsTab lead={lead} defaultTab="jobs" />
               )}
 
               {/* ===== TAB 1: SIGNALS VIEW (IMAGE MATCH RE-DESIGN) ===== */}
@@ -505,7 +525,7 @@ export default function LeadDetailDrawer({
                       <div className="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
                         <TrendingUp size={16} />
                       </div>
-                      <span>1 · SCORE AND JUSTIFICATION</span>
+                      <span>SCORE AND JUSTIFICATION</span>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
@@ -681,13 +701,81 @@ export default function LeadDetailDrawer({
                     </div>
                   </div>
 
-                  {/* SECTION 2 · WHY NOW AND RECOMMENDED ANGLE */}
+                  {/* SIGNAL TIMELINE */}
+                  <div className="p-6 sm:p-7 rounded-3xl border border-slate-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xs space-y-6">
+                    <div className="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-zinc-100">
+                      <div className="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                        <Bell size={16} />
+                      </div>
+                      <span>SIGNAL TIMELINE</span>
+                    </div>
+
+                    {/* Timeline List with Connecting Dots */}
+                    <div className="relative pl-9 space-y-4">
+                      {/* Vertical Axis Line (Exact 16px left center alignment) */}
+                      <div className="absolute left-4 top-3 bottom-3 w-0.5 bg-slate-200 dark:bg-zinc-800 -translate-x-1/2" />
+
+                      {timelineSignals.map((sig, idx) => {
+                        const isFunding = (sig.signal_type || '').toLowerCase().includes('fund') || (sig.signal_type || '').toLowerCase().includes('series');
+                        const isHiring = (sig.signal_type || '').toLowerCase().includes('hire') || (sig.signal_type || '').toLowerCase().includes('role');
+                        
+                        const nodeColor = isFunding ? 'bg-emerald-500' : isHiring ? 'bg-indigo-500' : 'bg-sky-500';
+                        const iconBg = isFunding ? 'bg-emerald-500/10 text-emerald-500' : isHiring ? 'bg-indigo-500/10 text-indigo-500' : 'bg-sky-500/10 text-sky-500';
+                        const badgeStyle = isFunding 
+                          ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/40' 
+                          : 'bg-indigo-50 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800/40';
+
+                        return (
+                          <div key={idx} className="relative group">
+                            {/* Dot on Left Line (Mathematically 100% centered at 16px from container edge) */}
+                            <div className={`absolute left-[-20px] -translate-x-1/2 top-5 w-3.5 h-3.5 rounded-full border-2 border-white dark:border-zinc-900 ${nodeColor} shadow-2xs group-hover:scale-125 transition-transform`} />
+
+                            {/* Signal Item Card */}
+                            <div className="p-4 rounded-2xl border border-slate-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 group-hover:border-indigo-300 dark:group-hover:border-indigo-500/60 transition-colors">
+                              <div className="flex items-center gap-3.5 min-w-0">
+                                <div className={`w-9 h-9 rounded-xl ${iconBg} flex items-center justify-center shrink-0 font-bold`}>
+                                  {isFunding ? <DollarSign size={18} /> : isHiring ? <Users size={18} /> : <Briefcase size={18} />}
+                                </div>
+                                <div className="space-y-1 min-w-0">
+                                  <div className="flex items-center gap-2 font-bold text-slate-900 dark:text-zinc-100 text-xs">
+                                    <span>{sig.signal_type || 'Market Signal'}</span>
+                                    {sig.verbatim_quote && (
+                                      <span className="text-slate-400 font-normal truncate max-w-sm">• {sig.verbatim_quote}</span>
+                                    )}
+                                  </div>
+                                  {sig.source_url && (
+                                    <a
+                                      href={sig.source_url}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      className="text-sky-600 dark:text-sky-400 hover:underline text-[11px] font-mono inline-flex items-center gap-1"
+                                    >
+                                      source <ExternalLink size={10} />
+                                    </a>
+                                  )}
+                                </div>
+                              </div>
+
+                              <div className="shrink-0 self-end sm:self-center">
+                                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-[11px] font-semibold border ${badgeStyle}`}>
+                                  <Calendar size={12} />
+                                  <span>{sig.recency_label || '1-3 months'}</span>
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* WHY NOW AND RECOMMENDED ANGLE */}
                   <div className="p-6 sm:p-7 rounded-3xl border border-slate-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xs space-y-5">
                     <div className="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-zinc-100">
                       <div className="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
                         <Users size={16} />
                       </div>
-                      <span>2 · WHY NOW AND RECOMMENDED ANGLE</span>
+                      <span>WHY NOW AND RECOMMENDED ANGLE</span>
                     </div>
 
                     <p className="text-xs font-medium text-slate-700 dark:text-zinc-300 leading-relaxed">
@@ -759,74 +847,6 @@ export default function LeadDetailDrawer({
                     </div>
                   </div>
 
-                  {/* SECTION 3 · SIGNAL TIMELINE */}
-                  <div className="p-6 sm:p-7 rounded-3xl border border-slate-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xs space-y-6">
-                    <div className="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-zinc-100">
-                      <div className="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
-                        <Bell size={16} />
-                      </div>
-                      <span>3 · SIGNAL TIMELINE</span>
-                    </div>
-
-                    {/* Timeline List with Connecting Dots */}
-                    <div className="relative pl-9 space-y-4">
-                      {/* Vertical Axis Line */}
-                      <div className="absolute left-3.5 top-3 bottom-3 w-0.5 bg-slate-200 dark:bg-zinc-800 -translate-x-1/2" />
-
-                      {timelineSignals.map((sig, idx) => {
-                        const isFunding = (sig.signal_type || '').toLowerCase().includes('fund') || (sig.signal_type || '').toLowerCase().includes('series');
-                        const isHiring = (sig.signal_type || '').toLowerCase().includes('hire') || (sig.signal_type || '').toLowerCase().includes('role');
-                        
-                        const nodeColor = isFunding ? 'bg-emerald-500' : isHiring ? 'bg-indigo-500' : 'bg-sky-500';
-                        const iconBg = isFunding ? 'bg-emerald-500/10 text-emerald-500' : isHiring ? 'bg-indigo-500/10 text-indigo-500' : 'bg-sky-500/10 text-sky-500';
-                        const badgeStyle = isFunding 
-                          ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/40' 
-                          : 'bg-indigo-50 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800/40';
-
-                        return (
-                          <div key={idx} className="relative group">
-                            {/* Dot on Left Line (Mathematically 100% centered on vertical axis line) */}
-                            <div className={`absolute left-[-23px] -translate-x-1/2 top-5 w-3.5 h-3.5 rounded-full border-2 border-white dark:border-zinc-900 ${nodeColor} shadow-2xs group-hover:scale-125 transition-transform`} />
-
-                            {/* Signal Item Card */}
-                            <div className="p-4 rounded-2xl border border-slate-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 group-hover:border-indigo-300 dark:group-hover:border-indigo-500/60 transition-colors">
-                              <div className="flex items-center gap-3.5 min-w-0">
-                                <div className={`w-9 h-9 rounded-xl ${iconBg} flex items-center justify-center shrink-0 font-bold`}>
-                                  {isFunding ? <DollarSign size={18} /> : isHiring ? <Users size={18} /> : <Briefcase size={18} />}
-                                </div>
-                                <div className="space-y-1 min-w-0">
-                                  <div className="flex items-center gap-2 font-bold text-slate-900 dark:text-zinc-100 text-xs">
-                                    <span>{sig.signal_type || 'Market Signal'}</span>
-                                    {sig.verbatim_quote && (
-                                      <span className="text-slate-400 font-normal truncate max-w-sm">• {sig.verbatim_quote}</span>
-                                    )}
-                                  </div>
-                                  {sig.source_url && (
-                                    <a
-                                      href={sig.source_url}
-                                      target="_blank"
-                                      rel="noreferrer"
-                                      className="text-sky-600 dark:text-sky-400 hover:underline text-[11px] font-mono inline-flex items-center gap-1"
-                                    >
-                                      source <ExternalLink size={10} />
-                                    </a>
-                                  )}
-                                </div>
-                              </div>
-
-                              <div className="shrink-0 self-end sm:self-center">
-                                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-[11px] font-semibold border ${badgeStyle}`}>
-                                  <Calendar size={12} />
-                                  <span>{sig.recency_label || '1-3 months'}</span>
-                                </span>
-                              </div>
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </div>
-
                 </div>
               )}
 
@@ -868,47 +888,31 @@ export default function LeadDetailDrawer({
                         />
                       </div>
                     </div>
-
-                    {/* Dashed Separator */}
-                    <div className="border-t border-dashed border-emerald-200 dark:border-emerald-800/60 my-2" />
-
-                    {/* Recommended Angle Row */}
-                    <div className="flex items-center gap-3.5 pt-1">
-                      <div className="w-9 h-9 rounded-full bg-white dark:bg-zinc-900 text-emerald-500 shadow-2xs flex items-center justify-center shrink-0 border border-emerald-100 dark:border-emerald-900/60">
-                        <Target size={16} />
-                      </div>
-                      <div>
-                        <div className="text-xs font-bold text-emerald-600 dark:text-emerald-400">Recommended angle</div>
-                        <div className="text-xs font-semibold text-slate-800 dark:text-zinc-200 mt-0.5">
-                          Lead with the marketing gap behind the sales hire.
-                        </div>
-                      </div>
-                    </div>
                   </div>
 
                   {/* 2. COMPANY INFO & REVENUE SUMMARY CARD */}
-                  <div className="p-6 sm:p-7 rounded-3xl border border-slate-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xs">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                  <div className="p-5 sm:p-6 rounded-2xl border border-slate-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xs">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 items-center">
                       
                       {/* Left Column: COMPANY INFO */}
-                      <div className="space-y-4 md:pr-6 md:border-r border-slate-100 dark:border-zinc-800/80">
+                      <div className="space-y-3.5 md:pr-5 md:border-r border-slate-100 dark:border-zinc-800/80">
                         <div className="flex items-center gap-2 text-xs font-bold text-slate-900 dark:text-zinc-100 uppercase tracking-wider">
-                          <div className="w-7 h-7 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+                          <div className="w-7 h-7 rounded-lg bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
                             <Building2 size={14} />
                           </div>
                           <span>Company Info</span>
                         </div>
 
-                        <div className="space-y-3 pt-1">
+                        <div className="space-y-2.5 pt-0.5">
                           {/* Stage Row */}
-                          <div className="flex items-center justify-between gap-4 text-xs">
+                          <div className="flex items-center justify-between gap-3 text-xs">
                             <div className="flex items-center gap-2 text-slate-500 dark:text-zinc-400 font-semibold">
                               <div className="w-6 h-6 rounded-md bg-purple-50 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400 flex items-center justify-center">
-                                <Users size={13} />
+                                <Users size={12} />
                               </div>
-                              <span>Stage</span>
+                              <span className="text-xs">Stage</span>
                             </div>
-                            <span className="font-bold text-slate-900 dark:text-zinc-100">
+                            <span className="font-bold text-slate-900 dark:text-zinc-100 text-xs sm:text-sm">
                               {(() => {
                                 if (lead.funding_stage && lead.funding_stage !== 'Unknown' && lead.funding_stage !== 'UNKNOWN') {
                                   return lead.funding_stage;
@@ -927,34 +931,34 @@ export default function LeadDetailDrawer({
                           <div className="border-b border-dashed border-slate-100 dark:border-zinc-800" />
 
                           {/* Headcount Row */}
-                          <div className="flex items-center justify-between gap-4 text-xs">
+                          <div className="flex items-center justify-between gap-3 text-xs">
                             <div className="flex items-center gap-2 text-slate-500 dark:text-zinc-400 font-semibold">
                               <div className="w-6 h-6 rounded-md bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-                                <Users size={13} />
+                                <Users size={12} />
                               </div>
-                              <span>Headcount</span>
+                              <span className="text-xs">Headcount</span>
                             </div>
-                            <span className="font-bold text-slate-900 dark:text-zinc-100 font-mono">
-                              {lead.employee_count ?? 15}
+                            <span className="font-bold text-slate-900 dark:text-zinc-100 text-xs sm:text-sm font-mono">
+                              {lead.employee_count ?? 'N/A'}
                             </span>
                           </div>
                         </div>
                       </div>
 
                       {/* Right Column: REVENUE */}
-                      <div className="space-y-4 md:pl-2 flex flex-col items-center sm:items-start justify-center">
+                      <div className="space-y-3 md:pl-2 flex flex-col items-center sm:items-start justify-center">
                         <div className="flex items-center gap-2 text-xs font-bold text-slate-900 dark:text-zinc-100 uppercase tracking-wider self-start">
-                          <div className="w-7 h-7 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                          <div className="w-7 h-7 rounded-lg bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
                             <Activity size={14} />
                           </div>
                           <span>Revenue</span>
                         </div>
 
-                        <div className="w-full py-2 flex flex-col items-center justify-center text-center">
-                          <div className="text-4xl font-extrabold text-indigo-600 dark:text-indigo-400 tracking-tight">
-                            ~$1.2M
+                        <div className="w-full py-1 flex flex-col items-center justify-center text-center">
+                          <div className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-zinc-100 tracking-tight">
+                            {lead.annual_revenue || 'N/A'}
                           </div>
-                          <div className="text-xs font-bold text-slate-400 dark:text-zinc-500 mt-1 uppercase tracking-wider">
+                          <div className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 mt-1 uppercase tracking-wider">
                             ARR est.
                           </div>
                         </div>

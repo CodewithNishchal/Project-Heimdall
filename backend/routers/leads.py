@@ -103,6 +103,7 @@ class LeadDetailResponse(BaseModel):
     dns_audit: DNSAuditModel
     contacts: List[ContactModel] = []
     company_linkedin_id: Optional[str] = None
+    annual_revenue: Optional[str] = None
     company_insights: Optional[Dict[str, Any]] = None
     job_openings: Optional[Dict[str, Any]] = None
     last_updated: str
@@ -123,6 +124,8 @@ def list_all_leads():
             if not lead.full_payload:
                 continue
             payload = dict(lead.full_payload)
+            if lead.annual_revenue:
+                payload["annual_revenue"] = lead.annual_revenue
             if isinstance(payload.get("confidence"), dict):
                 ver = payload["confidence"].get("verified", 0)
                 if ver > 100:
