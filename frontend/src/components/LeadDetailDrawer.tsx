@@ -1,8 +1,9 @@
 import { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, ExternalLink, Building2, Users, DollarSign, Globe, Target, Bookmark, Mail, Sparkles, Copy, Check, Flame, Zap, ChevronUp, ChevronDown, Compass, FileText, Signal, Filter, MapPin, Calendar, Briefcase, Link as LinkIcon } from 'lucide-react';
+import { X, ExternalLink, Building2, Users, DollarSign, Globe, Target, Bookmark, Mail, Sparkles, Copy, Check, Flame, Zap, ChevronUp, ChevronDown, Compass, FileText, Signal, Filter, MapPin, Calendar, Briefcase, Link as LinkIcon, MessageSquare, Megaphone, TrendingUp, Bell, Info, Activity } from 'lucide-react';
 import type { LeadDetailResponse } from '../types/lead';
 import PitcherMode from './PitcherMode';
+import JobsTab from './JobsTab';
 
 interface LeadDetailDrawerProps {
   lead: LeadDetailResponse | null;
@@ -71,7 +72,7 @@ export default function LeadDetailDrawer({
   onSelectLead,
   allLeads = [],
 }: LeadDetailDrawerProps) {
-  const [activeTab, setActiveTab] = useState<'about' | 'people' | 'signals'>('signals');
+  const [activeTab, setActiveTab] = useState<'about' | 'people' | 'signals' | 'jobs'>('signals');
   const [copiedEmail, setCopiedEmail] = useState<string | null>(null);
   const [showPitcher, setShowPitcher] = useState(false);
 
@@ -221,6 +222,24 @@ export default function LeadDetailDrawer({
     };
   }, [lead]);
 
+  // Compute overall display score based on average of key growth & hiring signals
+  const displayScore = useMemo(() => {
+    if (!lead) return 100;
+
+    const fVal = Math.round(Math.min(100, (categoryScores.funding / 40) * 100));
+    const hVal = Math.round(Math.min(100, (categoryScores.hiring / 35) * 100));
+    const sVal = Math.round(Math.min(100, (categoryScores.social / 25) * 100));
+    const lVal = Math.round(Math.min(100, (categoryScores.leadership / 20) * 100));
+
+    const activeVals = [fVal, hVal, sVal, lVal].filter(v => v > 0);
+    if (activeVals.length > 0) {
+      const avg = Math.round(activeVals.reduce((a, b) => a + b, 0) / activeVals.length);
+      return Math.max(avg, lead.intent_score ?? 0);
+    }
+
+    return lead.intent_score ?? 100;
+  }, [categoryScores, lead]);
+
   // Compute Suggested Opener text for section 2
   const suggestedOpenerText = useMemo(() => {
     if (!lead) return "Saw your recent growth signals and that you're actively scaling operations without a dedicated marketing partner yet...";
@@ -309,7 +328,7 @@ export default function LeadDetailDrawer({
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: '100%' }}
             transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-            className="side-drawer-panel fixed inset-y-0 right-0 w-full max-w-4xl bg-nexa-bg border-l border-nexa-border shadow-2xl z-50 flex flex-col font-sans"
+            className="side-drawer-panel fixed inset-y-0 right-0 w-full lg:w-[75vw] bg-nexa-bg border-l border-nexa-border shadow-2xl z-50 flex flex-col font-sans"
           >
             
             {/* 1. Top Header Controls Bar */}
@@ -446,6 +465,21 @@ export default function LeadDetailDrawer({
               >
                 <Signal size={14} /> Signals <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-indigo-950 text-indigo-300 border border-indigo-500/30 font-mono font-bold">{signalsCount}</span>
               </button>
+              <button
+                onClick={() => setActiveTab('jobs')}
+                className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition shrink-0 ${
+                  activeTab === 'jobs'
+                    ? 'side-drawer-tab-active bg-nexa-card text-zinc-100 shadow-xs font-bold border border-nexa-border'
+                    : 'side-drawer-tab-inactive text-zinc-400 hover:text-zinc-100'
+                }`}
+              >
+                <Briefcase size={14} /> Jobs
+                {lead?.job_openings?.verified_jobs?.length > 0 && (
+                  <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-emerald-950 text-emerald-400 border border-emerald-500/30 font-mono font-bold">
+                    {lead.job_openings.verified_jobs.length}
+                  </span>
+                )}
+              </button>
             </div>
 
             {/* 4. Tab Content Body (With pb-28 for Mobile Bottom Nav bar clearance) */}
@@ -456,274 +490,511 @@ export default function LeadDetailDrawer({
                 <PitcherMode id={lead.id} company_name={companyName} onClose={() => setShowPitcher(false)} inline={true} />
               )}
 
-              {/* ===== TAB 1: SIGNALS VIEW (REFERENCE DESIGN MATCH) ===== */}
+              {/* ===== TAB: JOBS & INSIGHTS ===== */}
+              {activeTab === 'jobs' && (
+                <JobsTab lead={lead} />
+              )}
+
+              {/* ===== TAB 1: SIGNALS VIEW (IMAGE MATCH RE-DESIGN) ===== */}
               {activeTab === 'signals' && (
                 <div className="space-y-6 animate-fade-in font-sans text-xs">
 
-                  {/* 1 · SCORE AND JUSTIFICATION */}
-                  <div className="space-y-2.5">
-                    <div className="text-[11px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-wider">
-                      1 · SCORE AND JUSTIFICATION
+                  {/* SECTION 1 · SCORE AND JUSTIFICATION */}
+                  <div className="p-5 sm:p-6 rounded-3xl border border-slate-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xs space-y-4">
+                    <div className="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-zinc-100">
+                      <div className="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                        <TrendingUp size={16} />
+                      </div>
+                      <span>1 · SCORE AND JUSTIFICATION</span>
                     </div>
-                    <div className="p-4 sm:p-5 rounded-2xl border border-nexa-border bg-nexa-surface space-y-4 shadow-xs">
-                      {/* Score & Badge Row */}
-                      <div className="flex items-baseline gap-2">
-                        <span className="text-3xl font-black text-slate-900 dark:text-zinc-100 tracking-tight">
-                          {lead.intent_score}
-                        </span>
-                        <span className="text-xs text-slate-500 dark:text-zinc-400 font-medium mr-2">/ 100</span>
-                        <span className={`px-3 py-0.5 rounded-full text-xs font-bold ${
-                          lead.intent_score >= 70 
-                            ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30' 
-                            : lead.intent_score >= 40
-                            ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30'
-                            : 'bg-slate-200 dark:bg-zinc-800 text-slate-600 dark:text-zinc-400 border border-slate-300 dark:border-zinc-700'
+
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-center">
+                      
+                      {/* Left Half-Circle Speedometer Arc Gauge (4 cols) */}
+                      <div className="md:col-span-4 p-3 sm:p-4 pr-6 flex flex-col items-center justify-center text-center space-y-3 md:border-r border-slate-200/60 dark:border-zinc-800/80">
+                        <div className="relative w-44 h-26 flex items-center justify-center pt-1">
+                          <svg className="w-full h-full overflow-visible" viewBox="0 0 100 60">
+                            {/* Background Light Arc */}
+                            <path
+                              d="M 10 52 A 40 40 0 0 1 90 52"
+                              fill="none"
+                              stroke="#EEF2FF"
+                              strokeWidth="4.5"
+                              strokeLinecap="round"
+                              className="dark:stroke-zinc-800"
+                            />
+                            {/* Foreground Green/Emerald Arc */}
+                            <path
+                              d="M 10 52 A 40 40 0 0 1 90 52"
+                              fill="none"
+                              stroke="#10b981"
+                              strokeWidth="4.5"
+                              strokeLinecap="round"
+                              strokeDasharray="126"
+                              strokeDashoffset={126 - Math.min(126, (displayScore / 100) * 126)}
+                              className="transition-all duration-1000"
+                            />
+                          </svg>
+                          
+                          {/* Inner Gauge Text */}
+                          <div className="absolute bottom-1 flex flex-col items-center justify-center">
+                            <div className="text-4xl font-extrabold text-slate-900 dark:text-zinc-100 leading-none tracking-tight">
+                              {displayScore}
+                            </div>
+                            <div className="text-[11px] font-semibold text-slate-400 dark:text-zinc-500 mt-1">
+                              / 100
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Intent Status Badge (No Flame icon) */}
+                        <div className={`inline-flex items-center justify-center px-5 py-1.5 rounded-full text-xs font-bold shadow-2xs ${
+                          displayScore >= 70
+                            ? 'bg-emerald-100/80 text-emerald-600 dark:bg-emerald-950/80 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800'
+                            : displayScore >= 40
+                            ? 'bg-amber-100/80 text-amber-600 dark:bg-amber-950/80 dark:text-amber-300 border border-amber-200 dark:border-amber-800'
+                            : 'bg-slate-100 text-slate-600 dark:bg-zinc-800 dark:text-zinc-300 border border-slate-200 dark:border-zinc-700'
                         }`}>
-                          {lead.intent_classification || (lead.intent_score >= 70 ? 'Hot' : lead.intent_score >= 40 ? 'Warm' : 'Watching')}
-                        </span>
+                          <span>{lead?.intent_classification || (displayScore >= 70 ? 'Hot' : displayScore >= 40 ? 'Warm' : 'Watching')}</span>
+                        </div>
+
+                        <p className="text-[11px] font-medium text-slate-500 dark:text-zinc-400 max-w-[220px] leading-relaxed px-1">
+                          This score indicates a high-priority account based on key growth and hiring signals.
+                        </p>
                       </div>
 
-                      {/* Extracted Metadata Chips */}
-                      {(lead.location_mentioned || lead.budget_mentioned || (lead.urgency_indicators && lead.urgency_indicators.length > 0) || lead.competitor_mentioned) && (
-                        <div className="flex flex-wrap gap-2 pt-1 border-t border-nexa-border/60">
-                          {lead.location_mentioned && (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-sky-500/10 text-sky-400 border border-sky-500/20">
-                              📍 {lead.location_mentioned}
-                            </span>
-                          )}
-                          {lead.budget_mentioned && (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                              💰 {lead.budget_mentioned}
-                            </span>
-                          )}
-                          {lead.urgency_indicators && lead.urgency_indicators.map((urg, uidx) => (
-                            <span key={uidx} className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/20">
-                              ⚡ {urg}
-                            </span>
-                          ))}
-                          {lead.competitor_mentioned && (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                              ⚔️ vs {lead.competitor_mentioned}
-                            </span>
-                          )}
-                        </div>
-                      )}
+                      {/* Right Breakdown Progress Bars (8 cols) */}
+                      <div className="md:col-span-8 space-y-3.5 pl-1">
+                        {/* 1. Funding */}
+                        {(() => {
+                          const val = Math.round(Math.min(100, (categoryScores.funding / 40) * 100));
+                          const badge = val >= 80 ? 'Very High' : val >= 70 ? 'High' : val >= 30 ? 'Medium' : val > 0 ? 'Low' : 'None';
+                          return (
+                            <div className="flex items-center justify-between gap-3 text-xs font-semibold">
+                              <div className="flex items-center gap-2.5 w-36 shrink-0 text-slate-700 dark:text-zinc-200">
+                                <div className="w-6 h-6 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
+                                  <DollarSign size={13} />
+                                </div>
+                                <span>Funding</span>
+                              </div>
+                              <div className="flex-1 bg-slate-100 dark:bg-zinc-800 rounded-full h-2.5 overflow-hidden">
+                                <div className="bg-emerald-500 h-full rounded-full transition-all duration-500" style={{ width: `${val}%` }} />
+                              </div>
+                              <span className="w-10 text-right font-mono font-bold text-slate-900 dark:text-zinc-100">{val}%</span>
+                              <span className={`w-16 text-center py-0.5 rounded-full text-[10px] font-bold ${
+                                badge === 'High' || badge === 'Very High' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' :
+                                badge === 'Medium' ? 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300' :
+                                badge === 'Low' ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400' :
+                                'bg-slate-100 text-slate-500 dark:bg-zinc-800 dark:text-zinc-400'
+                              }`}>
+                                {badge}
+                              </span>
+                            </div>
+                          );
+                        })()}
 
-                      {/* Breakdown Progress Bars */}
-                      <div className="space-y-2.5 pt-1">
-                        {/* Funding */}
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="w-32 text-slate-700 dark:text-zinc-300 font-medium">Funding</span>
-                          <div className="flex-1 mx-3 bg-slate-200 dark:bg-zinc-800/80 rounded-full h-2 overflow-hidden border border-slate-300/50 dark:border-zinc-700/50">
-                            <div 
-                              className="bg-lime-500 dark:bg-lime-400 h-full rounded-full transition-all duration-500" 
-                              style={{ width: `${Math.min(100, (categoryScores.funding / 40) * 100)}%` }} 
-                            />
-                          </div>
-                          <span className="w-10 text-right font-mono font-bold text-slate-800 dark:text-zinc-300">
-                            {Math.round(Math.min(100, (categoryScores.funding / 40) * 100))}%
-                          </span>
-                        </div>
+                        {/* 2. Hiring gap */}
+                        {(() => {
+                          const val = Math.round(Math.min(100, (categoryScores.hiring / 35) * 100));
+                          const badge = val >= 80 ? 'Very High' : val >= 50 ? 'High' : val > 0 ? 'Low' : 'None';
+                          return (
+                            <div className="flex items-center justify-between gap-3 text-xs font-semibold">
+                              <div className="flex items-center gap-2.5 w-36 shrink-0 text-slate-700 dark:text-zinc-200">
+                                <div className="w-6 h-6 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
+                                  <Users size={13} />
+                                </div>
+                                <span>Hiring gap</span>
+                              </div>
+                              <div className="flex-1 bg-slate-100 dark:bg-zinc-800 rounded-full h-2.5 overflow-hidden">
+                                <div className="bg-emerald-500 h-full rounded-full transition-all duration-500" style={{ width: `${val}%` }} />
+                              </div>
+                              <span className="w-10 text-right font-mono font-bold text-slate-900 dark:text-zinc-100">{val}%</span>
+                              <span className={`w-16 text-center py-0.5 rounded-full text-[10px] font-bold ${
+                                badge === 'Very High' || badge === 'High' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' :
+                                badge === 'Low' ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400' :
+                                'bg-slate-100 text-slate-500 dark:bg-zinc-800 dark:text-zinc-400'
+                              }`}>
+                                {badge}
+                              </span>
+                            </div>
+                          );
+                        })()}
 
-                        {/* Hiring gap */}
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="w-32 text-slate-700 dark:text-zinc-300 font-medium">Hiring gap</span>
-                          <div className="flex-1 mx-3 bg-slate-200 dark:bg-zinc-800/80 rounded-full h-2 overflow-hidden border border-slate-300/50 dark:border-zinc-700/50">
-                            <div 
-                              className="bg-lime-500 dark:bg-lime-400 h-full rounded-full transition-all duration-500" 
-                              style={{ width: `${Math.min(100, (categoryScores.hiring / 35) * 100)}%` }} 
-                            />
-                          </div>
-                          <span className="w-10 text-right font-mono font-bold text-slate-800 dark:text-zinc-300">
-                            {Math.round(Math.min(100, (categoryScores.hiring / 35) * 100))}%
-                          </span>
-                        </div>
+                        {/* 3. Social buy signal */}
+                        {(() => {
+                          const val = Math.round(Math.min(100, (categoryScores.social / 25) * 100));
+                          const badge = val >= 70 ? 'High' : val >= 30 ? 'Medium' : val > 0 ? 'Low' : 'None';
+                          return (
+                            <div className="flex items-center justify-between gap-3 text-xs font-semibold">
+                              <div className="flex items-center gap-2.5 w-36 shrink-0 text-slate-700 dark:text-zinc-200">
+                                <div className="w-6 h-6 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center shrink-0">
+                                  <Megaphone size={13} />
+                                </div>
+                                <span>Social buy signal</span>
+                              </div>
+                              <div className="flex-1 bg-slate-100 dark:bg-zinc-800 rounded-full h-2.5 overflow-hidden">
+                                <div className="bg-emerald-500 h-full rounded-full transition-all duration-500" style={{ width: `${val}%` }} />
+                              </div>
+                              <span className="w-10 text-right font-mono font-bold text-slate-900 dark:text-zinc-100">{val}%</span>
+                              <span className={`w-16 text-center py-0.5 rounded-full text-[10px] font-bold ${
+                                badge === 'High' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' :
+                                badge === 'Medium' ? 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300' :
+                                badge === 'Low' ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/40 dark:text-emerald-400' :
+                                'bg-slate-100 text-slate-500 dark:bg-zinc-800 dark:text-zinc-400'
+                              }`}>
+                                {badge}
+                              </span>
+                            </div>
+                          );
+                        })()}
 
-                        {/* Social buy signal */}
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="w-32 text-slate-700 dark:text-zinc-300 font-medium">Social buy signal</span>
-                          <div className="flex-1 mx-3 bg-slate-200 dark:bg-zinc-800/80 rounded-full h-2 overflow-hidden border border-slate-300/50 dark:border-zinc-700/50">
-                            <div 
-                              className="bg-lime-500 dark:bg-lime-400 h-full rounded-full transition-all duration-500" 
-                              style={{ width: `${Math.min(100, (categoryScores.social / 25) * 100)}%` }} 
-                            />
-                          </div>
-                          <span className="w-10 text-right font-mono font-bold text-slate-800 dark:text-zinc-300">
-                            {Math.round(Math.min(100, (categoryScores.social / 25) * 100))}%
-                          </span>
-                        </div>
+                        {/* 4. Leadership change */}
+                        {(() => {
+                          const val = Math.round(Math.min(100, (categoryScores.leadership / 20) * 100));
+                          const badge = val >= 70 ? 'High' : val >= 30 ? 'Medium' : val > 0 ? 'Low' : 'None';
+                          return (
+                            <div className="flex items-center justify-between gap-3 text-xs font-semibold">
+                              <div className="flex items-center gap-2.5 w-36 shrink-0 text-slate-700 dark:text-zinc-200">
+                                <div className="w-6 h-6 rounded-lg bg-slate-200 dark:bg-zinc-800 text-slate-500 flex items-center justify-center shrink-0">
+                                  <TrendingUp size={13} />
+                                </div>
+                                <span>Leadership change</span>
+                              </div>
+                              <div className="flex-1 bg-slate-100 dark:bg-zinc-800 rounded-full h-2.5 overflow-hidden">
+                                <div className="bg-slate-300 dark:bg-zinc-700 h-full rounded-full transition-all duration-500" style={{ width: `${val}%` }} />
+                              </div>
+                              <span className="w-10 text-right font-mono font-bold text-slate-500 dark:text-zinc-400">{val}%</span>
+                              <span className="w-16 text-center py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-500 dark:bg-zinc-800 dark:text-zinc-400">
+                                {badge}
+                              </span>
+                            </div>
+                          );
+                        })()}
 
-                        {/* Leadership change */}
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="w-32 text-slate-500 dark:text-zinc-400 font-medium">Leadership change</span>
-                          <div className="flex-1 mx-3 bg-slate-200 dark:bg-zinc-800/80 rounded-full h-2 overflow-hidden border border-slate-300/50 dark:border-zinc-700/50">
-                            <div 
-                              className="bg-slate-400 dark:bg-zinc-600 h-full rounded-full transition-all duration-500" 
-                              style={{ width: `${Math.min(100, (categoryScores.leadership / 20) * 100)}%` }} 
-                            />
-                          </div>
-                          <span className="w-10 text-right font-mono font-bold text-slate-500 dark:text-zinc-500">
-                            {Math.round(Math.min(100, (categoryScores.leadership / 20) * 100))}%
-                          </span>
+                        {/* Info Banner Pill below 4 progress bars */}
+                        <div className="mt-6 p-2.5 px-3 rounded-xl bg-slate-50/80 dark:bg-zinc-950/60 border border-slate-200/60 dark:border-zinc-800/80 flex items-center gap-2 text-[11px] text-slate-500 dark:text-zinc-400 font-medium">
+                          <Info size={13} className="text-slate-400 shrink-0" />
+                          <span>Scores are updated based on the latest available data and market signals.</span>
                         </div>
                       </div>
+
                     </div>
                   </div>
 
-                  {/* 2 · WHY NOW AND RECOMMENDED ANGLE */}
-                  <div className="space-y-2.5">
-                    <div className="text-[11px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-wider">
-                      2 · WHY NOW AND RECOMMENDED ANGLE
+                  {/* SECTION 2 · WHY NOW AND RECOMMENDED ANGLE */}
+                  <div className="p-6 sm:p-7 rounded-3xl border border-slate-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xs space-y-5">
+                    <div className="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-zinc-100">
+                      <div className="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                        <Users size={16} />
+                      </div>
+                      <span>2 · WHY NOW AND RECOMMENDED ANGLE</span>
                     </div>
-                    <p className="text-slate-800 dark:text-zinc-200 font-medium leading-relaxed">
-                      {lead.why_now || "Company scaling operations and actively seeking external growth & marketing partners."}
+
+                    <p className="text-xs font-medium text-slate-700 dark:text-zinc-300 leading-relaxed">
+                      {lead.why_now || "The company is experiencing rapid expansion and active hiring for technical positions, indicating an immediate need for talent acquisition support to scale operations."}
                     </p>
 
-                    {/* Suggested Opener Box (Light Blue Card) */}
-                    <div className="p-4 rounded-xl border border-sky-500/30 bg-sky-500/10 text-sky-950 dark:text-sky-100 space-y-1.5 shadow-xs">
-                      <div className="text-[11px] font-bold text-sky-600 dark:text-sky-400 tracking-wide">
-                        Suggested opener
-                      </div>
-                      <p className="text-xs font-semibold text-sky-900 dark:text-sky-200 leading-normal">
-                        "{suggestedOpenerText}"
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* 3 · SIGNAL TIMELINE */}
-                  <div className="space-y-2.5">
-                    <div className="text-[11px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-wider">
-                      3 · SIGNAL TIMELINE
-                    </div>
-
-                    <div className="space-y-2">
-                      {timelineSignals.map((sig, idx) => (
-                        <div key={idx} className="p-3.5 rounded-xl border border-nexa-border bg-nexa-surface flex flex-col sm:flex-row sm:items-center justify-between gap-2 hover:border-[var(--nexa-accent)] transition shadow-2xs">
-                          <div className="space-y-1 flex-1 min-w-0">
-                            <div className="flex items-center gap-2 font-bold text-slate-900 dark:text-zinc-100 text-xs">
-                              <span className="truncate">{sig.formattedHeadline}</span>
-                            </div>
-                            {sig.source_url && (
-                              <div>
-                                <a 
-                                  href={sig.source_url} 
-                                  target="_blank" 
-                                  rel="noreferrer" 
-                                  className="text-sky-600 dark:text-sky-400 hover:underline text-[11px] font-mono inline-flex items-center gap-1"
-                                >
-                                  source <ExternalLink size={10} />
-                                </a>
-                              </div>
-                            )}
+                    {/* Suggested Opener Box (Reduced Height + Arrow & Target Breaking Out Above Top) */}
+                    <div className="relative mt-7 p-4 sm:p-5 py-3.5 sm:py-4 rounded-2xl border border-[#DBE5FF] dark:border-indigo-900/50 bg-[#F0F4FF]/90 dark:bg-indigo-950/30 flex flex-col sm:flex-row sm:items-center justify-between gap-5 shadow-2xs overflow-visible">
+                      <div className="space-y-2 max-w-xl z-10">
+                        <div className="flex items-center gap-2 text-xs font-bold text-indigo-600 dark:text-indigo-400">
+                          <div className="w-5 h-5 rounded-md bg-indigo-600 text-white flex items-center justify-center shrink-0 shadow-2xs">
+                            <MessageSquare size={12} className="fill-current" />
                           </div>
-                          <div className="text-right shrink-0">
-                            <span className="text-[11px] text-slate-500 dark:text-zinc-400 font-mono">
-                              {sig.recency_label || 'fresh'}
-                            </span>
-                          </div>
+                          <span>Suggested opener</span>
                         </div>
-                      ))}
+                        
+                        <p className="text-sm sm:text-base font-bold text-slate-900 dark:text-zinc-100 leading-snug tracking-tight">
+                          <span className="text-indigo-500 dark:text-indigo-400 font-serif text-lg mr-1 select-none">“</span>
+                          {suggestedOpenerText}
+                          <span className="text-indigo-500 dark:text-indigo-400 font-serif text-lg ml-0.5 select-none">...”</span>
+                        </p>
+                      </div>
+
+                      {/* Right Side 3D Target + Arrow Image + Floating Chat Bubbles & Sparkles */}
+                      <div className="shrink-0 relative w-56 h-24 flex items-center justify-center self-center">
+                        <div className="absolute -top-10 -right-6 w-64 h-40 pointer-events-none z-20 overflow-visible flex items-center justify-end">
+                          {/* SVG for Floating Chat Bubbles & Sparkle Stars */}
+                          <svg viewBox="0 0 240 150" className="w-full h-full overflow-visible absolute inset-0">
+                            <defs>
+                              <filter id="bubbleShadow" x="-20%" y="-20%" width="140%" height="140%">
+                                <feDropShadow dx="1" dy="4" stdDeviation="3" floodColor="#6366F1" floodOpacity="0.15" />
+                              </filter>
+                              <linearGradient id="bubbleGrad" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stopColor="#FFFFFF" />
+                                <stop offset="100%" stopColor="#F0F4FF" />
+                              </linearGradient>
+                            </defs>
+
+                            {/* 1. Sparkle Stars */}
+                            <path d="M 80 10 Q 80 15 84 15 Q 80 15 80 20 Q 80 15 76 15 Q 80 15 80 10 Z" fill="#A5B4FC" />
+                            <path d="M 20 80 Q 20 85 24 85 Q 20 85 20 90 Q 20 85 16 85 Q 20 85 20 80 Z" fill="#C7D2FE" />
+
+                            {/* 2. Floating Chat Speech Bubbles */}
+                            {/* Top Bubble (Adjusted slightly down) */}
+                            <g filter="url(#bubbleShadow)">
+                              <rect x="32" y="16" width="40" height="28" rx="10" fill="url(#bubbleGrad)" stroke="#E0E7FF" strokeWidth="1.2" />
+                              <line x1="40" y1="25" x2="63" y2="25" stroke="#818CF8" strokeWidth="1.5" strokeLinecap="round" />
+                              <line x1="40" y1="32" x2="55" y2="32" stroke="#818CF8" strokeWidth="1.5" strokeLinecap="round" />
+                              <path d="M 34 37 L 28 41 L 37 40 Z" fill="#FFFFFF" stroke="#E0E7FF" strokeWidth="1" />
+                            </g>
+
+                            {/* Bottom Bubble */}
+                            <g filter="url(#bubbleShadow)">
+                              <rect x="48" y="60" width="36" height="24" rx="9" fill="url(#bubbleGrad)" stroke="#E0E7FF" strokeWidth="1.2" />
+                              <line x1="55" y1="68" x2="75" y2="68" stroke="#A5B4FC" strokeWidth="1.5" strokeLinecap="round" />
+                              <line x1="55" y1="75" x2="68" y2="75" stroke="#A5B4FC" strokeWidth="1.5" strokeLinecap="round" />
+                              <path d="M 76 83 L 81 88 L 79 81 Z" fill="#FFFFFF" stroke="#E0E7FF" strokeWidth="1" />
+                            </g>
+                          </svg>
+
+                          {/* Enlarged Purpule Arrow PNG Image Positioned Right & Breaking Out Top */}
+                          <img 
+                            src="/arrow.png" 
+                            alt="Target and Arrow" 
+                            className="w-52 max-w-none h-auto object-contain pointer-events-none drop-shadow-md select-none relative z-10 -mt-1 -mr-2" 
+                          />
+                        </div>
+                      </div>
                     </div>
                   </div>
 
-                  {/* 4 · WHO'S DECIDING */}
-                  <div className="space-y-2 pt-3 border-t border-slate-200 dark:border-zinc-800">
-                    <div className="text-[11px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-wider">
-                      4 · WHO'S DECIDING
+                  {/* SECTION 3 · SIGNAL TIMELINE */}
+                  <div className="p-6 sm:p-7 rounded-3xl border border-slate-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xs space-y-6">
+                    <div className="flex items-center gap-2 text-sm font-bold text-slate-900 dark:text-zinc-100">
+                      <div className="w-8 h-8 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                        <Bell size={16} />
+                      </div>
+                      <span>3 · SIGNAL TIMELINE</span>
                     </div>
-                    <button
-                      onClick={() => setActiveTab('people')}
-                      className="text-sky-600 dark:text-sky-400 hover:underline text-xs font-semibold flex items-center gap-1.5 transition text-left"
-                    >
-                      <span>
-                        ☐ {lead.contacts && lead.contacts.length > 0
-                          ? `${lead.contacts.length} decision-makers in People tab (${topTitlesStr})`
-                          : "3 decision-makers in People tab (CMO, VP Sales, Head of Growth)"}
-                      </span>
-                    </button>
+
+                    {/* Timeline List with Connecting Dots */}
+                    <div className="relative pl-9 space-y-4">
+                      {/* Vertical Axis Line */}
+                      <div className="absolute left-3.5 top-3 bottom-3 w-0.5 bg-slate-200 dark:bg-zinc-800 -translate-x-1/2" />
+
+                      {timelineSignals.map((sig, idx) => {
+                        const isFunding = (sig.signal_type || '').toLowerCase().includes('fund') || (sig.signal_type || '').toLowerCase().includes('series');
+                        const isHiring = (sig.signal_type || '').toLowerCase().includes('hire') || (sig.signal_type || '').toLowerCase().includes('role');
+                        
+                        const nodeColor = isFunding ? 'bg-emerald-500' : isHiring ? 'bg-indigo-500' : 'bg-sky-500';
+                        const iconBg = isFunding ? 'bg-emerald-500/10 text-emerald-500' : isHiring ? 'bg-indigo-500/10 text-indigo-500' : 'bg-sky-500/10 text-sky-500';
+                        const badgeStyle = isFunding 
+                          ? 'bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800/40' 
+                          : 'bg-indigo-50 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800/40';
+
+                        return (
+                          <div key={idx} className="relative group">
+                            {/* Dot on Left Line (Mathematically 100% centered on vertical axis line) */}
+                            <div className={`absolute left-[-23px] -translate-x-1/2 top-5 w-3.5 h-3.5 rounded-full border-2 border-white dark:border-zinc-900 ${nodeColor} shadow-2xs group-hover:scale-125 transition-transform`} />
+
+                            {/* Signal Item Card */}
+                            <div className="p-4 rounded-2xl border border-slate-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 group-hover:border-indigo-300 dark:group-hover:border-indigo-500/60 transition-colors">
+                              <div className="flex items-center gap-3.5 min-w-0">
+                                <div className={`w-9 h-9 rounded-xl ${iconBg} flex items-center justify-center shrink-0 font-bold`}>
+                                  {isFunding ? <DollarSign size={18} /> : isHiring ? <Users size={18} /> : <Briefcase size={18} />}
+                                </div>
+                                <div className="space-y-1 min-w-0">
+                                  <div className="flex items-center gap-2 font-bold text-slate-900 dark:text-zinc-100 text-xs">
+                                    <span>{sig.signal_type || 'Market Signal'}</span>
+                                    {sig.verbatim_quote && (
+                                      <span className="text-slate-400 font-normal truncate max-w-sm">• {sig.verbatim_quote}</span>
+                                    )}
+                                  </div>
+                                  {sig.source_url && (
+                                    <a
+                                      href={sig.source_url}
+                                      target="_blank"
+                                      rel="noreferrer"
+                                      className="text-sky-600 dark:text-sky-400 hover:underline text-[11px] font-mono inline-flex items-center gap-1"
+                                    >
+                                      source <ExternalLink size={10} />
+                                    </a>
+                                  )}
+                                </div>
+                              </div>
+
+                              <div className="shrink-0 self-end sm:self-center">
+                                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-[11px] font-semibold border ${badgeStyle}`}>
+                                  <Calendar size={12} />
+                                  <span>{sig.recency_label || '1-3 months'}</span>
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
                   </div>
 
                 </div>
               )}
 
-              {/* ===== TAB 2: ABOUT & AI STRATEGY ===== */}
+              {/* ===== TAB 2: ABOUT & AI STRATEGY (IMAGE MATCH RE-DESIGN) ===== */}
               {activeTab === 'about' && (
-                <div className="space-y-5 animate-fade-in font-sans text-xs">
+                <div className="space-y-6 animate-fade-in font-sans text-xs">
 
-                  {/* AI VERDICT AND STRATEGY Callout Box */}
-                  <div className="p-4 sm:p-5 rounded-2xl border border-lime-500/30 bg-lime-500/10 text-slate-900 dark:text-zinc-100 space-y-2 shadow-xs">
-                    <div className="text-[11px] font-bold uppercase tracking-wider text-lime-700 dark:text-lime-400">
-                      AI VERDICT AND STRATEGY
+                  {/* 1. MINT GREEN HERO CARD: AI VERDICT AND STRATEGY */}
+                  <div className="relative overflow-hidden p-6 sm:p-7 rounded-3xl border border-[#D1F3E0] dark:border-emerald-900/40 bg-[#F2FBF6] dark:bg-emerald-950/20 shadow-xs space-y-4">
+                    {/* Top Section */}
+                    <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 z-10 relative">
+                      <div className="flex items-start gap-4">
+                        {/* Icon */}
+                        <div className="w-11 h-11 rounded-full bg-white dark:bg-zinc-900 text-emerald-500 shadow-2xs flex items-center justify-center shrink-0 border border-emerald-100 dark:border-emerald-900/60 mt-0.5">
+                          <Sparkles size={20} />
+                        </div>
+
+                        <div className="space-y-1.5 max-w-xl">
+                          <div className="text-[11px] font-extrabold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">
+                            AI VERDICT AND STRATEGY
+                          </div>
+                          <div className="text-xl font-extrabold text-slate-900 dark:text-zinc-100 tracking-tight flex items-center gap-2">
+                            <span>{icpFitLabel} fit</span>
+                            <span className="text-slate-300 dark:text-zinc-600">•</span>
+                            <span className="text-emerald-600 dark:text-emerald-400 font-black">Score {lead.intent_score}</span>
+                          </div>
+                          <p className="text-xs font-medium text-slate-600 dark:text-zinc-300 leading-relaxed pt-1">
+                            {lead.why_now || "The company is experiencing rapid expansion, evidenced by 10x growth in contracted ARR and active hiring for critical technical positions as of mid-2026, indicating an immediate need for talent acquisition support to scale operations."}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Mint Green Target Board Image Asset on Right */}
+                      <div className="shrink-0 relative w-56 h-32 flex items-center justify-center self-end sm:self-center">
+                        <img 
+                          src="/Green arrow.png" 
+                          alt="Green Arrow Target" 
+                          className="w-56 max-w-none h-auto object-contain pointer-events-none drop-shadow-md select-none relative z-10 -mr-2" 
+                        />
+                      </div>
                     </div>
-                    <p className="text-xs font-bold text-slate-900 dark:text-lime-200 leading-normal">
-                      {icpFitLabel} fit · score {lead.intent_score}. {lead.why_now || 'Expanding sales with no marketing support and publicly seeking agency partners.'}
-                    </p>
-                    <p className="text-xs font-semibold text-lime-800 dark:text-lime-300 leading-normal">
-                      Recommended angle: lead with the marketing gap behind the sales hire.
-                    </p>
+
+                    {/* Dashed Separator */}
+                    <div className="border-t border-dashed border-emerald-200 dark:border-emerald-800/60 my-2" />
+
+                    {/* Recommended Angle Row */}
+                    <div className="flex items-center gap-3.5 pt-1">
+                      <div className="w-9 h-9 rounded-full bg-white dark:bg-zinc-900 text-emerald-500 shadow-2xs flex items-center justify-center shrink-0 border border-emerald-100 dark:border-emerald-900/60">
+                        <Target size={16} />
+                      </div>
+                      <div>
+                        <div className="text-xs font-bold text-emerald-600 dark:text-emerald-400">Recommended angle</div>
+                        <div className="text-xs font-semibold text-slate-800 dark:text-zinc-200 mt-0.5">
+                          Lead with the marketing gap behind the sales hire.
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
-                  {/* Company Info & Revenue Summary Grid */}
-                  <div className="p-4 rounded-xl border border-nexa-border bg-nexa-surface space-y-3 shadow-xs">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="space-y-1">
-                        <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
-                          COMPANY INFO
+                  {/* 2. COMPANY INFO & REVENUE SUMMARY CARD */}
+                  <div className="p-6 sm:p-7 rounded-3xl border border-slate-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xs">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
+                      
+                      {/* Left Column: COMPANY INFO */}
+                      <div className="space-y-4 md:pr-6 md:border-r border-slate-100 dark:border-zinc-800/80">
+                        <div className="flex items-center gap-2 text-xs font-bold text-slate-900 dark:text-zinc-100 uppercase tracking-wider">
+                          <div className="w-7 h-7 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+                            <Building2 size={14} />
+                          </div>
+                          <span>Company Info</span>
                         </div>
-                        <div className="text-slate-900 dark:text-zinc-100 font-bold">
-                          Stage: <span className="font-normal text-slate-700 dark:text-zinc-300">
-                            {(() => {
-                              if (lead.funding_stage && lead.funding_stage !== 'Unknown' && lead.funding_stage !== 'UNKNOWN') {
-                                return lead.funding_stage;
-                              }
-                              if (lead.signal_tags) {
-                                const fTag = lead.signal_tags.find(t => 
-                                  t.category === 'funding' || t.tag.toUpperCase().includes('FUNDING') || t.tag.toUpperCase().includes('SERIES') || t.tag.toUpperCase().includes('SEED')
-                                );
-                                if (fTag) {
-                                  return fTag.tag.split('/')[0].trim();
+
+                        <div className="space-y-3 pt-1">
+                          {/* Stage Row */}
+                          <div className="flex items-center justify-between gap-4 text-xs">
+                            <div className="flex items-center gap-2 text-slate-500 dark:text-zinc-400 font-semibold">
+                              <div className="w-6 h-6 rounded-md bg-purple-50 dark:bg-purple-950/40 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+                                <Users size={13} />
+                              </div>
+                              <span>Stage</span>
+                            </div>
+                            <span className="font-bold text-slate-900 dark:text-zinc-100">
+                              {(() => {
+                                if (lead.funding_stage && lead.funding_stage !== 'Unknown' && lead.funding_stage !== 'UNKNOWN') {
+                                  return lead.funding_stage;
                                 }
-                              }
-                              return 'Growth Stage';
-                            })()}
-                          </span>
-                        </div>
-                        <div className="text-slate-900 dark:text-zinc-100 font-bold">
-                          Headcount: <span className="font-normal text-slate-700 dark:text-zinc-300">{lead.employee_count ?? 50}</span>
+                                if (lead.signal_tags) {
+                                  const fTag = lead.signal_tags.find(t => 
+                                    t.category === 'funding' || t.tag.toUpperCase().includes('FUNDING') || t.tag.toUpperCase().includes('SERIES') || t.tag.toUpperCase().includes('SEED')
+                                  );
+                                  if (fTag) return fTag.tag.split('/')[0].trim();
+                                }
+                                return 'Venture Backed';
+                              })()}
+                            </span>
+                          </div>
+
+                          <div className="border-b border-dashed border-slate-100 dark:border-zinc-800" />
+
+                          {/* Headcount Row */}
+                          <div className="flex items-center justify-between gap-4 text-xs">
+                            <div className="flex items-center gap-2 text-slate-500 dark:text-zinc-400 font-semibold">
+                              <div className="w-6 h-6 rounded-md bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                                <Users size={13} />
+                              </div>
+                              <span>Headcount</span>
+                            </div>
+                            <span className="font-bold text-slate-900 dark:text-zinc-100 font-mono">
+                              {lead.employee_count ?? 15}
+                            </span>
+                          </div>
                         </div>
                       </div>
-                      <div className="space-y-1">
-                        <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
-                          REVENUE
+
+                      {/* Right Column: REVENUE */}
+                      <div className="space-y-4 md:pl-2 flex flex-col items-center sm:items-start justify-center">
+                        <div className="flex items-center gap-2 text-xs font-bold text-slate-900 dark:text-zinc-100 uppercase tracking-wider self-start">
+                          <div className="w-7 h-7 rounded-xl bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0">
+                            <Activity size={14} />
+                          </div>
+                          <span>Revenue</span>
                         </div>
-                        <div className="text-slate-900 dark:text-zinc-100 font-normal">
-                          ~$1.2M ARR est.
+
+                        <div className="w-full py-2 flex flex-col items-center justify-center text-center">
+                          <div className="text-4xl font-extrabold text-indigo-600 dark:text-indigo-400 tracking-tight">
+                            ~$1.2M
+                          </div>
+                          <div className="text-xs font-bold text-slate-400 dark:text-zinc-500 mt-1 uppercase tracking-wider">
+                            ARR est.
+                          </div>
                         </div>
                       </div>
+
                     </div>
                   </div>
 
-                  {/* SOCIAL SIGNALS Card */}
-                  <div className="space-y-2">
-                    <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-zinc-400">
-                      SOCIAL SIGNALS
-                    </div>
-                    <div className="p-4 rounded-xl border border-nexa-border bg-nexa-surface space-y-2.5 shadow-xs">
-                      <div className="flex items-center justify-between flex-wrap gap-2">
-                        <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
-                          ✓ Direct buy signal detected
-                        </span>
-                        <span className="text-[11px] text-slate-500 dark:text-zinc-400 font-mono">
-                          Public social post
-                        </span>
+                  {/* 3. SOCIAL SIGNALS CARD */}
+                  <div className="p-6 sm:p-7 rounded-3xl border border-slate-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xs space-y-4">
+                    <div className="flex items-center gap-2 text-xs font-bold text-slate-900 dark:text-zinc-100 uppercase tracking-wider">
+                      <div className="w-7 h-7 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                        <Megaphone size={14} />
                       </div>
-                      <p className="text-xs text-slate-800 dark:text-zinc-200 font-medium italic leading-relaxed">
-                        "{lead.signals && lead.signals.length > 0 && (lead.signals.find(s => s.verbatim_quote?.toLowerCase().includes('agency') || s.verbatim_quote?.toLowerCase().includes('grow'))?.verbatim_quote || lead.signals[0]?.verbatim_quote) 
+                      <span>Social Signals</span>
+                    </div>
+
+                    <div className="p-5 sm:p-6 rounded-2xl border border-[#D1F3E0] dark:border-emerald-950/60 bg-[#F2FBF6]/90 dark:bg-emerald-950/20 space-y-4">
+                      <div className="flex items-center justify-between flex-wrap gap-2">
+                        <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-bold bg-emerald-200/60 text-emerald-800 dark:bg-emerald-900/60 dark:text-emerald-300">
+                          <Check size={13} className="stroke-[3]" />
+                          <span>Direct buy signal detected</span>
+                        </div>
+                        
+                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-semibold bg-slate-100/80 text-slate-600 dark:bg-zinc-800 dark:text-zinc-400">
+                          <Globe size={13} />
+                          <span>Public social post</span>
+                        </div>
+                      </div>
+
+                      <p className="text-sm font-semibold text-slate-800 dark:text-zinc-200 leading-relaxed font-sans italic pt-1">
+                        <span className="text-emerald-500 font-serif text-lg mr-1 select-none font-normal">“</span>
+                        {lead.signals && lead.signals.length > 0 && (lead.signals.find(s => s.verbatim_quote?.toLowerCase().includes('agency') || s.verbatim_quote?.toLowerCase().includes('grow'))?.verbatim_quote || lead.signals[0]?.verbatim_quote) 
                           ? (lead.signals.find(s => s.verbatim_quote?.toLowerCase().includes('agency') || s.verbatim_quote?.toLowerCase().includes('grow'))?.verbatim_quote || lead.signals[0]?.verbatim_quote)
-                          : 'We are actively growing and looking for marketing agency partners to handle scale.'}"
+                          : 'reported 10x growth in contracted ARR over 5 months (as of early 2026/late 2025 context).'}
+                        <span className="text-emerald-500 font-serif text-lg ml-0.5 select-none font-normal">”</span>
                       </p>
                     </div>
                   </div>
+
                 </div>
               )}
 

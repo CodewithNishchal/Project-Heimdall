@@ -1,0 +1,41 @@
+{
+  "company_name": "Modal",
+  "company_slug": "modal",
+  "domain": "modal.com",
+  "used_fallback": true,
+  "platform_stats": {
+    "jobs.ashbyhq.com": {
+      "raw_count": 1,
+      "qualified_count": 0
+    },
+    "boards.greenhouse.io": {
+      "raw_count": 0,
+      "qualified_count": 0
+    },
+    "jobs.lever.co": {
+      "raw_count": 0,
+      "qualified_count": 0
+    },
+    "apply.workable.com": {
+      "raw_count": 0,
+      "qualified_count": 0
+    }
+  },
+  "total_verified_jobs": 2,
+  "verified_jobs": [
+    {
+      "title": "Machine Learning Engineer 3D Geometry/ Multi-Modal",
+      "link": "https://ca.linkedin.com/jobs/view/machine-learning-engineer-3d-geometry-multi-modal-at-autodesk-4445186928",
+      "snippet": "Machine Learning Engineer 3D Geometry/ Multi-Modal in Mountain View, CA ... You will report to a research manager in the Research Engineering organization of ...",
+      "date": "Jul 27, 2026",
+      "ats_platform": "FALLBACK_SERP"
+    },
+    {
+      "title": "Software Engineering Manager, LLM Training",
+      "link": "https://www.linkedin.com/jobs/view/software-engineering-manager-llm-training-at-linkedin-4413756380",
+      "snippet": "Senior Software Engineering Manager jobs. 55,779 open jobs \u00b7 Director of Software Engineering jobs. 7,042 open jobs \u00b7 Staff Software Engineer jobs. 64,945 open ...",
+      "date": "Jul 16, 2026",
+      "ats_platform": "FALLBACK_SERP"
+    }
+  ]
+}

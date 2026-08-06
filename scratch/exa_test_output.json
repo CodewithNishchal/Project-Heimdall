@@ -1,0 +1,32 @@
+{
+  "company_name": "Modal",
+  "domain": "modal.com",
+  "canonical_identity_results": [
+    {
+      "result_num": 1,
+      "title": "Modal",
+      "url": "https://modal.com/",
+      "published_date": "2026-06-27T00:00:00.000Z",
+      "summary": "Modal (Modal Labs, Inc.) \u2014 Company profile\n\nWhat it is: A private software development company and serverless platform provider for AI and data teams. Modal enables running generative AI models, large-scale batch jobs, and job queues on its custom runtime.\n\nKey products/technology: Serverless platform for AI/data workloads; supports model deployment, batch processing, and scalable runtimes. Tech stack includes Kubernetes, MLops, Terraform, Docker, Python, and related tooling.\n\nLeadership and team: CEO Erik Bernhardsson; Co-Founder & CTO Akshat Bubna; Head of Data Kenny Ning; Head of GTM and Operations Margaret Shen; Head of Design Sona Dolasia; other senior leaders and investors (e.g., Steven Li).\n\nHeadquarters and reach: Based in New York City, USA; presence in Sweden. Distributed workforce across the US, Sweden, Canada, and India.\n\nFinancials and funding: Privately held with about $483M in total funding across multiple rounds; annual revenue reported around $3.8M.\n\nCompany overview and contacts:\n- Industry: Software Development\n- Type: Privately Held\n- Website: modal.com\n- LinkedIn: linkedin.com/company/modal-labs (24k\u201326k followers range noted)\n- Email: support@modal.com\n- Phone: listed (institutional numbers provided)\n\nNotable recent activity: Public posts about running Kimi K3 in Codex on Modal and related AI model benchmarking and shared endpoints.",
+      "text_snippet_preview": "# Modal (Modal Labs, Inc.)\n\nModal is a Software Development company. Modal is a serverless platform for AI and data teams that allows developers to run generative AI models, large-scale batch jobs, job queues, and more. They provide a serverless platform for AI and data teams, allowing them to run t..."
+    }
+  ],
+  "deep_signals_results": [
+    {
+      "result_num": 1,
+      "title": "Modal's Series C: Raising $355M at a $4.65B valuation",
+      "url": "https://modal.com/blog/modal-series-c",
+      "published_date": "2026-05-21T00:00:00.000Z",
+      "summary": "Modal announces Series C funding of $355 million, valuing the company at $4.65 billion post-money. The round was led by General Catalyst and Redpoint, with new participation from Menlo, Bain Capital Ventures, and Accel, alongside continued support from existing investors. Since September, Modal has grown fivefold and surpassed $300 million in annualized revenue. The post describes Modal as a cloud platform built for AI workloads, with features like frontier APIs for model ownership, Sandboxes for safe isolated execution of untrusted code, and scalable AI compute primitives. Notable use cases include AI agents for platforms like DoorDash, RL and production inference, and diverse applications (e.g., real-time robotics inference, drug discovery pipelines, and large-scale content generation). The piece emphasizes the belief that agents will be widespread and benefited by Modal\u2019s runtime and isolation capabilities. No specific hiring or open roles are listed in the article.",
+      "text_snippet_preview": "Modal's Series C: Raising $355M at a $4.65B valuation\n\nKimi K3 is live. Try the new Shared Endpoint with token-based pricing Learn more\n\nNews\n\nMay 21, 2026 \u20223 minute read\n\n# Modal's Series C: Raising $355M at a $4.65B valuation\n\nWe\u2019ve raised $355 million after growing fivefold since September, surpa..."
+    },
+    {
+      "result_num": 2,
+      "title": "Serverless AI infrastructure startup Modal Labs seals $355M funding round - SiliconANGLE",
+      "url": "https://siliconangle.com/2026/05/21/serverless-ai-infrastructure-startup-modal-labs-seals-355m-funding-round/",
+      "published_date": "2026-05-22T01:11:35.000Z",
+      "summary": "Modal Labs raises $355M in new funding, boosting valuation to $4.65B (from $1.1B). The round was led by Redpoint Ventures and General Catalyst, with participation from Accel and Menlo Ventures. Revenue reportedly grew to about $300M annually (from $60M in September). Modal offers a serverless AI-infrastructure platform that rents GPU capacity for AI inference, simplifying deployment by handling cloud-server management and providing sandbox environments for testing code. The company partners with 13 infrastructure providers to meet rising demand. Co-founders Erik Bernhardsson (CEO) and Akshat Bubna (CTO) lead the firm. Modal has seen rapid enterprise adoption of AI coding tools, driving both demand for compute and its own growth. The funding round occurred in two tranches, initial valuation at $2.5B followed by a higher subsequent valuation. Open roles and hiring specifics aren\u2019t listed in the provided content.",
+      "text_snippet_preview": "Serverless AI infrastructure startup Modal Labs seals $355M funding round - SiliconANGLE\n\nSHARE\n\nUPDATED 21:11 EDT / MAY 21 2026\n\nINFRA\n\n### Serverless AI infrastructure startup Modal Labs seals $355M funding round\n\nArtificial intelligence startups are facing two massive headaches: There\u2019s too much ..."
+    }
+  ]
+}

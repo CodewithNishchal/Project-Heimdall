@@ -26,6 +26,9 @@ class LeadSnapshot(Base):
     why_now = Column(Text, nullable=True, default="Verified public buying intent triggers detected.")
     signal_tags = Column(JSON, nullable=True, default=list)
     ai_verdict = Column(Text, nullable=True)
+    company_linkedin_id = Column(String, nullable=True)
+    company_insights = Column(JSON, nullable=True)
+    job_openings = Column(JSON, nullable=True)
     full_payload = Column(JSON, nullable=True)
     last_updated = Column(
         DateTime,

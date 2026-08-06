@@ -108,5 +108,8 @@ export interface LeadDetailResponse {
   ai_verdict: string;
   dns_audit: DNSAuditObjective;
   contacts?: Contact[];
+  company_linkedin_id?: string | null;
+  company_insights?: any; // Replace with proper type if available
+  job_openings?: any; // Replace with proper type if available
   last_updated: string;
 }

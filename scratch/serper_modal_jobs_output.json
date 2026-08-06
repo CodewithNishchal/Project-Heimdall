@@ -1,0 +1,153 @@
+{
+  "site:modal.com/company OR site:modal.com/careers \"hiring\" OR \"open roles\" OR \"Software Engineer\"": {
+    "status_code": 200,
+    "total_results": 1,
+    "organic": [
+      {
+        "title": "Modal: Company",
+        "link": "https://modal.com/company",
+        "snippet": "We're also hiring! Modal Cloud. Investors. We've raised over $466M from some of the best investors and product leaders in the industry. Our investors include ...",
+        "position": 1
+      }
+    ]
+  },
+  "site:boards.greenhouse.io/modal OR site:jobs.lever.co/modal OR site:ashbyhq.com/modal": {
+    "status_code": 200,
+    "total_results": 10,
+    "organic": [
+      {
+        "title": "Modal",
+        "link": "https://jobs.ashbyhq.com/modal",
+        "snippet": "Modal Open Positions (31) ; San Francisco \u2022 Full time Forward Deployed Engineer - ML Engineering. Technical Staff - ML Performance Engineering",
+        "position": 1
+      },
+      {
+        "title": "Modal Jobs",
+        "link": "https://jobs.ashbyhq.com/modal?embed=js",
+        "snippet": "GTM \u00b7 Account Executive - Enterprise \u00b7 Community Manager \u00b7 Developer Relations Engineer \u00b7 Developer Relations Engineer, Sandboxes \u00b7 Product Marketing Manager.",
+        "position": 2
+      },
+      {
+        "title": "Community Manager @ Modal",
+        "link": "https://jobs.ashbyhq.com/modal/fa7c9c0a-c8de-4c99-8e10-c52242f44e38",
+        "snippet": "Modal is the cloud platform built for AI. We're hiring a Community Manager in SF to make Modal a fixture in the AI developer community. Compensation Range: $ ...",
+        "position": 3
+      },
+      {
+        "title": "Customer Engineer @ Modal",
+        "link": "https://jobs.ashbyhq.com/modal/44b57790-528e-4f97-8613-03564316be8a",
+        "snippet": "The Role: We're looking for engineers with deep AI/ML and low-level systems experience who want to build the best technical support experience in the world.",
+        "position": 4
+      },
+      {
+        "title": "Solutions Architect @ Modal",
+        "link": "https://jobs.ashbyhq.com/modal/2f5d046a-bd5f-44bb-a606-98bf13577c69",
+        "snippet": "Modal is hiring a high-impact Solutions Architect to drive technical strategy across our most strategic enterprise accounts.",
+        "position": 5
+      },
+      {
+        "title": "Member of Technical Staff - Research, Inference @ Modal",
+        "link": "https://jobs.ashbyhq.com/modal/73c97bbc-8e27-4c5d-b38b-90b3afdb0d93",
+        "snippet": "You will do hands-on inference research at Modal, working with the research lead to pick high-impact bets and owning them end to end. The bets that matter most ...",
+        "position": 6
+      },
+      {
+        "title": "Infrastructure Security Engineer @ Modal",
+        "link": "https://jobs.ashbyhq.com/modal/8de60620-09bf-4905-910f-a290814a29ee",
+        "snippet": "We're looking for an Infrastructure Security Engineer to design and secure the core systems that power our platform. This role focuses on building security ...",
+        "position": 7
+      },
+      {
+        "title": "VP, Finance @ Modal",
+        "link": "https://jobs.ashbyhq.com/modal/5ac02bd3-a7ac-4e3d-b9c2-cc1abede0ae3",
+        "snippet": "We're hiring a VP of Finance to build the finance function from the ground up as our first full-time finance hire. Compensation Range: $300K - $350K Apply for ...",
+        "position": 8
+      },
+      {
+        "title": "Member of Technical Staff - Product (Growth) @ Modal - Jobs",
+        "link": "https://jobs.ashbyhq.com/modal/9fe70d84-1d3a-42ab-87c8-df0266628c16",
+        "snippet": "Experience with marketing sites, docs sites, or product-led-growth surfaces at a dev tools / infra / AI company. Familiarity with our stack: ...",
+        "position": 9
+      },
+      {
+        "title": "Talent Partner, GTM @ Modal",
+        "link": "https://jobs.ashbyhq.com/modal/1dffcf2e-32e1-4caa-a1ca-21ad416d4598",
+        "snippet": "Modal builds the infrastructure that lets engineers run AI workloads without the usual pain. To do this well, we need exceptional people \u2013 and that's where you ...",
+        "position": 10
+      }
+    ]
+  },
+  "\"Modal\" (\"Software Engineer\" OR \"Machine Learning\" OR \"Backend\" OR \"Product Manager\") \"Apply\" OR \"Careers\" site:modal.com": {
+    "status_code": 200,
+    "total_results": 10,
+    "organic": [
+      {
+        "title": "Modal: Company",
+        "link": "https://modal.com/company",
+        "snippet": "We started Modal with the goal to make it easier to iterate and ship applications for data, AI, and machine learning. ... Careers. All. Engineering. G&A. GTM ...",
+        "position": 1
+      },
+      {
+        "title": "Modal for Academics",
+        "link": "https://modal.com/academics",
+        "snippet": "Modal is the fastest way for researchers to develop tomorrow's cutting-edge AI models and machine learning methods. ... AboutBlogCareersEventsPrivacy Policy ...",
+        "position": 2
+      },
+      {
+        "title": "Inside the Modal code playground",
+        "link": "https://modal.com/blog/playground",
+        "snippet": "Let's dive into how we quickly built an in-browser code execution environment using some of Modal's own features. Backend. While the backend ...",
+        "date": "Aug 16, 2024",
+        "position": 3
+      },
+      {
+        "title": "Train an SLM from scratch with early-stopping grid search ...",
+        "link": "https://modal.com/docs/examples/hp_sweep_gpt",
+        "snippet": "Together, these features give every machine learning and AI team the same ... backend.application.TensorBoardWSGIApp( board.flags, board.plugin_loaders ...",
+        "position": 4
+      },
+      {
+        "title": "Jamsocket is joining Modal",
+        "link": "https://modal.com/blog/jamsocket-is-joining-modal",
+        "snippet": "We're excited to share that the Jamsocket team is joining Modal! Jamsocket is a backend platform used to build sync engines that power ...",
+        "date": "Jul 10, 2025",
+        "position": 5
+      },
+      {
+        "title": "Open-source AI agents",
+        "link": "https://modal.com/blog/open-ai-agents",
+        "snippet": "... software engineer would do. Devin has even been spotted asking questions in our Modal Slack community. Devin also occasionally makes ...",
+        "date": "Sep 23, 2024",
+        "position": 6
+      },
+      {
+        "title": "How Ramp built a full context background coding agent on ...",
+        "link": "https://modal.com/blog/how-ramp-built-a-full-context-background-coding-agent-on-modal",
+        "snippet": "Leveraging Modal Sandboxes, Ramp spins up full development ... A product manager or designer sends a prompt, Inspect spins up a full ...",
+        "date": "Feb 19, 2026",
+        "position": 7
+      },
+      {
+        "title": "Lambda on hard mode: Inside Modal's web infrastructure",
+        "link": "https://modal.com/blog/serverless-http",
+        "snippet": "Users may ask to upload a gigabyte of video to their machine learning ... backend server. For most of these platforms, HTTP is the main way ...",
+        "date": "Mar 14, 2024",
+        "position": 8
+      },
+      {
+        "title": "5 Best GPUs for Machine Learning in 2025",
+        "link": "https://modal.com/blog/5-best-gpus-for-machine-learning-compared",
+        "snippet": "Example: Running ML on Modal. import modal app = modal.App(\"ml ... AboutBlogCareersEventsPrivacy PolicySecurity & PrivacyTerms. Popular ...",
+        "date": "Mar 18, 2025",
+        "position": 9
+      },
+      {
+        "title": "Anthropic integration with Modal brings scalable compute ...",
+        "link": "https://modal.com/blog/modal-integration-brings-scalable-compute-to-claude-science",
+        "snippet": "To use Modal as your compute backend: Download the Claude Science ... AboutBlogCareersEventsPrivacy PolicySecurity & PrivacyTerms.",
+        "date": "Jun 30, 2026",
+        "position": 10
+      }
+    ]
+  }
+}

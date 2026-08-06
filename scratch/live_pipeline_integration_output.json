@@ -1,0 +1,691 @@
+{
+  "company_name": "Azion",
+  "industry": "Technology, Information and Internet",
+  "company_segment": "Mid-Market",
+  "intent_score": 100,
+  "intent_classification": "HOT",
+  "one_line_reason": "Azion is actively hiring for 15+ roles across Engineering, Revenue, Operations, and Security, indicating significant growth and talent acquisition needs.",
+  "signal_freshness": 100,
+  "tier": "High",
+  "icp_fit": "Strong",
+  "adjacent_hiring_gap": false,
+  "signals": [
+    {
+      "signal_type": "Active Hiring",
+      "verbatim_quote": "Active hiring across Engineering, Revenue, Operations, and Security departments.",
+      "quote_validated": true,
+      "similarity_score": 100.0,
+      "source_url": "https://www.azion.com/en/careers/",
+      "recency_label": "3-6 months",
+      "days_old": 180,
+      "score_contribution": 17.5
+    },
+    {
+      "signal_type": "Open Roles Count",
+      "verbatim_quote": "15 active job postings",
+      "quote_validated": true,
+      "similarity_score": 100.0,
+      "source_url": "https://www.azion.com/en/careers/",
+      "recency_label": "3-6 months",
+      "days_old": 180,
+      "score_contribution": 17.5
+    },
+    {
+      "signal_type": "Head of People",
+      "verbatim_quote": "Caroline Zucco: Head of People",
+      "quote_validated": true,
+      "similarity_score": 100.0,
+      "source_url": "https://azion.com.tw/",
+      "recency_label": "3-6 months",
+      "days_old": 180,
+      "score_contribution": 17.5
+    },
+    {
+      "signal_type": "Series A Funding",
+      "verbatim_quote": "Azion's latest funding round was a Series A for $15M on November 10, 2020.",
+      "quote_validated": true,
+      "similarity_score": 100.0,
+      "source_url": "https://tracxn.com/d/companies/azion/__9a5wTvzoR1SO1maxpV3VOxTBxhNYqcygQqUA1wqtDXg",
+      "recency_label": "12+ months",
+      "days_old": 2094,
+      "score_contribution": 2.5
+    }
+  ],
+  "why_now": "The company's careers page explicitly lists active job postings across multiple departments, signaling an immediate need for talent to support ongoing expansion. The presence of a Head of People suggests they may be seeking external recruitment support to scale their hiring efforts.",
+  "signal_tags": [
+    {
+      "tag": "Hiring",
+      "category": "HIRING",
+      "color_theme": "indigo"
+    },
+    {
+      "tag": "Leadership",
+      "category": "LEADERSHIP",
+      "color_theme": "indigo"
+    },
+    {
+      "tag": "Funding",
+      "category": "FUNDING",
+      "color_theme": "indigo"
+    }
+  ],
+  "gemini_token_usage": "Prompt: 4237 | Output: 640 | Total: 6005",
+  "scoring_breakdown": {
+    "base_ai_score": 75,
+    "multi_category_bonus": 15.0,
+    "adjacent_hiring_bonus": 0.0,
+    "signal_categories_detected": [
+      "LEADERSHIP",
+      "FUNDING",
+      "HIRING"
+    ],
+    "final_math_score": 100
+  },
+  "ai_verdict": "Azion is a technology company with a global presence, actively seeking to fill over 15 roles across key departments, as evidenced by their current careers page and structured facts. This strong, recent hiring signal, combined with their existing Head of People, indicates a clear need for recruitment services to support their growth. Outreach should focus on their specific departmental hiring needs and how external support can augment their internal talent acquisition strategy.",
+  "raw_gemini_output": {
+    "company_name": "Azion",
+    "industry": "Technology, Information and Internet",
+    "company_segment": "Mid-Market",
+    "intent_score": 75,
+    "intent_classification": "HOT",
+    "one_line_reason": "Azion is actively hiring for 15+ roles across Engineering, Revenue, Operations, and Security, indicating significant growth and talent acquisition needs.",
+    "why_now": "The company's careers page explicitly lists active job postings across multiple departments, signaling an immediate need for talent to support ongoing expansion. The presence of a Head of People suggests they may be seeking external recruitment support to scale their hiring efforts.",
+    "adjacent_hiring_gap": false,
+    "signal_tags": [
+      {
+        "tag": "Active Hiring",
+        "category": "HIRING"
+      },
+      {
+        "tag": "Head of People",
+        "category": "LEADERSHIP"
+      },
+      {
+        "tag": "Series A Funding",
+        "category": "FUNDING"
+      }
+    ],
+    "signals": [
+      {
+        "signal_type": "Active Hiring",
+        "verbatim_quote": "Active hiring across Engineering, Revenue, Operations, and Security departments.",
+        "source_post_index": 5,
+        "event_date": null,
+        "is_grant": false
+      },
+      {
+        "signal_type": "Open Roles Count",
+        "verbatim_quote": "15 active job postings",
+        "source_post_index": 5,
+        "event_date": null,
+        "is_grant": false
+      },
+      {
+        "signal_type": "Head of People",
+        "verbatim_quote": "Caroline Zucco: Head of People",
+        "source_post_index": 1,
+        "event_date": null,
+        "is_grant": false
+      },
+      {
+        "signal_type": "Series A Funding",
+        "verbatim_quote": "Azion's latest funding round was a Series A for $15M on November 10, 2020.",
+        "source_post_index": 3,
+        "event_date": "2020-11-10",
+        "is_grant": false
+      }
+    ],
+    "ai_verdict": "Azion is a technology company with a global presence, actively seeking to fill over 15 roles across key departments, as evidenced by their current careers page and structured facts. This strong, recent hiring signal, combined with their existing Head of People, indicates a clear need for recruitment services to support their growth. Outreach should focus on their specific departmental hiring needs and how external support can augment their internal talent acquisition strategy.",
+    "gemini_token_usage": {
+      "prompt_tokens": 4237,
+      "completion_tokens": 640,
+      "thinking_tokens": 0,
+      "total_tokens": 6005,
+      "raw_usage_metadata": {
+        "cached_content_token_count": null,
+        "candidates_token_count": 640,
+        "prompt_token_count": 4237,
+        "total_token_count": 6005
+      }
+    }
+  },
+  "id": "f6fb612a-7797-4fe1-afdf-c2d1a8502761",
+  "domain": "azion.com",
+  "employee_count": 197,
+  "funding_stage": "$24M raised",
+  "badge": "new_today",
+  "confidence": {
+    "label": "Verified Intention",
+    "color": "emerald",
+    "verified": 4,
+    "total": 4
+  },
+  "dns_audit": {
+    "spf": "Valid",
+    "dkim": "Valid",
+    "dmarc": "Valid",
+    "issues": []
+  },
+  "contacts": [
+    {
+      "name": "VP of Engineering @ Azion",
+      "title": "VP of Engineering / Talent",
+      "email": "hiring@azion.com",
+      "confidence": "95%",
+      "source": "Airtable Domain Lead"
+    }
+  ],
+  "last_updated": "2026-08-05T17:29:46.653885+00:00",
+  "groq_token_usage": "Prompt: 4237 | Output: 640 | Total: 6005",
+  "mistral_token_usage": "Prompt: 4237 | Output: 640 | Total: 6005",
+  "company_linkedin_id": "2137446",
+  "company_insights": {
+    "headcount_by_function": {
+      "Administrative": {
+        "count": 5,
+        "percentage": 3
+      },
+      "Arts and Design": {
+        "count": 4,
+        "percentage": 2
+      },
+      "Business Development": {
+        "count": 11,
+        "percentage": 6
+      },
+      "Engineering": {
+        "count": 57,
+        "percentage": 29
+      },
+      "Finance": {
+        "count": 10,
+        "percentage": 5
+      },
+      "Human Resources": {
+        "count": 5,
+        "percentage": 3
+      },
+      "Information Technology": {
+        "count": 29,
+        "percentage": 15
+      },
+      "Marketing": {
+        "count": 10,
+        "percentage": 5
+      },
+      "Media and Communication": {
+        "count": 4,
+        "percentage": 2
+      },
+      "Operations": {
+        "count": 13,
+        "percentage": 7
+      },
+      "Sales": {
+        "count": 25,
+        "percentage": 13
+      },
+      "Support": {
+        "count": 4,
+        "percentage": 2
+      }
+    },
+    "headcount_by_month": [
+      {
+        "date": "2024-8-1",
+        "employee_count": 199
+      },
+      {
+        "date": "2024-9-1",
+        "employee_count": 199
+      },
+      {
+        "date": "2024-10-1",
+        "employee_count": 198
+      },
+      {
+        "date": "2024-11-1",
+        "employee_count": 196
+      },
+      {
+        "date": "2024-12-1",
+        "employee_count": 192
+      },
+      {
+        "date": "2025-1-1",
+        "employee_count": 194
+      },
+      {
+        "date": "2025-2-1",
+        "employee_count": 193
+      },
+      {
+        "date": "2025-3-1",
+        "employee_count": 193
+      },
+      {
+        "date": "2025-4-1",
+        "employee_count": 201
+      },
+      {
+        "date": "2025-5-1",
+        "employee_count": 196
+      },
+      {
+        "date": "2025-6-1",
+        "employee_count": 198
+      },
+      {
+        "date": "2025-7-1",
+        "employee_count": 198
+      },
+      {
+        "date": "2025-8-1",
+        "employee_count": 197
+      },
+      {
+        "date": "2025-9-1",
+        "employee_count": 201
+      },
+      {
+        "date": "2025-10-1",
+        "employee_count": 196
+      },
+      {
+        "date": "2025-11-1",
+        "employee_count": 190
+      },
+      {
+        "date": "2025-12-1",
+        "employee_count": 188
+      },
+      {
+        "date": "2026-1-1",
+        "employee_count": 187
+      },
+      {
+        "date": "2026-2-1",
+        "employee_count": 192
+      },
+      {
+        "date": "2026-3-1",
+        "employee_count": 191
+      },
+      {
+        "date": "2026-4-1",
+        "employee_count": 190
+      },
+      {
+        "date": "2026-5-1",
+        "employee_count": 196
+      },
+      {
+        "date": "2026-6-1",
+        "employee_count": 194
+      },
+      {
+        "date": "2026-7-1",
+        "employee_count": 197
+      },
+      {
+        "date": "2026-8-1",
+        "employee_count": 197
+      }
+    ],
+    "headcount_growth": {
+      "1y": "0%",
+      "2y": "-1%",
+      "6m": "3%"
+    },
+    "headcount_growth_by_function": {
+      "Administrative": {
+        "1y": "25%",
+        "6m": "0%"
+      },
+      "Arts and Design": {
+        "1y": "33%",
+        "6m": "0%"
+      },
+      "Business Development": {
+        "1y": "0%",
+        "6m": "22%"
+      },
+      "Engineering": {
+        "1y": "-10%",
+        "6m": "14%"
+      },
+      "Finance": {
+        "1y": "25%",
+        "6m": "11%"
+      },
+      "Human Resources": {
+        "1y": "-17%",
+        "6m": "-17%"
+      },
+      "Information Technology": {
+        "1y": "16%",
+        "6m": "0%"
+      },
+      "Marketing": {
+        "1y": "11%",
+        "6m": "0%"
+      },
+      "Media and Communication": {
+        "1y": "-20%",
+        "6m": "0%"
+      },
+      "Operations": {
+        "1y": "8%",
+        "6m": "0%"
+      },
+      "Sales": {
+        "1y": "14%",
+        "6m": "0%"
+      },
+      "Support": {
+        "1y": "0%",
+        "6m": "0%"
+      }
+    },
+    "job_openings": {
+      "job_openings_by_function": [
+        {
+          "count_by_function": {
+            "Engineering": {
+              "count": 9,
+              "percentage": 43
+            },
+            "Finance": {
+              "count": 1,
+              "percentage": 5
+            },
+            "Information Technology": {
+              "count": 7,
+              "percentage": 33
+            },
+            "Media and Communication": {
+              "count": 1,
+              "percentage": 5
+            },
+            "Sales": {
+              "count": 3,
+              "percentage": 14
+            }
+          },
+          "date": "2026-6",
+          "total_count": 21
+        },
+        {
+          "count_by_function": {
+            "Engineering": {
+              "count": 11,
+              "percentage": 44
+            },
+            "Finance": {
+              "count": 0,
+              "percentage": 0
+            },
+            "Information Technology": {
+              "count": 2,
+              "percentage": 8
+            },
+            "Media and Communication": {
+              "count": 1,
+              "percentage": 4
+            },
+            "Sales": {
+              "count": 4,
+              "percentage": 16
+            }
+          },
+          "date": "2026-3",
+          "total_count": 25
+        },
+        {
+          "count_by_function": {
+            "Engineering": {
+              "count": 10,
+              "percentage": 50
+            },
+            "Finance": {
+              "count": 0,
+              "percentage": 0
+            },
+            "Information Technology": {
+              "count": 4,
+              "percentage": 20
+            },
+            "Media and Communication": {
+              "count": 0,
+              "percentage": 0
+            },
+            "Sales": {
+              "count": 2,
+              "percentage": 10
+            }
+          },
+          "date": "2025-12",
+          "total_count": 20
+        }
+      ],
+      "job_openings_growth": {
+        "3m": "-16%",
+        "6m": "5%"
+      },
+      "job_openings_growth_by_function": {
+        "Engineering": {
+          "3m": "-18%",
+          "6m": "-10%"
+        },
+        "Finance": {
+          "3m": "100%",
+          "6m": "100%"
+        },
+        "Information Technology": {
+          "3m": "250%",
+          "6m": "75%"
+        },
+        "Media and Communication": {
+          "3m": "0%",
+          "6m": "100%"
+        },
+        "Sales": {
+          "3m": "-25%",
+          "6m": "50%"
+        }
+      }
+    },
+    "median_employee_tenure": 2.5,
+    "new_hires": [
+      {
+        "date": "2024-8",
+        "senior_hires": 0,
+        "total_hires": 3
+      },
+      {
+        "date": "2024-9",
+        "senior_hires": 0,
+        "total_hires": 3
+      },
+      {
+        "date": "2024-10",
+        "senior_hires": 0,
+        "total_hires": 5
+      },
+      {
+        "date": "2024-11",
+        "senior_hires": 0,
+        "total_hires": 3
+      },
+      {
+        "date": "2024-12",
+        "senior_hires": 0,
+        "total_hires": 2
+      },
+      {
+        "date": "2025-1",
+        "senior_hires": 0,
+        "total_hires": 4
+      },
+      {
+        "date": "2025-2",
+        "senior_hires": 0,
+        "total_hires": 3
+      },
+      {
+        "date": "2025-3",
+        "senior_hires": 0,
+        "total_hires": 4
+      },
+      {
+        "date": "2025-4",
+        "senior_hires": 0,
+        "total_hires": 13
+      },
+      {
+        "date": "2025-5",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2025-6",
+        "senior_hires": 1,
+        "total_hires": 8
+      },
+      {
+        "date": "2025-7",
+        "senior_hires": 0,
+        "total_hires": 7
+      },
+      {
+        "date": "2025-8",
+        "senior_hires": 0,
+        "total_hires": 8
+      },
+      {
+        "date": "2025-9",
+        "senior_hires": 0,
+        "total_hires": 8
+      },
+      {
+        "date": "2025-10",
+        "senior_hires": 0,
+        "total_hires": 3
+      },
+      {
+        "date": "2025-11",
+        "senior_hires": 0,
+        "total_hires": 3
+      },
+      {
+        "date": "2025-12",
+        "senior_hires": 0,
+        "total_hires": 5
+      },
+      {
+        "date": "2026-1",
+        "senior_hires": 0,
+        "total_hires": 5
+      },
+      {
+        "date": "2026-2",
+        "senior_hires": 0,
+        "total_hires": 6
+      },
+      {
+        "date": "2026-3",
+        "senior_hires": 0,
+        "total_hires": 4
+      },
+      {
+        "date": "2026-4",
+        "senior_hires": 0,
+        "total_hires": 3
+      },
+      {
+        "date": "2026-5",
+        "senior_hires": 0,
+        "total_hires": 8
+      },
+      {
+        "date": "2026-6",
+        "senior_hires": 0,
+        "total_hires": 4
+      },
+      {
+        "date": "2026-7",
+        "senior_hires": 0,
+        "total_hires": 6
+      }
+    ],
+    "total_employees": 197
+  },
+  "job_openings": {
+    "total_results": 8,
+    "used_fallback": true,
+    "platform_stats": {
+      "jobs.ashbyhq.com": 0,
+      "boards.greenhouse.io": 0,
+      "jobs.lever.co": 0,
+      "apply.workable.com": 0
+    },
+    "qualified_jobs": [
+      {
+        "title": "Qubika hiring Rust Engineer in Latin America",
+        "link": "https://www.linkedin.com/jobs/view/rust-engineer-at-qubika-4447000861",
+        "snippet": "Software Engineer - Storage. Software Engineer - Storage. Backblaze. Mexico 2 months ago. Software Engineer (Rust). Software Engineer (Rust). Azion. S\u00e3o Paulo, ...",
+        "date": "6 days ago",
+        "ats_platform": "FALLBACK_SERP"
+      },
+      {
+        "title": "Senior Solutions Engineer",
+        "link": "https://br.linkedin.com/jobs/view/senior-solutions-engineer-at-azion-4446932901",
+        "snippet": "Cadastre-se para se candidatar ao cargo de Senior Solutions Engineer na empresa Azion ... Engineer na empresa Azion. E-mail ou telefone. Senha. Exibir.",
+        "date": "6 days ago",
+        "ats_platform": "FALLBACK_SERP"
+      },
+      {
+        "title": "Hired hiring Rust Developer (Remote) in Latin America",
+        "link": "https://www.linkedin.com/jobs/view/rust-developer-remote-at-hired-4447266278",
+        "snippet": "Azion. S\u00e3o Paulo, S\u00e3o Paulo, Brazil 3 months ago. Software Engineer ... Systems Engineer (Rust) - Remote Work | REF#295779. BairesDev. Jalisco, Mexico ...",
+        "date": "5 days ago",
+        "ats_platform": "FALLBACK_SERP"
+      },
+      {
+        "title": "micro1 hiring Rust Developer in Latin America",
+        "link": "https://www.linkedin.com/jobs/view/rust-developer-at-micro1-4445673741",
+        "snippet": "Azion. S\u00e3o Paulo, S\u00e3o Paulo, Brazil 3 months ago. Senior Software ... Software Engineer (Rust / WebAssembly) - Remote Work | REF#295129. BairesDev.",
+        "date": "Jul 26, 2026",
+        "ats_platform": "FALLBACK_SERP"
+      },
+      {
+        "title": "Technical Support Engineer [English Speaker]",
+        "link": "https://br.linkedin.com/jobs/view/technical-support-engineer-english-speaker-at-azion-4444058084",
+        "snippet": "Technical Support Engineer [English Speaker]. Azion Porto Alegre e Regi\u00e3o. H\u00e1 1 semana Seja um dos 25 primeiros a se ...",
+        "date": "Jul 23, 2026",
+        "ats_platform": "FALLBACK_SERP"
+      },
+      {
+        "title": "Founding Marketer - Jobright.ai",
+        "link": "https://www.linkedin.com/jobs/view/founding-marketer-at-jobright-ai-4443857795",
+        "snippet": "Azion. Palo Alto, CA 1 week ago. Manager, Integrated Marketing, Consumer - DashPass Benefits. Manager, Integrated Marketing, Consumer - DashPass Benefits.",
+        "date": "Jul 23, 2026",
+        "ats_platform": "FALLBACK_SERP"
+      },
+      {
+        "title": "NVIDIA AI hiring Principal Developer Relations Manager \u2013 ...",
+        "link": "https://www.linkedin.com/jobs/view/principal%C2%A0developer-relations-manager%C2%A0%E2%80%93%C2%A0marketing-technology-strategic-isvs-at-nvidia-ai-4441894335",
+        "snippet": "Principal Developer Relations Manager \u2013 Marketing Technology Strategic ISVs ... Senior Layout Engineer jobs \u00b7 Oracle Application Database Administrator jobs ...",
+        "date": "Jul 24, 2026",
+        "ats_platform": "FALLBACK_SERP"
+      },
+      {
+        "title": "Hired hiring Technical Writer (Remote) in Latin America",
+        "link": "https://www.linkedin.com/jobs/view/technical-writer-remote-at-hired-4445383374",
+        "snippet": "Azion. Brazil 1 month ago. Associate technical Writer. Associate technical ... L2 Support Engineer, Alpha (Remote) - $60,000/year USD. Crossover. Kingston ...",
+        "date": "Jul 25, 2026",
+        "ats_platform": "FALLBACK_SERP"
+      }
+    ]
+  }
+}

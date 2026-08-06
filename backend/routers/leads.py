@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
-from typing import Literal, Optional, List, cast
+from typing import Literal, Optional, List, cast, Dict, Any
 from datetime import datetime, timezone
 import uuid
 import logging
@@ -102,6 +102,9 @@ class LeadDetailResponse(BaseModel):
     ai_verdict: str
     dns_audit: DNSAuditModel
     contacts: List[ContactModel] = []
+    company_linkedin_id: Optional[str] = None
+    company_insights: Optional[Dict[str, Any]] = None
+    job_openings: Optional[Dict[str, Any]] = None
     last_updated: str
 
 
@@ -507,3 +510,4 @@ async def ingest_new_lead(req: IngestRequest):
         raise HTTPException(status_code=400, detail="Lead was recently cached.")
     
     raise HTTPException(status_code=500, detail="Failed to ingest lead.")
+

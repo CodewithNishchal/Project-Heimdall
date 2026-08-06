@@ -1,0 +1,89 @@
+{
+  "lead_info": {
+    "company_name": "Modal",
+    "company_slug": "modal-labs",
+    "domain": "modal.com",
+    "intent_score": 95,
+    "pipeline_status": "QUALIFIED_HIGH_INTENT",
+    "company_linkedin_id": null,
+    "linkedin_url": "https://www.linkedin.com/company/modal-labs/"
+  },
+  "jobs_tab_infographics_data": {
+    "headcount_summary": {
+      "total_employees": null,
+      "headcount_growth_1y": null,
+      "headcount_growth_6m": null,
+      "median_tenure_years": null
+    },
+    "department_breakdown": {},
+    "department_growth_yoy": {},
+    "headcount_24m_trajectory": [],
+    "recent_new_hires_monthly": []
+  },
+  "active_job_openings_cards": {
+    "total_results": 10,
+    "used_fallback": true,
+    "qualified_jobs": [
+      {
+        "title": "Senior Deep Learning Software Engineer, Inference and ...",
+        "link": "https://www.linkedin.com/jobs/view/senior-deep-learning-software-engineer-inference-and-model-optimization-at-nvidia-4446894121",
+        "snippet": "Software Engineer, Inference - Multi Modal. OpenAI. San Francisco, CA $295,000 ... Software Engineering Manager jobs \u00b7 Distinguished Engineer jobs \u00b7 Lead ...",
+        "date": "7 days ago"
+      },
+      {
+        "title": "Embedded ML Engineer (Audio/Omni) in San Francisco, CA",
+        "link": "https://www.linkedin.com/jobs/view/member-of-technical-staff-embedded-ml-engineer-audio-omni-at-liquid-ai-4445424569",
+        "snippet": "Software Engineer, Inference - Multi Modal. Software Engineer, Inference - Multi Modal. OpenAI. San Francisco, CA $295,000 - $555,000 1 day ago. Senior Machine ...",
+        "date": "Jul 27, 2026"
+      },
+      {
+        "title": "Senior Software Engineer - Vehicle Motion Planning & ...",
+        "link": "https://www.linkedin.com/jobs/view/senior-software-engineer-vehicle-motion-planning-control-at-zendar-4445794270",
+        "snippet": "Senior Software Engineer - Vehicle Motion Planning & Control. Zendar Berkeley ... Software Engineering Manager jobs \u00b7 Ruby on Rails Developer jobs \u00b7 Senior ...",
+        "date": "8 days ago"
+      },
+      {
+        "title": "Principal Software Engineer - Robot Applications & Voice AI",
+        "link": "https://www.linkedin.com/jobs/view/principal-software-engineer-robot-applications-voice-ai-at-ladders-4442819970",
+        "snippet": "... recruiter to learn more. Base pay range. $165,550.00/yr - $264,450.00/yr. For our client, we are seeking a Principal Software Engineer - Robot Applications ...",
+        "date": "Jul 27, 2026"
+      },
+      {
+        "title": "Rippling hiring Senior Staff Software Engineer in Seattle, WA",
+        "link": "https://www.linkedin.com/jobs/view/senior-staff-software-engineer-at-rippling-4432038823",
+        "snippet": "Staff Software Engineer jobs. 64,945 open jobs \u00b7 Senior Staff Engineer jobs. 45,658 open jobs \u00b7 Customer Engineering Manager jobs. 21,371 open jobs. Show more",
+        "date": "Jun 22, 2026"
+      },
+      {
+        "title": "Senior Staff Software Engineer",
+        "link": "https://www.linkedin.com/jobs/view/senior-staff-software-engineer-at-indenovo-global-search-selection-4446820264",
+        "snippet": "Principal Software Engineer jobs. 73,845 open jobs \u00b7 Senior Staff Engineer jobs. 45,658 open jobs \u00b7 Customer Engineering Manager jobs. 21,371 open jobs ...",
+        "date": "7 days ago"
+      },
+      {
+        "title": "Computer Vision Software Engineer, Lead",
+        "link": "https://www.linkedin.com/jobs/view/computer-vision-software-engineer-lead-at-booz-allen-hamilton-4447253286",
+        "snippet": "Computer Software Engineer jobs \u00b7 Process Engineering Manager jobs \u00b7 Extreme Engineering Solutions jobs \u00b7 Training Supervisor jobs \u00b7 Pharmacovigilance Manager ...",
+        "date": "6 days ago"
+      },
+      {
+        "title": "FieldAI hiring Senior Software Engineer, ROS ...",
+        "link": "https://www.linkedin.com/jobs/view/senior-software-engineer-ros-engineer-at-fieldai-4408014775",
+        "snippet": "Your actual pay will be based on your skills and experience \u2014 talk with your recruiter to learn more. ... modal data handling; Practical experience with ...",
+        "date": "5 days ago"
+      },
+      {
+        "title": "Simbe hiring Senior Software Engineer in San Francisco ...",
+        "link": "https://www.linkedin.com/jobs/view/senior-software-engineer-at-simbe-4447081375",
+        "snippet": "Your actual pay will be based on your skills and experience \u2014 talk with your recruiter to learn more. ... Our autonomous robots and multi-modal data ...",
+        "date": "6 days ago"
+      },
+      {
+        "title": "Senior Infrastructure Software Engineer, Search Platform",
+        "link": "https://www.linkedin.com/jobs/view/senior-infrastructure-software-engineer-search-platform-at-dropbox-4427625868",
+        "snippet": "... modal search, Q&A, and recommendations, to meet evolving customer needs. ... Senior Engineering Manager jobs. 17,824 open jobs \u00b7 Senior Software Engineer ...",
+        "date": "Jun 11, 2026"
+      }
+    ]
+  }
+}
