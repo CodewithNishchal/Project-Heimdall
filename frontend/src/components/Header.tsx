@@ -35,7 +35,7 @@ export default function Header({ status, searchTerm, setSearchTerm, isDark, setI
   }, []);
 
   return (
-    <header className="nexa-card nexa-card-no-hover relative z-10 flex items-center justify-between px-3 sm:px-5 py-2 sm:py-2.5 w-full rounded-2xl shadow-xs border border-nexa-border gap-2 sm:gap-4 overflow-hidden">
+    <header className="nexa-card nexa-card-no-hover relative z-10 flex items-center justify-between px-3 sm:px-5 py-2 sm:py-2.5 w-full rounded-2xl shadow-xs border border-nexa-border gap-2 sm:gap-4 overflow-hidden shrink-0">
       
       {/* 1. MOBILE ONLY: EXPANDED OVERLAY SEARCH (Spring animated on mobile viewports < sm) */}
       <AnimatePresence>

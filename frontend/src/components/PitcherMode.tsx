@@ -85,7 +85,7 @@ export default function PitcherMode({ id, company_name, onClose, inline = false 
     >
 
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-nexa-border pb-4">
+      <div className="flex items-center justify-between border-b border-slate-200 dark:border-nexa-border pb-3">
         <div>
           <h2
             className="text-sm font-bold uppercase tracking-wide"
@@ -93,13 +93,13 @@ export default function PitcherMode({ id, company_name, onClose, inline = false 
           >
             Intent Summary
           </h2>
-          <p className="mt-1 text-xs text-slate-500 dark:text-zinc-500 font-medium">
+          <p className="mt-0.5 text-xs text-slate-500 dark:text-zinc-400 font-medium">
             Summarised signal context for {company_name}
           </p>
         </div>
         <button
           aria-label="Close Intent Summary"
-          className="rounded-md border border-nexa-border bg-nexa-card p-2 text-zinc-500 transition hover:border-[var(--nexa-accent)]/40 hover:text-zinc-200"
+          className="rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-100 dark:bg-zinc-800/80 p-2 text-slate-700 dark:text-zinc-300 hover:bg-slate-200 dark:hover:bg-zinc-700 transition cursor-pointer shrink-0"
           onClick={onClose}
           type="button"
         >
@@ -108,7 +108,7 @@ export default function PitcherMode({ id, company_name, onClose, inline = false 
       </div>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto py-6">
+      <div className="flex-1 overflow-y-auto pt-2.5 pb-4">
         {loading ? (
           <div className="flex h-full flex-col items-center justify-center gap-3 text-center font-mono text-xs text-slate-500 dark:text-zinc-600">
             <Loader2

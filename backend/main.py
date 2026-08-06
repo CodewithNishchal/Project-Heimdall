@@ -19,7 +19,6 @@ from backend.pipeline.dns_audit import audit_domain_email_infrastructure
 from backend.pipeline.filter_funnel import trim_html_for_llm, passes_keyword_gate
 from backend.validation.quote_validator import validate_quote
 from backend.pipeline.scorer import process_hybrid_lead_scoring
-from backend.scheduler.pipeline_scheduler import run_pipeline_job
 from backend.routers import pipeline, leads
 
 

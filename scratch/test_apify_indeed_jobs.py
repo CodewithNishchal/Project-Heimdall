@@ -5,8 +5,7 @@ from dotenv import load_dotenv
 
 load_dotenv(os.path.join("backend", ".env"), override=True)
 
-# Use APIFY_INSIGHTS_API_KEY as requested
-APIFY_API_KEY = os.getenv("APIFY_INSIGHTS_API_KEY") or os.getenv("APIFY_API_KEY")
+APIFY_API_KEY = os.getenv("APIFY_API_KEY")
 APIFY_INDEED_ACTOR_URL = "https://api.apify.com/v2/acts/memo23~apify-indeed-reviews-ppr/run-sync-get-dataset-items"
 
 def test_apify_indeed_jobs(indeed_jobs_url: str = "https://www.indeed.com/cmp/Valence/jobs"):

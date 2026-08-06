@@ -378,7 +378,7 @@ export default function LeadDetailDrawer({
 
                 <button
                   onClick={onClose}
-                  className="side-drawer-pill p-1.5 sm:p-1.5 rounded-lg border border-nexa-border bg-nexa-surface text-zinc-400 hover:text-zinc-100 transition shrink-0 ml-1"
+                  className="rounded-xl border border-slate-200 dark:border-zinc-800 bg-slate-100 dark:bg-zinc-800/80 p-1.5 text-slate-700 dark:text-zinc-300 hover:bg-slate-200 dark:hover:bg-zinc-700 transition shrink-0 ml-1 cursor-pointer"
                   title="Close Panel"
                 >
                   <X size={15} />
@@ -712,8 +712,8 @@ export default function LeadDetailDrawer({
 
                     {/* Timeline List with Connecting Dots */}
                     <div className="relative pl-9 space-y-4">
-                      {/* Vertical Axis Line (Exact 16px left center alignment) */}
-                      <div className="absolute left-4 top-3 bottom-3 w-0.5 bg-slate-200 dark:bg-zinc-800 -translate-x-1/2" />
+                      {/* Vertical Axis Line (Centered at 16px) */}
+                      <div className="absolute left-[15px] top-4 bottom-4 w-[2px] bg-slate-200 dark:bg-zinc-800" />
 
                       {timelineSignals.map((sig, idx) => {
                         const isFunding = (sig.signal_type || '').toLowerCase().includes('fund') || (sig.signal_type || '').toLowerCase().includes('series');
@@ -727,8 +727,8 @@ export default function LeadDetailDrawer({
 
                         return (
                           <div key={idx} className="relative group">
-                            {/* Dot on Left Line (Mathematically 100% centered at 16px from container edge) */}
-                            <div className={`absolute left-[-20px] -translate-x-1/2 top-5 w-3.5 h-3.5 rounded-full border-2 border-white dark:border-zinc-900 ${nodeColor} shadow-2xs group-hover:scale-125 transition-transform`} />
+                            {/* Dot on Left Line (Dead-centered horizontally on 16px line and vertically on card) */}
+                            <div className={`absolute left-[-27px] top-1/2 -translate-y-1/2 w-[14px] h-[14px] rounded-full border-2 border-white dark:border-zinc-900 ${nodeColor} shadow-2xs group-hover:scale-125 transition-transform z-10`} />
 
                             {/* Signal Item Card */}
                             <div className="p-4 rounded-2xl border border-slate-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900/50 shadow-2xs flex flex-col sm:flex-row sm:items-center justify-between gap-3 group-hover:border-indigo-300 dark:group-hover:border-indigo-500/60 transition-colors">

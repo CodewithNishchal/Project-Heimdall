@@ -193,7 +193,7 @@ export default function App() {
         />
 
         {/* Main Workspace */}
-        <main className="flex min-w-0 flex-1 flex-col gap-2.5 pl-1 pr-1 sm:pr-3 lg:pl-2.5 pt-0.5 pb-11 lg:pb-0.5 overflow-y-auto overflow-x-hidden">
+        <main className="flex min-w-0 flex-1 flex-col gap-2.5 pl-1 pr-1 sm:pr-1.5 lg:pl-2 pt-0 pb-11 lg:pb-1 overflow-y-auto overflow-x-hidden">
           {/* Top Header Bar */}
           <Header
             status={status}

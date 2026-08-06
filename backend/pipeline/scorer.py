@@ -3,7 +3,6 @@ from google import genai
 from google.genai import types
 from datetime import datetime, timezone
 from pydantic import BaseModel, Field
-from backend.pipeline.time_decay import calculate_time_decay
 from backend.validation.quote_validator import validate_quote
 from backend.config import settings
 import logging

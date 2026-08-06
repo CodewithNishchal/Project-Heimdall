@@ -21,7 +21,7 @@ def extract_revenue_from_exa_text(text: str, structured_out: Optional[dict] = No
         m = re.search(r'(~?\s*\$?\s*[\d\.]+(?:\s*-\s*\$?\s*[\d\.]+)?)\s*([MKBmkb])?', s)
         if m:
             raw_num = m.group(1).replace("~", "").replace("$", "").strip()
-            unit = (m.group(2) or "").toUpperCase()
+            unit = (m.group(2) or "").upper()
             if not unit:
                 try:
                     num_val = float(raw_num.split("-")[0].strip())
@@ -536,15 +536,7 @@ async def process_single_company(
                 "dmarc": "Pass",
                 "issues": []
             },
-            "contacts": [
-                {
-                    "name": f"VP of Engineering @ {company_name}",
-                    "title": "VP of Engineering / Talent",
-                    "email": f"hiring@{domain}",
-                    "confidence": "95%",
-                    "source": "Airtable Domain Lead"
-                }
-            ],
+            "contacts": [],
             "last_updated": now_iso,
             "groq_token_usage": token_str,
             "gemini_token_usage": token_str,
@@ -563,7 +555,19 @@ async def process_single_company(
         
         if final_score >= 80:
             logger.info(f"🔥 Triggering High-Intent Jobs & Insights Enrichment for {company_name} (intent_score={final_score} >= 80)...")
-            
+
+            # Contact Extraction (4-tier: regex → spaCy NER → email gen → LinkedIn Serper)
+            try:
+                from backend.pipeline.contact_extractor import extract_contacts
+                import asyncio
+                loop = asyncio.get_running_loop()
+                extracted_contacts = await loop.run_in_executor(None, extract_contacts, domain, company_name)
+                if extracted_contacts:
+                    full_lead_payload["contacts"] = extracted_contacts
+                    logger.info(f"📇 Extracted {len(extracted_contacts)} contacts for {company_name}")
+            except Exception as e:
+                logger.warning(f"Contact extraction failed for {company_name}: {e}")
+
             # 1. Resolve numeric LinkedIn Company ID ($0 cost)
             company_id = await resolve_linkedin_company_id(company_slug)
             full_lead_payload["company_linkedin_id"] = company_id
@@ -667,8 +671,8 @@ async def run_pipeline_batch(candidates: List[Dict[str, Any]], concurrency_limit
     qualified_leads = []
     for res in results:
         if res and isinstance(res, dict):
-            # Strictly qualify leads clearing Final Math Score >= 80 threshold
-            if res.get("intent_score", 0) >= 80:
+            # Save all qualified leads (Medium tier and above) to preserve data from expensive API calls
+            if res.get("intent_score", 0) >= 40:
                 save_lead_to_db(res)
                 qualified_leads.append(res)
                 

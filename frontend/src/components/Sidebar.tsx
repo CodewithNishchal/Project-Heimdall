@@ -30,7 +30,7 @@ export default function Sidebar({ currentView, setCurrentView, status, isMobileO
   return (
     <>
       {/* ===== DESKTOP SIDEBAR (Visible on lg screens and up) ===== */}
-      <div className="group relative w-[62px] shrink-0 hidden lg:block z-30">
+      <div className="group relative w-[62px] shrink-0 hidden lg:block z-30 mr-0.5">
         {/* Background Dim Overlay when hovering over desktop sidebar */}
         <div className="fixed inset-0 bg-slate-950/20 dark:bg-black/40 backdrop-blur-[1px] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30" />
 
