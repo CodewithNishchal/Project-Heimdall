@@ -126,6 +126,10 @@ def list_all_leads():
             payload = dict(lead.full_payload)
             if lead.annual_revenue:
                 payload["annual_revenue"] = lead.annual_revenue
+            if lead.job_openings is not None:
+                payload["job_openings"] = lead.job_openings
+            if lead.company_insights is not None:
+                payload["company_insights"] = lead.company_insights
             if isinstance(payload.get("confidence"), dict):
                 ver = payload["confidence"].get("verified", 0)
                 if ver > 100:
@@ -196,6 +200,12 @@ def get_lead_profile_details(lead_id: str):
                 detail="Requested lead tracking index not found."
             )
         payload = dict(lead.full_payload)
+        if lead.annual_revenue:
+            payload["annual_revenue"] = lead.annual_revenue
+        if lead.job_openings is not None:
+            payload["job_openings"] = lead.job_openings
+        if lead.company_insights is not None:
+            payload["company_insights"] = lead.company_insights
         if isinstance(payload.get("confidence"), dict):
             ver = payload["confidence"].get("verified", 0)
             if ver > 100:

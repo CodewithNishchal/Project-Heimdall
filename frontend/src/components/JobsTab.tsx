@@ -876,7 +876,7 @@ export default function JobsTab({ lead, defaultTab = 'all' }: JobsTabProps) {
                       </div>
                       {job.snippet && (
                         <p className="mt-2.5 text-xs text-slate-600 dark:text-zinc-400 leading-relaxed line-clamp-3">
-                          {job.snippet}
+                          {job.snippet.replace(/\*\*/g, '')}
                         </p>
                       )}
                     </div>

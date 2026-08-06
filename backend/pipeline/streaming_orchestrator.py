@@ -85,6 +85,8 @@ SCRAPEBADGER_API_KEY = os.getenv("SCRAPEBADGER_API_KEY")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
 APIFY_INSIGHTS_API_KEY = os.getenv("APIFY_INSIGHTS_API_KEY") or os.getenv("APIFY_API_KEY")
+THEIRSTACK_API_KEY = os.getenv("THEIRSTACK_API_KEY")
+LINKUP_API_KEY = os.getenv("LINKUP_API_KEY")
 
 from backend.pipeline.linkedin_id_resolver import resolve_linkedin_company_id
 
@@ -160,6 +162,64 @@ async def fetch_linkedin_company_insights(company_id: str, company_slug: str) ->
                     return data.get("data")
     except Exception as e:
         logger.error(f"Error fetching Apify LinkedIn Insights for company_id {company_id}: {e}")
+
+async def fetch_company_job_theirstack(company_name: str, domain: str, company_slug: str) -> Optional[Dict[str, Any]]:
+    """
+    Fetches strictly 1 active job for the company using TheirStack Jobs API.
+    Uses domain or company LinkedIn URL. Falls back to None if API fails or returns 0 jobs.
+    """
+    if not THEIRSTACK_API_KEY:
+        logger.info("TheirStack API key not configured. Will use Serper fallback.")
+        return None
+
+    url = "https://api.theirstack.com/v1/jobs/search"
+    headers = {
+        "Authorization": f"Bearer {THEIRSTACK_API_KEY}",
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+    }
+
+    linkedin_url = f"https://www.linkedin.com/company/{company_slug}" if company_slug else None
+
+    # Priority payload: domain or company linkedin url with limit 1
+    payload = {
+        "company_domain_or": [domain] if domain else [],
+        "posted_at_max_age_days": 90,
+        "limit": 1,
+        "page": 0
+    }
+    if linkedin_url:
+        payload["company_linkedin_url_or"] = [linkedin_url]
+
+    try:
+        async with httpx.AsyncClient(timeout=15.0) as client:
+            resp = await client.post(url, headers=headers, json=payload)
+            if resp.status_code == 200:
+                data = resp.json()
+                jobs = data.get("data", [])
+                if isinstance(jobs, list) and len(jobs) > 0:
+                    j = jobs[0]
+                    company_info = j.get("company_object", {})
+                    qualified_job = {
+                        "title": j.get("job_title", "Position Open"),
+                        "link": j.get("url") or j.get("source_url") or f"https://www.linkedin.com/company/{company_slug}/jobs",
+                        "snippet": (j.get("description") or "")[:250].replace("\n", " ").replace("**", ""),
+                        "date": j.get("date_posted", "Recent"),
+                        "ats_platform": "TheirStack API (LinkedIn)",
+                        "seniority": j.get("seniority", "mid_level"),
+                        "location": j.get("location", ""),
+                        "technologies": company_info.get("technology_names", [])
+                    }
+                    logger.info(f"🎯 TheirStack successfully returned 1 job for {company_name}: '{qualified_job['title']}'")
+                    return {
+                        "total_results": 1,
+                        "used_fallback": False,
+                        "source": "theirstack",
+                        "qualified_jobs": [qualified_job]
+                    }
+            logger.warning(f"TheirStack API returned status {resp.status_code} or 0 jobs for {company_name}. Falling back to Serper...")
+    except Exception as e:
+        logger.error(f"Error calling TheirStack API for {company_name}: {e}. Falling back to Serper...")
 
     return None
 
@@ -241,11 +301,9 @@ async def process_single_company(
 ) -> Optional[Dict[str, Any]]:
     """
     Processes a single candidate domain through the approved multi-source pipeline:
-    1. Exa AI: Core Company Profile & Headcount (Field Filtered)
-    2. Serper API: Live News Articles & Press Releases
-    3. ScrapeBadger / Social Intent: LinkedIn & X Intent Posts
-    4. Gemini 2.5 Flash: Compact Schema Extraction ("q", "s", "t", "d")
-    5. Codebase Math Engine (`scorer.py`) & DB Persistence (intent_score >= 80)
+    1. Stage 1: Exa AI (Canonical Identity & Deep Signals) -> Sent directly to Gemini 2.5 Flash
+    2. Stage 2: Unified Gemini 2.5 Flash Intent Synthesis & Codebase Math Engine (`scorer.py`)
+    3. Stage 3: High-Intent Gate (intent_score >= 80) -> Apify LinkedIn Insights & TheirStack (1-job limit) with Serper fallback
     """
     async with semaphore:
         company_name = candidate.get("company_name", "")
@@ -360,6 +418,32 @@ async def process_single_company(
                 except Exception as e:
                     logger.error(f"Exa search error for {company_name}: {e}")
 
+            # -----------------------------------------------------------------
+            # LINKUP.SO FALLBACK (Triggers if Exa AI fails or returns empty text)
+            # -----------------------------------------------------------------
+            if not combined_raw_text and LINKUP_API_KEY:
+                logger.info(f"Exa AI empty/failed for {company_name}. Triggering Linkup.so Standard SourcedAnswer Fallback...")
+                linkup_headers = {
+                    "Authorization": f"Bearer {LINKUP_API_KEY}",
+                    "Content-Type": "application/json"
+                }
+                linkup_payload = {
+                    "q": f"Provide a detailed overview for {company_name} (domain: {domain}) including its core business, recent funding, employee headcount, and leadership.",
+                    "depth": "standard",
+                    "outputType": "sourcedAnswer"
+                }
+                try:
+                    res_l = await client.post("https://api.linkup.so/v1/search", json=linkup_payload, headers=linkup_headers, timeout=25.0)
+                    if res_l.status_code == 200:
+                        l_data = res_l.json()
+                        answer = l_data.get("answer") or l_data.get("sourcedAnswer", "")
+                        if answer:
+                            src_id = "S_LINKUP"
+                            url_index_map[src_id] = f"https://{domain}"
+                            combined_raw_text = f"\n--- [S_LINKUP] LINKUP DEEP SYNTHESIZED EVIDENCE ---\n{answer}\n"
+                            logger.info(f"✅ Linkup.so fallback successfully retrieved evidence for {company_name}")
+                except Exception as e_l:
+                    logger.error(f"Linkup fallback error for {company_name}: {e_l}")
 
         if not combined_raw_text:
             logger.warning(f"No evidence retrieved for {company_name}.")
@@ -491,8 +575,12 @@ async def process_single_company(
             else:
                 full_lead_payload["company_insights"] = None
 
-            # 3. Fetch Active ATS Jobs via Serper (Senior-Calibrated Strategy)
-            jobs_res = await fetch_company_jobs_serper(company_name, company_slug, domain)
+            # 3. Fetch Active Job via TheirStack (1 job limit using LinkedIn URL / domain), fallback to Serper on error/0 results
+            jobs_res = await fetch_company_job_theirstack(company_name, domain, company_slug)
+            if not jobs_res or jobs_res.get("total_results", 0) == 0:
+                logger.info(f"TheirStack returned 0 jobs or failed. Fallback triggered -> Fetching Serper Jobs for {company_name}...")
+                jobs_res = await fetch_company_jobs_serper(company_name, company_slug, domain)
+
             full_lead_payload["job_openings"] = jobs_res
         else:
             logger.info(f"Skipping Jobs & Insights fetching for {company_name} (intent_score={final_score} < 80)")
