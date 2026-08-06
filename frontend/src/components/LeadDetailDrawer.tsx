@@ -956,7 +956,27 @@ export default function LeadDetailDrawer({
 
                         <div className="w-full py-1 flex flex-col items-center justify-center text-center">
                           <div className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-zinc-100 tracking-tight">
-                            {lead.annual_revenue || 'N/A'}
+                            {(() => {
+                              const rev = (lead.annual_revenue || '').trim();
+                              if (!rev || rev === 'N/A' || rev === 'Unknown' || rev.length > 25 || !/\d/.test(rev)) {
+                                return 'N/A';
+                              }
+                              let s = rev.replace(/\s*million\b/gi, 'M').replace(/\s*billion\b/gi, 'B').replace(/\s*thousand\b/gi, 'K');
+                              const match = s.match(/(~?\s*\$?\s*[\d\.]+(?:\s*-\s*\$?\s*[\d\.]+)?)\s*([MKBmkb])?/);
+                              if (match) {
+                                const rawNum = match[1].replace('~', '').replace('$', '').trim();
+                                let unit = (match[2] || '').toUpperCase();
+                                if (!unit) {
+                                  const parsed = parseFloat(rawNum.split('-')[0]);
+                                  if (!isNaN(parsed) && parsed > 0 && parsed < 1000) {
+                                    unit = 'M';
+                                  }
+                                }
+                                const prefix = s.includes('~') ? '~$' : '$';
+                                return `${prefix}${rawNum}${unit}`;
+                              }
+                              return s;
+                            })()}
                           </div>
                           <div className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 mt-1 uppercase tracking-wider">
                             ARR est.

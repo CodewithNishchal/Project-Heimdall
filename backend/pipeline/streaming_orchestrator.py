@@ -10,6 +10,29 @@ from datetime import datetime, timezone
 
 
 def extract_revenue_from_exa_text(text: str, structured_out: Optional[dict] = None) -> Optional[str]:
+    def clean_rev_string(val_str: str) -> str:
+        if not val_str or not any(c.isdigit() for c in val_str):
+            return "N/A"
+        # Convert words like million/billion to M/B
+        s = re.sub(r'(?i)\s*million\b', 'M', val_str)
+        s = re.sub(r'(?i)\s*billion\b', 'B', s)
+        s = re.sub(r'(?i)\s*thousand\b', 'K', s)
+
+        m = re.search(r'(~?\s*\$?\s*[\d\.]+(?:\s*-\s*\$?\s*[\d\.]+)?)\s*([MKBmkb])?', s)
+        if m:
+            raw_num = m.group(1).replace("~", "").replace("$", "").strip()
+            unit = (m.group(2) or "").toUpperCase()
+            if not unit:
+                try:
+                    num_val = float(raw_num.split("-")[0].strip())
+                    if 0 < num_val < 1000:
+                        unit = "M"
+                except Exception:
+                    pass
+            prefix = "~$" if "~" in s else "$"
+            return f"{prefix}{raw_num}{unit}"
+        return "N/A"
+
     if structured_out and isinstance(structured_out, dict):
         content = structured_out.get("content") if isinstance(structured_out.get("content"), dict) else structured_out
         rev_val = content.get("arr_estimate") or content.get("annual_revenue") or content.get("revenueAnnual")
@@ -19,30 +42,28 @@ def extract_revenue_from_exa_text(text: str, structured_out: Optional[dict] = No
                 return f"${rev_val / 1_000_000_000:.1f}B"
             elif rev_val >= 1_000_000:
                 return f"${rev_val / 1_000_000:.1f}M"
+            elif rev_val < 1000:
+                return f"${rev_val:.1f}M"
             else:
                 return f"${rev_val:,.0f}"
         elif isinstance(rev_val, str) and rev_val.strip():
-            m = re.search(r'\$([\d\.]+\s*[MKB]?)', rev_val)
-            if m:
-                return f"~${m.group(1).strip()}"
-            return rev_val.strip()
+            res = clean_rev_string(rev_val)
+            if res != "N/A":
+                return res
 
     if not text:
         return None
 
     patterns = [
-        r'(?i)(?:annual\s+revenue|revenue|arr)\s*(?:of|is|=|:)?\s*~\s*\$?\s*([\d\.]+\s*[MKB]|\$[\d\.]+\s*[MKB]?)',
-        r'(?i)\$\s*([\d\.]+\s*[MKB])\s*(?:annual\s+revenue|arr|revenue)',
-        r'(?i)(?:annual\s+revenue|revenue|arr)\s*(?:of|is|=|:)?\s*\$?\s*([\d\.]+\s*-\s*\$?[\d\.]+\s*[MKB]|\$?[\d\.]+\s*[MKB]?)',
+        r'(?i)(?:annual\s+revenue|revenue|arr)\s*(?:of|is|=|:)?\s*~\s*\$?\s*([\d\.]+\s*(?:million|billion|M|B)?)',
+        r'(?i)\$\s*([\d\.]+\s*(?:million|billion|M|B)?)\s*(?:annual\s+revenue|arr|revenue)',
+        r'(?i)(?:annual\s+revenue|revenue|arr)\s*(?:of|is|=|:)?\s*\$?\s*([\d\.]+\s*-\s*\$?[\d\.]+\s*(?:million|billion|M|B)?)',
         r'(?i)USD\s+([\d,]+)'
     ]
     for pat in patterns:
         m = re.search(pat, text)
         if m:
-            val = m.group(1).strip()
-            if not val.startswith("$") and not val.startswith("USD"):
-                return f"~${val}"
-            return val
+            return clean_rev_string(m.group(1))
     return None
 from dotenv import load_dotenv
 
