@@ -143,14 +143,26 @@ def is_valid_company_job(title: str, link: str, snippet: str, company_name: str,
     return False
 
 
-async def fetch_linkedin_company_insights(company_id: str, company_slug: str) -> Optional[Dict[str, Any]]:
+async def fetch_linkedin_company_insights(company_url_or_slug: str, company_slug: str) -> Optional[Dict[str, Any]]:
     api_key = APIFY_INSIGHTS_API_KEY or os.getenv("APIFY_API_KEY")
-    if not api_key or not company_id:
+    if not api_key:
         return None
 
-    url = "https://api.apify.com/v2/acts/freshdata~linkedin-company-insights-scraper/run-sync-get-dataset-items"
+    if company_url_or_slug.startswith("https://www.linkedin.com/company/"):
+        target_url = company_url_or_slug
+    elif "/company/" in company_url_or_slug:
+        slug = company_url_or_slug.rstrip("/").split("/company/")[-1].split("/")[0]
+        target_url = f"https://www.linkedin.com/company/{slug}/"
+    else:
+        target_url = f"https://www.linkedin.com/company/{company_slug}/"
+
+    url = "https://api.apify.com/v2/acts/riceman~linkedin-company-data-insights-scraper/run-sync-get-dataset-items"
     params = {"token": api_key}
-    payload = {"company_id": company_id, "company_name": company_slug}
+    payload = {
+        "company_linkedin_urls": [target_url],
+        "get_company_insights": True,
+        "get_total_job_openings": True
+    }
 
     try:
         async with httpx.AsyncClient(timeout=120.0) as client:
@@ -158,11 +170,34 @@ async def fetch_linkedin_company_insights(company_id: str, company_slug: str) ->
             if resp.status_code in [200, 201]:
                 data = resp.json()
                 if isinstance(data, list) and len(data) > 0:
-                    return data[0].get("data")
+                    return data[0]
                 elif isinstance(data, dict):
-                    return data.get("data")
+                    return data
     except Exception as e:
-        logger.error(f"Error fetching Apify LinkedIn Insights for company_id {company_id}: {e}")
+        logger.error(f"Error fetching Apify riceman LinkedIn Insights for {target_url}: {e}")
+
+    return None
+
+NON_JOB_TITLE_KEYWORDS = {
+    "support", "privacy policy", "privacy", "terms of service", "terms of use", "terms", 
+    "about us", "about", "contact us", "contact", "login", "sign in", "sign up", "blog", 
+    "cookie policy", "security", "documentation", "faq", "pricing", "get started", 
+    "help center", "press", "news", "home", "case studies", "insights", "resources", 
+    "community", "our mission", "overview", "search jobs", "loading...", "loading"
+}
+
+def is_valid_job_title(title: str) -> bool:
+    if not title or len(title.strip()) < 3:
+        return False
+    t_clean = title.strip().lower()
+    if t_clean in NON_JOB_TITLE_KEYWORDS:
+        return False
+    for kw in NON_JOB_TITLE_KEYWORDS:
+        if t_clean.startswith(kw + " ") or t_clean.endswith(" " + kw) or f" {kw} " in t_clean:
+            # Only invalidate if title is short (e.g. "Customer Support" is valid, but "Support" or "Support Page" is invalid)
+            if len(t_clean.split()) <= 2:
+                return False
+    return True
 
 async def fetch_company_jobs_apify(company_name: str, domain: str, company_slug: str) -> Optional[Dict[str, Any]]:
     """
@@ -193,15 +228,15 @@ async def fetch_company_jobs_apify(company_name: str, domain: str, company_slug:
                 if isinstance(items, list) and len(items) > 0:
                     qualified_jobs = []
                     for item in items:
-                        t = item.get("title") or ""
+                        t = (item.get("title") or "").strip()
                         c_url = item.get("careersUrl") or item.get("url") or f"https://{clean_dom}"
                         desc = item.get("descriptionHtml") or item.get("snippet") or ""
                         snippet_clean = re.sub(r'<[^>]+>', ' ', str(desc))
                         snippet_clean = ' '.join(snippet_clean.split())[:250]
                         
-                        if t or snippet_clean:
+                        if is_valid_job_title(t):
                             qualified_jobs.append({
-                                "title": t if t and t != "Search Jobs" else "Position Open",
+                                "title": t,
                                 "link": c_url,
                                 "snippet": snippet_clean or f"Active position at {company_name}",
                                 "date": "Recent",
@@ -623,8 +658,26 @@ async def process_single_company(
         # ---------------------------------------------------------------------
         # STAGE 3 & 4: HIGH-INTENT DEEP ENRICHMENT GATE (intent_score >= 80)
         # ---------------------------------------------------------------------
-        candidate_slug = candidate.get("linkedin_slug")
-        company_slug = candidate_slug or (domain.split(".")[0].lower() if domain else company_name.lower().replace(" ", ""))
+        # Extract LinkedIn slug from Airtable, Exa AI text, company name, or domain
+        candidate_slug = candidate.get("linkedin_slug") or candidate.get("firmographics", {}).get("linkedin")
+        if candidate_slug and "linkedin.com/company/" in candidate_slug:
+            candidate_slug = candidate_slug.rstrip("/").split("/company/")[-1].split("/")[0]
+
+        exa_match = re.search(r'https?://(?:www\.)?linkedin\.com/company/([a-zA-Z0-9_-]+)', combined_raw_text, re.IGNORECASE)
+        exa_slug = exa_match.group(1).rstrip("/") if exa_match else None
+
+        domain_slug = domain.split(".")[0].lower() if domain else ""
+        name_slug = re.sub(r'[^a-zA-Z0-9-]', '', company_name.lower().strip().replace(" ", "-"))
+
+        possible_slugs = []
+        if candidate_slug:
+            possible_slugs.append(candidate_slug)
+        if exa_slug and exa_slug not in possible_slugs:
+            possible_slugs.append(exa_slug)
+        if name_slug and name_slug not in possible_slugs:
+            possible_slugs.append(name_slug)
+        if domain_slug and domain_slug not in possible_slugs:
+            possible_slugs.append(domain_slug)
 
         if final_score >= 80:
             logger.info(f"🔥 [STAGE 3/5 GATE PASSED] Intent Score {final_score} >= 80! Triggering Stage 4 Premium Enrichment for '{company_name}'...")
@@ -641,56 +694,83 @@ async def process_single_company(
             except Exception as e:
                 logger.warning(f"Contact extraction failed for {company_name}: {e}")
 
-            # 1. Resolve numeric LinkedIn Company ID ($0 cost)
-            company_id = await resolve_linkedin_company_id(company_slug)
-            full_lead_payload["company_linkedin_id"] = company_id
+            # 1. Fetch LinkedIn Insights & Firmographics via Apify riceman actor (with smart multi-slug fallback)
+            insights = None
+            for slug in possible_slugs:
+                target_linkedin_url = f"https://www.linkedin.com/company/{slug}/"
+                logger.info(f"📈 [Stage 4/5] Fetching LinkedIn Insights via Apify riceman for '{company_name}' ({target_linkedin_url})...")
+                res = await fetch_linkedin_company_insights(target_linkedin_url, slug)
+                if isinstance(res, dict) and res.get("company_name"):
+                    insights = res
+                    break
             
-            # 2. Fetch LinkedIn Insights via Apify if ID resolved
-            if company_id:
-                insights = await fetch_linkedin_company_insights(company_id, company_slug)
-                if isinstance(insights, dict):
-                    now_dt = datetime.now()
-                    hires_by_date = {}
-                    new_hires_raw = insights.get("new_hires", [])
-                    if isinstance(new_hires_raw, list):
-                        for item in new_hires_raw:
-                            d_str = str(item.get("date", "")).strip()
-                            if d_str:
-                                parts = d_str.split("-")
-                                if len(parts) >= 2:
-                                    try:
-                                        norm_key = f"{int(parts[0])}-{int(parts[1])}"
-                                        hires_by_date[norm_key] = item
-                                    except Exception:
-                                        pass
+            if isinstance(insights, dict):
+                # Map company ID and rich firmographics onto root payload
+                full_lead_payload["company_linkedin_id"] = insights.get("company_id")
+                if insights.get("logo_url"):
+                    full_lead_payload["logo_url"] = insights.get("logo_url")
+                if insights.get("tagline"):
+                    full_lead_payload["tagline"] = insights.get("tagline")
+                if insights.get("description"):
+                    full_lead_payload["description"] = insights.get("description")
+                if insights.get("hq_full_address"):
+                    full_lead_payload["hq_address"] = insights.get("hq_full_address")
+                if insights.get("locations"):
+                    full_lead_payload["locations"] = insights.get("locations")
+                if insights.get("phone"):
+                    full_lead_payload["phone"] = insights.get("phone")
+                if insights.get("year_founded"):
+                    full_lead_payload["year_founded"] = insights.get("year_founded")
+                if insights.get("follower_count"):
+                    full_lead_payload["follower_count"] = insights.get("follower_count")
 
-                    trend = []
-                    for i in range(5, -1, -1):
-                        m_val = now_dt.month - i
-                        y_val = now_dt.year
-                        while m_val <= 0:
-                            m_val += 12
-                            y_val -= 1
+                now_dt = datetime.now()
+                hires_by_date = {}
+                new_hires_raw = insights.get("new_hires", [])
+                if isinstance(new_hires_raw, list):
+                    for item in new_hires_raw:
+                        d_str = str(item.get("date", "")).strip()
+                        if d_str:
+                            parts = d_str.split("-")
+                            if len(parts) >= 2:
+                                try:
+                                    norm_key = f"{int(parts[0])}-{int(parts[1])}"
+                                    hires_by_date[norm_key] = item
+                                except Exception:
+                                    pass
 
-                        month_dt = datetime(y_val, m_val, 1)
-                        date_key = f"{y_val}-{m_val}"
-                        label = month_dt.strftime("%b")
+                trend = []
+                for i in range(5, -1, -1):
+                    m_val = now_dt.month - i
+                    y_val = now_dt.year
+                    while m_val <= 0:
+                        m_val += 12
+                        y_val -= 1
 
-                        match_item = hires_by_date.get(date_key, {})
-                        s_hires = match_item.get("senior_hires", 0)
-                        t_hires = match_item.get("total_hires", 0)
+                    month_dt = datetime(y_val, m_val, 1)
+                    date_key = f"{y_val}-{m_val}"
+                    label = month_dt.strftime("%b")
 
-                        trend.append({
-                            "date": date_key,
-                            "label": label,
-                            "senior_hires": s_hires,
-                            "total_hires": t_hires
-                        })
+                    match_item = hires_by_date.get(date_key, {})
+                    s_hires = match_item.get("senior_hires", 0)
+                    t_hires = match_item.get("total_hires", 0)
 
-                    insights["hiring_trend"] = trend
-                    insights["senior_hiring_trend"] = trend
+                    trend.append({
+                        "date": date_key,
+                        "label": label,
+                        "senior_hires": s_hires,
+                        "total_hires": t_hires
+                    })
 
-                    # Extract exact latest headcount count from Apify headcount_by_month
+                insights["hiring_trend"] = trend
+                insights["senior_hiring_trend"] = trend
+
+                # Extract employee count
+                emp_c = insights.get("employee_count")
+                if emp_c and isinstance(emp_c, (int, float)):
+                    insights["total_employees"] = int(emp_c)
+                    full_lead_payload["employee_count"] = int(emp_c)
+                else:
                     h_month = insights.get("headcount_by_month", [])
                     if isinstance(h_month, list) and len(h_month) > 0:
                         latest_count = h_month[-1].get("employee_count")
@@ -703,6 +783,7 @@ async def process_single_company(
                 full_lead_payload["company_insights"] = None
 
             # 3. 3-Tier Job Fetching Cascade: Primary (Apify Career Scraper) -> Fallback 1 (TheirStack) -> Fallback 2 (Serper)
+            company_slug = possible_slugs[0] if possible_slugs else name_slug
             jobs_res = await fetch_company_jobs_apify(company_name, domain, company_slug)
             if not jobs_res or jobs_res.get("total_results", 0) == 0:
                 logger.info(f"Apify Career Scraper returned 0 jobs or failed. Fallback 1 -> Fetching TheirStack Jobs for {company_name}...")
@@ -804,7 +885,7 @@ async def run_pipeline_batch(candidates: List[Dict[str, Any]], concurrency_limit
                 
     return qualified_leads
 
-async def trigger_ui_test_run(limit: int = 2) -> Dict[str, Any]:
+async def trigger_ui_test_run(limit: int = 5) -> Dict[str, Any]:
     """Executed when user clicks 'Run Pipeline Test' on the UI."""
     batch, state = await get_ui_test_batch(limit=limit)
     if not batch:

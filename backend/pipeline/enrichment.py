@@ -433,45 +433,29 @@ EXCLUDED_DOMAINS = {
 
 async def fetch_harvestapi_linkedin_company(linkedin_url: str, apify_api_key: str) -> dict:
     """
-    Calls harvestapi~linkedin-company actor on Apify asynchronously to retrieve complete company infographics.
+    Calls riceman~linkedin-company-data-insights-scraper actor on Apify asynchronously to retrieve complete company infographics & insights.
     """
     if not apify_api_key or apify_api_key == "mock_key_if_empty":
         return {}
 
-    actor_id = "harvestapi~linkedin-company"
-    url = f"https://api.apify.com/v2/acts/{actor_id}/runs?token={apify_api_key}"
-    payload = {"companies": [linkedin_url]}
+    url = f"https://api.apify.com/v2/acts/riceman~linkedin-company-data-insights-scraper/run-sync-get-dataset-items?token={apify_api_key}"
+    payload = {
+        "company_linkedin_urls": [linkedin_url],
+        "get_company_insights": True,
+        "get_total_job_openings": True
+    }
 
     try:
-        async with httpx.AsyncClient(timeout=25.0) as client:
+        async with httpx.AsyncClient(timeout=60.0) as client:
             res = await client.post(url, json=payload)
-            if res.status_code not in (200, 201):
-                return {}
-            
-            run_data = res.json().get("data", {})
-            run_id = run_data.get("id")
-            dataset_id = run_data.get("defaultDatasetId")
-            if not run_id or not dataset_id:
-                return {}
-
-            status_url = f"https://api.apify.com/v2/actor-runs/{run_id}?token={apify_api_key}"
-            for _ in range(12):
-                await asyncio.sleep(2)
-                st_res = await client.get(status_url)
-                if st_res.status_code == 200:
-                    status = st_res.json().get("data", {}).get("status")
-                    if status == "SUCCEEDED":
-                        items_url = f"https://api.apify.com/v2/datasets/{dataset_id}/items?token={apify_api_key}"
-                        items_res = await client.get(items_url)
-                        if items_res.status_code == 200:
-                            items = items_res.json()
-                            if items and isinstance(items, list):
-                                return items[0]
-                        break
-                    elif status in ["FAILED", "ABORTED", "TIMED-OUT"]:
-                        break
+            if res.status_code in (200, 201):
+                items = res.json()
+                if items and isinstance(items, list) and len(items) > 0:
+                    return items[0]
+                elif isinstance(items, dict):
+                    return items
     except Exception as e:
-        logger.error(f"[HarvestAPI LinkedIn] Error fetching details for {linkedin_url}: {e}")
+        logger.error(f"[Riceman LinkedIn] Error fetching details for {linkedin_url}: {e}")
 
     return {}
 

@@ -83,6 +83,13 @@ async def fetch_airtable_candidates_batch(
     async with httpx.AsyncClient(timeout=30.0) as client:
         try:
             res = await client.get(url, headers=headers, params=params)
+            
+            # If offset token expired or invalid (HTTP 422), fallback to initial page
+            if res.status_code in (400, 422) and offset_token:
+                logger.warning(f"⚠️ Airtable offset token expired or invalid (HTTP {res.status_code}). Resetting offset cursor to page 1.")
+                params.pop("offset", None)
+                res = await client.get(url, headers=headers, params=params)
+
             res.raise_for_status()
             data = res.json()
 
@@ -126,6 +133,7 @@ async def get_ui_test_batch(limit: int = 5) -> Tuple[List[Dict[str, Any]], Dict[
     batch, next_offset = await fetch_airtable_candidates_batch(limit=limit, offset_token=offset_token)
 
     state["next_offset_token"] = next_offset
+    state["current_offset"] = state.get("current_offset", 0) + len(batch)
     state["daily_processed_count"] = state.get("daily_processed_count", 0) + len(batch)
     state["last_run_timestamp"] = datetime.now(timezone.utc).isoformat()
 
@@ -156,6 +164,7 @@ async def get_midnight_cron_batch(daily_quota: int = 30) -> Tuple[List[Dict[str,
     batch, next_offset = await fetch_airtable_candidates_batch(limit=remaining_needed, offset_token=offset_token)
 
     state["next_offset_token"] = next_offset
+    state["current_offset"] = state.get("current_offset", 0) + len(batch)
     state["daily_processed_count"] = 0  # Reset for next day
     state["last_run_timestamp"] = datetime.now(timezone.utc).isoformat()
 

@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Depends
+from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import Literal, Optional, List, cast, Dict, Any
 from datetime import datetime, timezone
@@ -11,7 +12,7 @@ from backend.pipeline.discovery import fetch_public_intent_signals
 
 from backend.pipeline.dns_audit import audit_domain_email_infrastructure
 from backend.models import LeadSnapshot
-from backend.database import SessionLocal
+from backend.database import SessionLocal, get_db
 
 router = APIRouter(prefix="/api/leads", tags=["Lead Intelligence Operations"])
 
@@ -224,21 +225,39 @@ def get_lead_profile_details(lead_id: str):
 
 
 @router.delete("/{lead_id}")
-def delete_lead_record(lead_id: str):
-    """Removes a lead record from the persistent tracking database."""
-    db = SessionLocal()
+def delete_lead_record(lead_id: str, db: Session = Depends(get_db)):
+    """Removes a lead record from the persistent tracking database by ID, domain, or company_name."""
     try:
-        lead = db.query(LeadSnapshot).filter(LeadSnapshot.id == lead_id).first()
+        lead = db.query(LeadSnapshot).filter(
+            (LeadSnapshot.id == lead_id) | 
+            (LeadSnapshot.domain == lead_id) |
+            (LeadSnapshot.company_name == lead_id)
+        ).first()
+        
+        if not lead:
+            # Fallback search across all snapshots for matching payload ID
+            all_leads = db.query(LeadSnapshot).all()
+            for l in all_leads:
+                if l.full_payload and isinstance(l.full_payload, dict) and l.full_payload.get("id") == lead_id:
+                    lead = l
+                    break
+
         if not lead:
             raise HTTPException(
                 status_code=404,
-                detail="Lead tracking index not found."
+                detail=f"Lead record '{lead_id}' not found."
             )
+        
         db.delete(lead)
         db.commit()
+        logger.info(f"🗑️ Successfully deleted lead record: '{lead.company_name}' ({lead.domain}) [ID: {lead_id}]")
         return {"status": "deleted", "id": lead_id}
-    finally:
-        db.close()
+    except HTTPException:
+        raise
+    except Exception as e:
+        db.rollback()
+        logger.error(f"Error deleting lead record {lead_id}: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @router.post("/{lead_id}/verdict")
