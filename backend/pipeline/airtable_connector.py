@@ -123,26 +123,68 @@ async def fetch_airtable_candidates_batch(
 
 async def get_ui_test_batch(limit: int = 5) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
     """
-    Fetches the next `limit` candidate companies for the interactive UI test run.
-    Uses native Airtable pagination (1 HTTP call).
+    Fetches the next `limit` UNPROCESSED candidate companies for the interactive UI test run.
+    Deduplicates against existing database records to guarantee zero repeated runs.
     """
+    from backend.database import SessionLocal
+    from backend.models import LeadSnapshot
+
+    # 1. Query existing database leads to prevent processing duplicate companies
+    db = SessionLocal()
+    try:
+        db_leads = db.query(LeadSnapshot).all()
+        processed_domains = {l.domain.lower() for l in db_leads if l.domain}
+        processed_names = {l.company_name.lower() for l in db_leads if l.company_name}
+    except Exception as e:
+        processed_domains, processed_names = set(), set()
+        logger.warning(f"Error querying existing database leads for deduplication: {e}")
+    finally:
+        db.close()
 
     state = load_pipeline_state()
     offset_token = state.get("next_offset_token")
 
-    batch, next_offset = await fetch_airtable_candidates_batch(limit=limit, offset_token=offset_token)
+    unprocessed_batch = []
+    current_offset_token = offset_token
+    last_valid_offset = offset_token
 
-    state["next_offset_token"] = next_offset
-    state["current_offset"] = state.get("current_offset", 0) + len(batch)
-    state["daily_processed_count"] = state.get("daily_processed_count", 0) + len(batch)
+    # 2. Paginate through Airtable until limit UNPROCESSED candidates are collected
+    for _ in range(15):  # Up to 15 pages per request to find fresh leads
+        raw_batch, next_offset = await fetch_airtable_candidates_batch(limit=max(limit * 2, 10), offset_token=current_offset_token)
+        last_valid_offset = next_offset
+        if not raw_batch:
+            break
+
+        for cand in raw_batch:
+            dom = (cand.get("domain") or "").lower()
+            name = (cand.get("company_name") or "").lower()
+            if dom and dom in processed_domains:
+                continue
+            if name and name in processed_names:
+                continue
+            
+            unprocessed_batch.append(cand)
+            processed_domains.add(dom)
+            processed_names.add(name)
+
+            if len(unprocessed_batch) >= limit:
+                break
+
+        current_offset_token = next_offset
+        if len(unprocessed_batch) >= limit or not next_offset:
+            break
+
+    state["next_offset_token"] = last_valid_offset
+    state["current_offset"] = state.get("current_offset", 0) + len(unprocessed_batch)
+    state["daily_processed_count"] = state.get("daily_processed_count", 0) + len(unprocessed_batch)
     state["last_run_timestamp"] = datetime.now(timezone.utc).isoformat()
 
     save_pipeline_state(state)
-    names = [c.get("company_name", "Unknown") for c in batch]
+    names = [c.get("company_name", "Unknown") for c in unprocessed_batch]
     logger.info(f"\n=========================================================================")
-    logger.info(f"📋 AIRTABLE BATCH FETCHED ({len(batch)} companies): {', '.join(names)}")
+    logger.info(f"📋 AIRTABLE BATCH FETCHED ({len(unprocessed_batch)} UNPROCESSED companies): {', '.join(names)}")
     logger.info(f"=========================================================================\n")
-    return batch, state
+    return unprocessed_batch, state
 
 async def get_midnight_cron_batch(daily_quota: int = 30) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:
     """

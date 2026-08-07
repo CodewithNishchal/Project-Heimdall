@@ -1,0 +1,849 @@
+{
+  "id": "bf332e64-9b27-474e-ac31-3b9da3b72bd3",
+  "domain": "azion.com",
+  "company_name": "Azion",
+  "company_segment": "IaaS Providers",
+  "industry": "Edge Computing Platform",
+  "employee_count": 197,
+  "funding_stage": "Venture Backed",
+  "intent_score": 100,
+  "signal_freshness": 100,
+  "tier": "High",
+  "icp_fit": "Strong",
+  "badge": "new_today",
+  "social_segment": null,
+  "meta_ads_active": false,
+  "meta_ads_count": 0,
+  "bio_url": null,
+  "why_now": "Azion is undergoing strategic expansion, evidenced by projected revenue and headcount growth, 15 active job openings, and the recent appointment of a Chief Information Security Officer, signaling an immediate need for talent acquisition to support its scaling operations and enhanced security posture.",
+  "signal_tags": [
+    {
+      "tag": "Expansion",
+      "category": "EXPANSION",
+      "color_theme": "indigo"
+    },
+    {
+      "tag": "Expansion",
+      "category": "EXPANSION",
+      "color_theme": "indigo"
+    },
+    {
+      "tag": "Hiring",
+      "category": "HIRING",
+      "color_theme": "indigo"
+    },
+    {
+      "tag": "Leadership",
+      "category": "LEADERSHIP",
+      "color_theme": "indigo"
+    },
+    {
+      "tag": "Expansion",
+      "category": "EXPANSION",
+      "color_theme": "indigo"
+    }
+  ],
+  "ai_verdict": "Azion is a HOT lead for recruitment services, demonstrating clear intent through projected revenue and headcount growth by 2025, 15 active job postings, and the recent strategic appointment of a new CISO. The absence of internal recruitment roles despite significant hiring indicates an immediate need for external support to manage their scaling talent acquisition demands.",
+  "company_linkedin_id": "10206226",
+  "annual_revenue": "~$20.6M",
+  "company_insights": {
+    "new_hires": [
+      {
+        "date": "2024-8",
+        "total_hires": 1,
+        "senior_hires": 0
+      }
+    ],
+    "headcount_growth": {
+      "1y": "0%",
+      "2y": "0%",
+      "6m": "0%"
+    },
+    "headcount_by_month": [
+      {
+        "date": "2024-8-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2024-9-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2024-10-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2024-11-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2024-12-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2025-1-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2025-2-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2025-3-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2025-4-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2025-5-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2025-6-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2025-7-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2025-8-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2025-9-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2025-10-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2025-11-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2025-12-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2026-1-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2026-2-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2026-3-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2026-4-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2026-5-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2026-6-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2026-7-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2026-8-1",
+        "employee_count": 5
+      }
+    ],
+    "senior_hiring_trend": [
+      {
+        "date": "2026-03",
+        "label": "Mar",
+        "total_hires": 0,
+        "senior_hires": 0
+      },
+      {
+        "date": "2026-04",
+        "label": "Apr",
+        "total_hires": 0,
+        "senior_hires": 0
+      },
+      {
+        "date": "2026-05",
+        "label": "May",
+        "total_hires": 0,
+        "senior_hires": 0
+      },
+      {
+        "date": "2026-06",
+        "label": "Jun",
+        "total_hires": 0,
+        "senior_hires": 0
+      },
+      {
+        "date": "2026-07",
+        "label": "Jul",
+        "total_hires": 0,
+        "senior_hires": 0
+      },
+      {
+        "date": "2026-08",
+        "label": "Aug",
+        "total_hires": 0,
+        "senior_hires": 0
+      }
+    ],
+    "headcount_by_function": {
+      "Operations": {
+        "count": 1,
+        "percentage": 20
+      },
+      "Engineering": {
+        "count": 2,
+        "percentage": 40
+      },
+      "Business Development": {
+        "count": 1,
+        "percentage": 20
+      }
+    },
+    "median_employee_tenure": 3.3
+  },
+  "job_openings": {
+    "source": "theirstack",
+    "total_results": 1,
+    "used_fallback": false,
+    "qualified_jobs": [
+      {
+        "date": "2026-07-31",
+        "link": "https://www.azion.com/pt-br/carreiras/vaga/?id=0af3c6c1-c1e3-4075-adb6-4d6bb58282ab",
+        "title": "Senior Solutions Engineer",
+        "snippet": "### **About Azion**  We are a global technology company specializing in digital applications and security. Our platform helps companies operate more agilely, reducing response times and increasing the reliability of their systems.  At Azion, our purp",
+        "location": "S\u00e3o Paulo, SP",
+        "seniority": "senior",
+        "ats_platform": "TheirStack API (LinkedIn)",
+        "technologies": [
+          "jenkins",
+          "qlik",
+          "apollo-io",
+          "redis",
+          "outreach",
+          "google-tag-manager",
+          "envoy",
+          "centro",
+          "pulumi",
+          "sentinelone",
+          "hotjar",
+          "serverless",
+          "atomic_2",
+          "power-bi",
+          "elasticsearch",
+          "macos",
+          "cloudflare",
+          "datahub",
+          "argo-cd",
+          "aws-iot",
+          "data-studio",
+          "microsoft-active-directory",
+          "adobe-illustrator",
+          "faas",
+          "elearning-lms",
+          "infer",
+          "tailwind",
+          "macro",
+          "cloudflare-workers",
+          "jazzhr",
+          "amazon-linux",
+          "mitre",
+          "tableau",
+          "modo",
+          "snowflake",
+          "workspace",
+          "curl",
+          "slack",
+          "apache-isis",
+          "flask",
+          "c-sharp",
+          "semrush",
+          "nessus",
+          "braze",
+          "fego",
+          "adobe-indesign",
+          "amazon-s3",
+          "fluent-bit",
+          "cplusplus",
+          "pytorch",
+          "jira",
+          "atandt",
+          "hugging-face",
+          "sales-navigator",
+          "intel",
+          "nodejs",
+          "akamai",
+          "aws-sdks",
+          "crowdstrike",
+          "mysql",
+          "okta",
+          "network-solutions",
+          "google-analytics",
+          "pip",
+          "faiss",
+          "grpc",
+          "google-cloud-platform",
+          "vault",
+          "compose",
+          "aws-lambdaedge",
+          "netsuite",
+          "ahrefs",
+          "etcd",
+          "docker",
+          "amplitude",
+          "juju",
+          "zoominfo",
+          "adem",
+          "postgresql",
+          "k6",
+          "wazuh",
+          "microsoft-azure",
+          "hubspot",
+          "argo",
+          "graphql",
+          "segment",
+          "salesforce",
+          "microsoft-typescript",
+          "markdown",
+          "discourse",
+          "intricately",
+          "sourceforge",
+          "clickhouse",
+          "launchdarkly",
+          "juniper",
+          "airflow",
+          "linkedin-sales-navigator",
+          "react",
+          "rancher",
+          "kafka",
+          "json",
+          "airbyte-io",
+          "venda",
+          "superset",
+          "webpack",
+          "zapier",
+          "agora",
+          "google-web-designer",
+          "python",
+          "n8n",
+          "zeromq",
+          "dbt",
+          "gitHub-copilot",
+          "qdrant",
+          "signavio",
+          "notion",
+          "azure-active-directory",
+          "microsoft-entra-id",
+          "javascript",
+          "wireshark",
+          "clay-run",
+          "cypress",
+          "carta",
+          "migra",
+          "crisp",
+          "scikit-learn",
+          "adobe-photoshop",
+          "windsurf",
+          "processing-js",
+          "cisco-routers",
+          "jest",
+          "logstash",
+          "mixpanel",
+          "prometheus",
+          "cobertura",
+          "gitlab",
+          "golang",
+          "optimizely",
+          "claude-code",
+          "clearbit",
+          "gainsight",
+          "browserstack",
+          "fastapi",
+          "beats",
+          "rabbitmq",
+          "puppet1",
+          "tenable",
+          "g2",
+          "kibana",
+          "kotlin",
+          "cursor",
+          "swift",
+          "playwright",
+          "google-workspace",
+          "django",
+          "sumo-logic",
+          "grafana",
+          "linkedin-ads",
+          "postman",
+          "zabbix",
+          "elastic-security",
+          "validar",
+          "hubspot-crm",
+          "customer-io",
+          "coder",
+          "caddy",
+          "bizagi",
+          "rust",
+          "publica",
+          "chatgpt",
+          "supabase",
+          "pact",
+          "ceph",
+          "moz",
+          "camunda",
+          "fastly",
+          "burpsuite",
+          "eslint",
+          "kube",
+          "create-lms",
+          "deno",
+          "sonarqube",
+          "terraform",
+          "vue-js",
+          "winning-by-design",
+          "typescript",
+          "selenium",
+          "microsoft-defender-for-endpoint-",
+          "milvus",
+          "pipedrive",
+          "spinnaker",
+          "twitter-ads",
+          "amazon-web-services",
+          "figma",
+          "webassembly",
+          "kubernetes",
+          "apache-airflow",
+          "dist",
+          "sveltekit",
+          "jumpcloud",
+          "globale",
+          "haproxy",
+          "ios",
+          "elastic-go",
+          "tower",
+          "looker",
+          "powershell",
+          "perl",
+          "azure-storage",
+          "webflow",
+          "jekyll",
+          "mac-os",
+          "ansible",
+          "splunk",
+          "testcafe",
+          "java",
+          "pipefy",
+          "xml-format",
+          "aws-lambda",
+          "open-api",
+          "nmap",
+          "gitlab-ci",
+          "reduxjs",
+          "sqlite",
+          "vercel",
+          "digitalocean",
+          "svelte",
+          "atera",
+          "awx",
+          "make",
+          "nginx",
+          "streamline",
+          "claude-by-anthropic",
+          "discord",
+          "tensorflow",
+          "azure-cdn",
+          "zap",
+          "hootsuite",
+          "vllm1",
+          "capterra",
+          "storybook",
+          "github",
+          "github-actions",
+          "microsoft-defender-for-endpoint",
+          "google-ads",
+          "active-directory"
+        ]
+      }
+    ]
+  },
+  "full_payload": {
+    "company_name": "Azion",
+    "industry": "Edge Computing Platform",
+    "company_segment": "IaaS Providers",
+    "intent_score": 100,
+    "intent_classification": "HOT",
+    "one_line_reason": "Azion is projecting significant revenue and headcount growth by 2025, actively hiring for 15 roles, and recently appointed a new CISO to strengthen information security, indicating strategic expansion.",
+    "signal_freshness": 100,
+    "tier": "High",
+    "icp_fit": "Strong",
+    "adjacent_hiring_gap": true,
+    "signals": [
+      {
+        "signal_type": "Active Job Postings",
+        "verbatim_quote": "Active job postings currently total 15, with 10 shown and 5 more available.",
+        "quote_validated": true,
+        "similarity_score": 100.0,
+        "source_url": "https://www.linkedin.com/company/aziontech",
+        "recency_label": "3-6 months",
+        "days_old": 180,
+        "score_contribution": 17.5
+      },
+      {
+        "signal_type": "Executive Appointment",
+        "verbatim_quote": "Azion Nomeia Rafael Santos como Novo CISO para Fortalecer Seguran\u00e7a da Informa\u00e7\u00e3o",
+        "quote_validated": true,
+        "similarity_score": 100.0,
+        "source_url": "https://portalnovarejo.com.br/noticias/azion-nomeia-rafael-santos-como-novo-ciso-para-fortalecer-seguranca-da-informacao/",
+        "recency_label": "3-6 months",
+        "days_old": 180,
+        "score_contribution": 17.5
+      },
+      {
+        "signal_type": "Strategic Expansion",
+        "verbatim_quote": "Active hiring and a focus on edge/network-oriented roles (e.g., Infrastructure/Security, Edge strategies, Go/Rust engineers) suggest ongoing expansion in platform capabilities and global presence.",
+        "quote_validated": true,
+        "similarity_score": 100.0,
+        "source_url": "https://www.linkedin.com/company/aziontech",
+        "recency_label": "3-6 months",
+        "days_old": 180,
+        "score_contribution": 17.5
+      }
+    ],
+    "why_now": "Azion is undergoing strategic expansion, evidenced by projected revenue and headcount growth, 15 active job openings, and the recent appointment of a Chief Information Security Officer, signaling an immediate need for talent acquisition to support its scaling operations and enhanced security posture.",
+    "signal_tags": [
+      {
+        "tag": "Expansion",
+        "category": "EXPANSION",
+        "color_theme": "indigo"
+      },
+      {
+        "tag": "Expansion",
+        "category": "EXPANSION",
+        "color_theme": "indigo"
+      },
+      {
+        "tag": "Hiring",
+        "category": "HIRING",
+        "color_theme": "indigo"
+      },
+      {
+        "tag": "Leadership",
+        "category": "LEADERSHIP",
+        "color_theme": "indigo"
+      },
+      {
+        "tag": "Expansion",
+        "category": "EXPANSION",
+        "color_theme": "indigo"
+      }
+    ],
+    "gemini_token_usage": "Prompt: 4113 | Output: 808 | Total: 7407",
+    "scoring_breakdown": {
+      "base_ai_score": 75,
+      "multi_category_bonus": 15.0,
+      "adjacent_hiring_bonus": 10.0,
+      "signal_categories_detected": [
+        "HIRING",
+        "LEADERSHIP",
+        "EXPANSION"
+      ],
+      "final_math_score": 100
+    },
+    "ai_verdict": "Azion is a HOT lead for recruitment services, demonstrating clear intent through projected revenue and headcount growth by 2025, 15 active job postings, and the recent strategic appointment of a new CISO. The absence of internal recruitment roles despite significant hiring indicates an immediate need for external support to manage their scaling talent acquisition demands.",
+    "raw_gemini_output": {
+      "company_name": "Azion",
+      "industry": "Edge Computing Platform",
+      "company_segment": "IaaS Providers",
+      "intent_score": 75,
+      "intent_classification": "HOT",
+      "one_line_reason": "Azion is projecting significant revenue and headcount growth by 2025, actively hiring for 15 roles, and recently appointed a new CISO to strengthen information security, indicating strategic expansion.",
+      "why_now": "Azion is undergoing strategic expansion, evidenced by projected revenue and headcount growth, 15 active job openings, and the recent appointment of a Chief Information Security Officer, signaling an immediate need for talent acquisition to support its scaling operations and enhanced security posture.",
+      "adjacent_hiring_gap": true,
+      "signal_tags": [
+        {
+          "tag": "Projected Revenue Growth",
+          "category": "EXPANSION"
+        },
+        {
+          "tag": "Projected Headcount Growth",
+          "category": "EXPANSION"
+        },
+        {
+          "tag": "Active Job Postings",
+          "category": "HIRING"
+        },
+        {
+          "tag": "New CISO Appointment",
+          "category": "LEADERSHIP"
+        },
+        {
+          "tag": "Strategic Expansion",
+          "category": "EXPANSION"
+        }
+      ],
+      "signals": [
+        {
+          "signal_type": "Projected Revenue Growth",
+          "verbatim_quote": "2025 Revenue $20.6M(Est.)",
+          "source_post_index": 2,
+          "event_date": "2025-12-31",
+          "is_grant": false
+        },
+        {
+          "signal_type": "Projected Headcount Growth",
+          "verbatim_quote": "Team 187",
+          "source_post_index": 2,
+          "event_date": "2025-12-31",
+          "is_grant": false
+        },
+        {
+          "signal_type": "Active Job Postings",
+          "verbatim_quote": "Active job postings currently total 15, with 10 shown and 5 more available.",
+          "source_post_index": 3,
+          "event_date": null,
+          "is_grant": false
+        },
+        {
+          "signal_type": "Executive Appointment",
+          "verbatim_quote": "Azion Nomeia Rafael Santos como Novo CISO para Fortalecer Seguran\u00e7a da Informa\u00e7\u00e3o",
+          "source_post_index": 4,
+          "event_date": null,
+          "is_grant": false
+        },
+        {
+          "signal_type": "Strategic Expansion",
+          "verbatim_quote": "Active hiring and a focus on edge/network-oriented roles (e.g., Infrastructure/Security, Edge strategies, Go/Rust engineers) suggest ongoing expansion in platform capabilities and global presence.",
+          "source_post_index": 3,
+          "event_date": null,
+          "is_grant": false
+        }
+      ],
+      "ai_verdict": "Azion is a HOT lead for recruitment services, demonstrating clear intent through projected revenue and headcount growth by 2025, 15 active job postings, and the recent strategic appointment of a new CISO. The absence of internal recruitment roles despite significant hiring indicates an immediate need for external support to manage their scaling talent acquisition demands.",
+      "gemini_token_usage": {
+        "prompt_tokens": 4113,
+        "completion_tokens": 808,
+        "thinking_tokens": 0,
+        "total_tokens": 7407,
+        "raw_usage_metadata": {
+          "cached_content_token_count": null,
+          "candidates_token_count": 808,
+          "prompt_token_count": 4113,
+          "total_token_count": 7407
+        }
+      }
+    },
+    "id": "bf332e64-9b27-474e-ac31-3b9da3b72bd3",
+    "domain": "azion.com",
+    "employee_count": 197,
+    "funding_stage": "Venture Backed",
+    "badge": "new_today",
+    "confidence": {
+      "label": "Verified Intention",
+      "color": "emerald",
+      "verified": 3,
+      "total": 3
+    },
+    "dns_audit": {
+      "spf": "Valid",
+      "dkim": "Valid",
+      "dmarc": "Valid",
+      "issues": []
+    },
+    "contacts": [
+      {
+        "name": "VP of Engineering @ Azion",
+        "title": "VP of Engineering / Talent",
+        "email": "hiring@azion.com",
+        "confidence": "95%",
+        "source": "Airtable Domain Lead"
+      }
+    ],
+    "last_updated": "2026-08-04T09:41:40.630404+00:00",
+    "groq_token_usage": "Prompt: 4113 | Output: 808 | Total: 7407",
+    "mistral_token_usage": "Prompt: 4113 | Output: 808 | Total: 7407",
+    "company_insights": {
+      "senior_hiring_trend": [
+        {
+          "date": "2026-03",
+          "label": "Mar",
+          "total_hires": 0,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-04",
+          "label": "Apr",
+          "total_hires": 0,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-05",
+          "label": "May",
+          "total_hires": 0,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-06",
+          "label": "Jun",
+          "total_hires": 0,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-07",
+          "label": "Jul",
+          "total_hires": 0,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-08",
+          "label": "Aug",
+          "total_hires": 0,
+          "senior_hires": 0
+        }
+      ],
+      "median_employee_tenure": 3.3,
+      "new_hires": [
+        {
+          "date": "2024-8",
+          "senior_hires": 0,
+          "total_hires": 1
+        }
+      ],
+      "headcount_by_function": {
+        "Business Development": {
+          "count": 1,
+          "percentage": 20
+        },
+        "Engineering": {
+          "count": 2,
+          "percentage": 40
+        },
+        "Operations": {
+          "count": 1,
+          "percentage": 20
+        }
+      },
+      "headcount_growth": {
+        "1y": "0%",
+        "2y": "0%",
+        "6m": "0%"
+      },
+      "headcount_by_month": [
+        {
+          "date": "2024-8-1",
+          "employee_count": 5
+        },
+        {
+          "date": "2024-9-1",
+          "employee_count": 5
+        },
+        {
+          "date": "2024-10-1",
+          "employee_count": 5
+        },
+        {
+          "date": "2024-11-1",
+          "employee_count": 5
+        },
+        {
+          "date": "2024-12-1",
+          "employee_count": 5
+        },
+        {
+          "date": "2025-1-1",
+          "employee_count": 5
+        },
+        {
+          "date": "2025-2-1",
+          "employee_count": 5
+        },
+        {
+          "date": "2025-3-1",
+          "employee_count": 5
+        },
+        {
+          "date": "2025-4-1",
+          "employee_count": 5
+        },
+        {
+          "date": "2025-5-1",
+          "employee_count": 5
+        },
+        {
+          "date": "2025-6-1",
+          "employee_count": 5
+        },
+        {
+          "date": "2025-7-1",
+          "employee_count": 5
+        },
+        {
+          "date": "2025-8-1",
+          "employee_count": 5
+        },
+        {
+          "date": "2025-9-1",
+          "employee_count": 5
+        },
+        {
+          "date": "2025-10-1",
+          "employee_count": 5
+        },
+        {
+          "date": "2025-11-1",
+          "employee_count": 5
+        },
+        {
+          "date": "2025-12-1",
+          "employee_count": 5
+        },
+        {
+          "date": "2026-1-1",
+          "employee_count": 5
+        },
+        {
+          "date": "2026-2-1",
+          "employee_count": 5
+        },
+        {
+          "date": "2026-3-1",
+          "employee_count": 5
+        },
+        {
+          "date": "2026-4-1",
+          "employee_count": 5
+        },
+        {
+          "date": "2026-5-1",
+          "employee_count": 5
+        },
+        {
+          "date": "2026-6-1",
+          "employee_count": 5
+        },
+        {
+          "date": "2026-7-1",
+          "employee_count": 5
+        },
+        {
+          "date": "2026-8-1",
+          "employee_count": 5
+        }
+      ]
+    },
+    "company_linkedin_id": "10206226"
+  },
+  "last_updated": "2026-08-07T07:36:49.803405"
+}

@@ -1,0 +1,198 @@
+[
+  {
+    "company_name": "Chalk",
+    "company_id": "688588",
+    "tagline": "",
+    "description": "Corporate communications is no longer a one-way street.  The corporate fortresses, meticulously created in a by-gone age, are starting to crumble and businesses have been forced to stand up to public scrutiny like never before.\r\n\r\nChalk is an independent communications consultancy that enables businesses to address these challenges, find their voice and build and protect their reputation.",
+    "logo_url": "https://media.licdn.com/dms/image/v2/C4D0BAQF1ga1DH4mAEQ/company-logo_400_400/company-logo_400_400/0/1631332078260?e=1787788800&v=beta&t=VgpvvoPkNrmvrny1juq9lyry_sdFA3MeffpKkgUBg2w",
+    "linkedin_url": "https://www.linkedin.com/company/chalk/",
+    "website": "",
+    "hq_full_address": "",
+    "hq_city": "",
+    "hq_region": "",
+    "hq_country": "GB",
+    "hq_postalcode": "EC1N 8HX",
+    "locations": [
+      {
+        "city": "",
+        "country": "GB",
+        "full_address": "EC1N 8HX, GB",
+        "is_headquarter": true,
+        "line1": "",
+        "line2": "",
+        "region": "",
+        "zipcode": "EC1N 8HX"
+      }
+    ],
+    "phone": "",
+    "email": "",
+    "domain": "",
+    "industries": [
+      "Public Relations and Communications Services"
+    ],
+    "specialties": "reputation management, stakeholder engagement, media relations, analyst relations, employee communications, brand strategy, events management, copy writing",
+    "year_founded": null,
+    "funding_info": {
+      "crunchbase_url": null,
+      "last_funding_round_amount": null,
+      "last_funding_round_currency": null,
+      "last_funding_round_month": null,
+      "last_funding_round_type": null,
+      "last_funding_round_year": null,
+      "num_funding_rounds": null
+    },
+    "employee_count": 5,
+    "employee_range": "2-10",
+    "follower_count": 12,
+    "affiliated_companies": [],
+    "headcount_by_function": {
+      "Arts and Design": {
+        "count": 1,
+        "percentage": 20
+      },
+      "Business Development": {
+        "count": 1,
+        "percentage": 20
+      },
+      "Community and Social Services": {
+        "count": 2,
+        "percentage": 40
+      },
+      "Program and Project Management": {
+        "count": 1,
+        "percentage": 20
+      }
+    },
+    "headcount_by_month": [
+      {
+        "date": "2024-8-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2024-9-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2024-10-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2024-11-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2024-12-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2025-1-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2025-2-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2025-3-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2025-4-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2025-5-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2025-6-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2025-7-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2025-8-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2025-9-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2025-10-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2025-11-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2025-12-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2026-1-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2026-2-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2026-3-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2026-4-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2026-5-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2026-6-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2026-7-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2026-8-1",
+        "employee_count": 5
+      }
+    ],
+    "headcount_growth": {
+      "1y": "0%",
+      "2y": "0%",
+      "6m": "0%"
+    },
+    "headcount_growth_by_function": {
+      "Arts and Design": {
+        "1y": "0%",
+        "6m": "0%"
+      },
+      "Business Development": {
+        "1y": "0%",
+        "6m": "0%"
+      },
+      "Community and Social Services": {
+        "1y": "0%",
+        "6m": "0%"
+      },
+      "Program and Project Management": {
+        "1y": "0%",
+        "6m": "0%"
+      }
+    },
+    "total_job_openings": 0,
+    "job_openings_by_function": [],
+    "job_openings_growth": {},
+    "job_openings_growth_by_function": {},
+    "median_employee_tenure": 4.3,
+    "new_hires": []
+  }
+]

@@ -144,8 +144,15 @@ def is_valid_company_job(title: str, link: str, snippet: str, company_name: str,
 
 
 async def fetch_linkedin_company_insights(company_url_or_slug: str, company_slug: str) -> Optional[Dict[str, Any]]:
-    api_key = APIFY_INSIGHTS_API_KEY or os.getenv("APIFY_API_KEY")
-    if not api_key:
+    primary_key = os.getenv("APIFY_INSIGHTS_API_KEY")
+    secondary_key = os.getenv("APIFY_API_KEY")
+    keys_to_try = []
+    if primary_key:
+        keys_to_try.append(primary_key)
+    if secondary_key and secondary_key not in keys_to_try:
+        keys_to_try.append(secondary_key)
+
+    if not keys_to_try:
         return None
 
     if company_url_or_slug.startswith("https://www.linkedin.com/company/"):
@@ -157,24 +164,27 @@ async def fetch_linkedin_company_insights(company_url_or_slug: str, company_slug
         target_url = f"https://www.linkedin.com/company/{company_slug}/"
 
     url = "https://api.apify.com/v2/acts/riceman~linkedin-company-data-insights-scraper/run-sync-get-dataset-items"
-    params = {"token": api_key}
     payload = {
         "company_linkedin_urls": [target_url],
         "get_company_insights": True,
         "get_total_job_openings": True
     }
 
-    try:
-        async with httpx.AsyncClient(timeout=120.0) as client:
-            resp = await client.post(url, params=params, json=payload)
-            if resp.status_code in [200, 201]:
-                data = resp.json()
-                if isinstance(data, list) and len(data) > 0:
-                    return data[0]
-                elif isinstance(data, dict):
-                    return data
-    except Exception as e:
-        logger.error(f"Error fetching Apify riceman LinkedIn Insights for {target_url}: {e}")
+    async with httpx.AsyncClient(timeout=120.0) as client:
+        for api_key in keys_to_try:
+            try:
+                resp = await client.post(url, params={"token": api_key}, json=payload)
+                if resp.status_code in [200, 201]:
+                    data = resp.json()
+                    if isinstance(data, list) and len(data) > 0:
+                        return data[0]
+                    elif isinstance(data, dict):
+                        return data
+                elif resp.status_code in [401, 402, 403]:
+                    logger.warning(f"⚠️ Apify key ({api_key[:10]}...) returned HTTP {resp.status_code} Forbidden/Out of Credits. Trying fallback key...")
+                    continue
+            except Exception as e:
+                logger.error(f"Error fetching Apify riceman LinkedIn Insights for {target_url}: {e}")
 
     return None
 
@@ -204,57 +214,63 @@ async def fetch_company_jobs_apify(company_name: str, domain: str, company_slug:
     Fetches active jobs using Apify piotrv1001/company-career-page-scraper actor.
     Returns standard qualified_jobs format or None if error / 0 results.
     """
-    api_key = APIFY_INSIGHTS_API_KEY or os.getenv("APIFY_API_KEY")
-    if not api_key:
-        logger.info("Apify API key not configured. Skipping Apify Career Scraper.")
-        return None
+    primary_key = os.getenv("APIFY_INSIGHTS_API_KEY")
+    secondary_key = os.getenv("APIFY_API_KEY")
+    keys_to_try = []
+    if primary_key:
+        keys_to_try.append(primary_key)
+    if secondary_key and secondary_key not in keys_to_try:
+        keys_to_try.append(secondary_key)
 
-    if not domain:
+    if not keys_to_try or not domain:
         return None
 
     clean_dom = domain.replace("https://", "").replace("http://", "").strip("/")
     target_url = f"https://{clean_dom}"
     url = "https://api.apify.com/v2/acts/piotrv1001~company-career-page-scraper/run-sync-get-dataset-items"
-    params = {"token": api_key}
     payload = {
         "startUrls": [{"url": target_url}]
     }
 
-    try:
-        async with httpx.AsyncClient(timeout=45.0) as client:
-            resp = await client.post(url, params=params, json=payload)
-            if resp.status_code in [200, 201]:
-                items = resp.json()
-                if isinstance(items, list) and len(items) > 0:
-                    qualified_jobs = []
-                    for item in items:
-                        t = (item.get("title") or "").strip()
-                        c_url = item.get("careersUrl") or item.get("url") or f"https://{clean_dom}"
-                        desc = item.get("descriptionHtml") or item.get("snippet") or ""
-                        snippet_clean = re.sub(r'<[^>]+>', ' ', str(desc))
-                        snippet_clean = ' '.join(snippet_clean.split())[:250]
-                        
-                        if is_valid_job_title(t):
-                            qualified_jobs.append({
-                                "title": t,
-                                "link": c_url,
-                                "snippet": snippet_clean or f"Active position at {company_name}",
-                                "date": "Recent",
-                                "ats_platform": "Apify Career Scraper",
-                                "location": item.get("location") or item.get("locationCity") or "",
-                                "seniority": item.get("seniority") or "mid_level"
-                            })
-                    if qualified_jobs:
-                        logger.info(f"🎯 Apify Career Scraper successfully returned {len(qualified_jobs)} job(s) for {company_name}")
-                        return {
-                            "total_results": len(qualified_jobs),
-                            "used_fallback": False,
-                            "source": "apify_career_scraper",
-                            "qualified_jobs": qualified_jobs[:5]
-                        }
-            logger.warning(f"Apify Career Scraper returned HTTP {resp.status_code} or empty results for {company_name}.")
-    except Exception as e:
-        logger.error(f"Error executing Apify Career Scraper for {company_name}: {e}")
+    async with httpx.AsyncClient(timeout=45.0) as client:
+        for api_key in keys_to_try:
+            try:
+                resp = await client.post(url, params={"token": api_key}, json=payload)
+                if resp.status_code in [200, 201]:
+                    items = resp.json()
+                    if isinstance(items, list) and len(items) > 0:
+                        qualified_jobs = []
+                        for item in items:
+                            t = (item.get("title") or "").strip()
+                            c_url = item.get("careersUrl") or item.get("url") or f"https://{clean_dom}"
+                            desc = item.get("descriptionHtml") or item.get("snippet") or ""
+                            snippet_clean = re.sub(r'<[^>]+>', ' ', str(desc))
+                            snippet_clean = ' '.join(snippet_clean.split())[:250]
+                            
+                            if is_valid_job_title(t):
+                                qualified_jobs.append({
+                                    "title": t,
+                                    "link": c_url,
+                                    "snippet": snippet_clean or f"Active position at {company_name}",
+                                    "date": "Recent",
+                                    "ats_platform": "Apify Career Scraper",
+                                    "location": item.get("location") or item.get("locationCity") or "",
+                                    "seniority": item.get("seniority") or "mid_level"
+                                })
+                        if qualified_jobs:
+                            logger.info(f"🎯 Apify Career Scraper successfully returned {len(qualified_jobs)} job(s) for {company_name}")
+                            return {
+                                "total_results": len(qualified_jobs),
+                                "used_fallback": False,
+                                "source": "apify_career_scraper",
+                                "qualified_jobs": qualified_jobs[:5]
+                            }
+                elif resp.status_code in [401, 402, 403]:
+                    logger.warning(f"⚠️ Apify Career Scraper key ({api_key[:10]}...) returned HTTP {resp.status_code}. Trying fallback key...")
+                    continue
+                logger.warning(f"Apify Career Scraper returned HTTP {resp.status_code} or empty results for {company_name}.")
+            except Exception as e:
+                logger.error(f"Error executing Apify Career Scraper for {company_name}: {e}")
 
     return None
 

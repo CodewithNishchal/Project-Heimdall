@@ -1,0 +1,196 @@
+[
+  {
+    "company_name": "Azion",
+    "company_id": "10206226",
+    "tagline": "",
+    "description": "Azion is a growing software company located in Maastricht, the Netherlands. We create tailor-made software for the Apple Mac to offer a user-friendly experience.",
+    "logo_url": "https://media.licdn.com/dms/image/v2/C4E0BAQF45vfu9O5xpQ/company-logo_400_400/company-logo_400_400/0/1631342749295?e=1787788800&v=beta&t=fLrwXlLvuaxwcAK60fgrRoIEk41L8tTMJ6ZXjmZ92lM",
+    "linkedin_url": "https://www.linkedin.com/company/azion/",
+    "website": "http://www.azion.nl",
+    "hq_full_address": "Maastricht, NL",
+    "hq_city": "Maastricht",
+    "hq_region": "",
+    "hq_country": "NL",
+    "hq_postalcode": "",
+    "locations": [
+      {
+        "city": "Maastricht",
+        "country": "NL",
+        "full_address": "Maastricht, NL",
+        "is_headquarter": true,
+        "line1": "",
+        "line2": "",
+        "region": "",
+        "zipcode": ""
+      }
+    ],
+    "phone": "",
+    "email": "",
+    "domain": "azion.nl",
+    "industries": [
+      "IT Services and IT Consulting"
+    ],
+    "specialties": "Software",
+    "year_founded": null,
+    "funding_info": {
+      "crunchbase_url": null,
+      "last_funding_round_amount": null,
+      "last_funding_round_currency": null,
+      "last_funding_round_month": null,
+      "last_funding_round_type": null,
+      "last_funding_round_year": null,
+      "num_funding_rounds": null
+    },
+    "employee_count": 5,
+    "employee_range": "2-10",
+    "follower_count": 938,
+    "affiliated_companies": [],
+    "headcount_by_function": {
+      "Business Development": {
+        "count": 1,
+        "percentage": 20
+      },
+      "Engineering": {
+        "count": 2,
+        "percentage": 40
+      },
+      "Operations": {
+        "count": 1,
+        "percentage": 20
+      }
+    },
+    "headcount_by_month": [
+      {
+        "date": "2024-8-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2024-9-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2024-10-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2024-11-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2024-12-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2025-1-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2025-2-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2025-3-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2025-4-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2025-5-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2025-6-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2025-7-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2025-8-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2025-9-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2025-10-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2025-11-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2025-12-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2026-1-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2026-2-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2026-3-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2026-4-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2026-5-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2026-6-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2026-7-1",
+        "employee_count": 5
+      },
+      {
+        "date": "2026-8-1",
+        "employee_count": 5
+      }
+    ],
+    "headcount_growth": {
+      "1y": "0%",
+      "2y": "0%",
+      "6m": "0%"
+    },
+    "headcount_growth_by_function": {
+      "Business Development": {
+        "1y": "0%",
+        "6m": "0%"
+      },
+      "Engineering": {
+        "1y": "0%",
+        "6m": "0%"
+      },
+      "Operations": {
+        "1y": "0%",
+        "6m": "0%"
+      }
+    },
+    "total_job_openings": 0,
+    "job_openings_by_function": [],
+    "job_openings_growth": {},
+    "job_openings_growth_by_function": {},
+    "median_employee_tenure": 3.3,
+    "new_hires": [
+      {
+        "date": "2024-8",
+        "senior_hires": 0,
+        "total_hires": 1
+      }
+    ]
+  }
+]

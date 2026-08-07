@@ -16,6 +16,7 @@ const DEPT_COLORS = [
   { bg: 'bg-indigo-500', text: 'text-indigo-500', hex: '#6366f1', softHex: '#818cf8', lightBg: 'bg-indigo-50 dark:bg-indigo-950/40', border: 'border-indigo-200 dark:border-indigo-800' },
   { bg: 'bg-sky-500', text: 'text-sky-500', hex: '#0ea5e9', softHex: '#38bdf8', lightBg: 'bg-sky-50 dark:bg-sky-950/40', border: 'border-sky-200 dark:border-sky-800' },
   { bg: 'bg-emerald-500', text: 'text-emerald-500', hex: '#10b981', softHex: '#34d399', lightBg: 'bg-emerald-50 dark:bg-emerald-950/40', border: 'border-emerald-200 dark:border-emerald-800' },
+  { bg: 'bg-purple-500', text: 'text-purple-500', hex: '#a855f7', softHex: '#c084fc', lightBg: 'bg-purple-50 dark:bg-purple-950/40', border: 'border-purple-200 dark:border-purple-800' },
   { bg: 'bg-amber-500', text: 'text-amber-500', hex: '#f59e0b', softHex: '#fbbf24', lightBg: 'bg-amber-50 dark:bg-amber-950/40', border: 'border-amber-200 dark:border-amber-800' },
   { bg: 'bg-rose-500', text: 'text-rose-500', hex: '#f43f5e', softHex: '#f87171', lightBg: 'bg-rose-50 dark:bg-rose-950/40', border: 'border-rose-200 dark:border-rose-800' },
   { bg: 'bg-slate-400', text: 'text-slate-400', hex: '#94a3b8', softHex: '#94a3b8', lightBg: 'bg-slate-100 dark:bg-zinc-800/80', border: 'border-slate-200 dark:border-zinc-700/50' },
@@ -191,16 +192,31 @@ export default function JobsTab({ lead, defaultTab = 'all' }: JobsTabProps) {
     });
   }
 
-  const top4 = rawDepts.slice(0, 4);
-  const remainingDepts = rawDepts.slice(4);
+  // Select top 4 departments excluding Administrative
+  let selectedDepts = rawDepts.filter(d => d.name.toLowerCase() !== 'administrative').slice(0, 4);
 
-  let mergedDepts = [...top4];
+  // Ensure Information Technology / IT is explicitly featured if present in rawDepts
+  const itDept = rawDepts.find(d => {
+    const n = d.name.toLowerCase();
+    return n === 'information technology' || n === 'it' || n === 'it services';
+  });
+
+  if (itDept && !selectedDepts.some(d => d.name === itDept.name)) {
+    selectedDepts.push(itDept);
+  }
+
+  const selectedNames = new Set(selectedDepts.map(d => d.name));
+  const remainingDepts = rawDepts.filter(d => !selectedNames.has(d.name));
+
+  let mergedDepts = [...selectedDepts];
   if (remainingDepts.length > 0) {
     const otherCount = remainingDepts.reduce((sum, d) => sum + d.count, 0);
-    mergedDepts.push({
-      name: "Other",
-      count: otherCount
-    });
+    if (otherCount > 0) {
+      mergedDepts.push({
+        name: "Other",
+        count: otherCount
+      });
+    }
   }
 
   const grandTotalCount = mergedDepts.reduce((sum, d) => sum + d.count, 0) || 1;
@@ -435,8 +451,9 @@ export default function JobsTab({ lead, defaultTab = 'all' }: JobsTabProps) {
                   : '';
 
                 return (
-                  <div className="relative pt-1 pb-1">
-                    <svg className="w-full h-52 overflow-visible" viewBox="0 0 800 175">
+                  <div className="relative pt-1 pb-1 overflow-x-auto scrollbar-none">
+                    <div className="min-w-[620px] sm:min-w-0 sm:w-full">
+                      <svg className="w-full h-52 overflow-visible" viewBox="0 0 800 175">
                       <defs>
                         <linearGradient id="lineAreaGrad" x1="0" y1="0" x2="0" y2="1">
                           <stop offset="0%" stopColor="#6366F1" stopOpacity="0.2" />
@@ -505,8 +522,9 @@ export default function JobsTab({ lead, defaultTab = 'all' }: JobsTabProps) {
                       ))}
                     </svg>
                   </div>
-                );
-              })()}
+                </div>
+              );
+            })()}
             </div>
 
             {/* Bottom Grid: Department Breakdown (7 cols) + Key Takeaways (5 cols) */}
@@ -524,28 +542,32 @@ export default function JobsTab({ lead, defaultTab = 'all' }: JobsTabProps) {
                   </span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-12 gap-6 items-center pt-2">
+                <div className="grid grid-cols-1 sm:grid-cols-12 gap-5 items-center pt-2">
                   
-                  {/* Left Column: Department List */}
-                  <div className="sm:col-span-7 space-y-3.5">
+                  {/* Left Column: Department List (7 cols) */}
+                  <div className="sm:col-span-7 space-y-3">
                     {topDepartments.map((dept, idx) => {
                       const theme = DEPT_COLORS[idx % DEPT_COLORS.length];
+                      const displayName = (dept.name.includes(' ') && dept.name.length > 12)
+                        ? dept.name.split(' ').join('\n')
+                        : dept.name;
+
                       return (
-                        <div key={idx} className="flex items-center justify-between text-xs group">
-                          <div className="flex items-center gap-2.5 min-w-0">
+                        <div key={idx} className="flex items-center justify-between gap-2 text-xs group">
+                          <div className="flex items-center gap-2.5 min-w-0 flex-1 sm:w-40 sm:flex-none">
                             <div className={`w-7 h-7 rounded-lg ${theme.lightBg} ${theme.text} flex items-center justify-center shrink-0 border ${theme.border}`}>
                               {getDepartmentIcon(dept.name)}
                             </div>
-                            <span className="font-semibold text-slate-700 dark:text-zinc-300 truncate">
-                              {dept.name}
+                            <span className="font-bold text-slate-800 dark:text-zinc-200 text-xs sm:text-[13px] leading-tight whitespace-pre-line truncate">
+                              {displayName}
                             </span>
                           </div>
 
-                          <div className="flex items-center gap-3 shrink-0 font-mono pl-2">
-                            <span className="text-slate-400 dark:text-zinc-500 font-medium text-[11px]">
+                          <div className="flex items-center gap-2 sm:gap-3 shrink-0 font-mono pl-1 sm:pl-2">
+                            <span className="text-slate-500 dark:text-zinc-400 font-semibold text-xs min-w-[18px] text-right">
                               {dept.count}
                             </span>
-                            <span className={`w-12 text-right font-extrabold ${theme.text}`}>
+                            <span className={`w-11 sm:w-12 text-right font-black text-xs ${theme.text}`}>
                               {dept.percentage.toFixed(1)}%
                             </span>
                           </div>
@@ -554,18 +576,18 @@ export default function JobsTab({ lead, defaultTab = 'all' }: JobsTabProps) {
                     })}
                   </div>
 
-                  {/* Right Column: Clean SVG Donut Chart */}
+                  {/* Right Column: Balanced SVG Donut Chart (5 cols) */}
                   <div className="sm:col-span-5 flex flex-col items-center justify-center pt-4 sm:pt-0">
-                    <div className="relative w-36 h-36 flex items-center justify-center">
+                    <div className="relative w-44 h-44 sm:w-46 sm:h-46 flex items-center justify-center">
                       <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
                         {/* Background Base Ring */}
                         <circle
                           cx="50"
                           cy="50"
-                          r="38"
+                          r="37"
                           fill="transparent"
                           stroke="#e2e8f0"
-                          strokeWidth="13"
+                          strokeWidth="14"
                           className="dark:stroke-zinc-800"
                         />
 
@@ -574,7 +596,7 @@ export default function JobsTab({ lead, defaultTab = 'all' }: JobsTabProps) {
                           let runningOffset = 0;
                           return topDepartments.map((dept, idx) => {
                             const theme = DEPT_COLORS[idx % DEPT_COLORS.length];
-                            const strokeDash = (dept.percentage / 100) * 238.76;
+                            const strokeDash = (dept.percentage / 100) * 232.48;
                             const offset = runningOffset;
                             runningOffset += strokeDash;
 
@@ -583,11 +605,11 @@ export default function JobsTab({ lead, defaultTab = 'all' }: JobsTabProps) {
                                 key={idx}
                                 cx="50"
                                 cy="50"
-                                r="38"
+                                r="37"
                                 fill="transparent"
                                 stroke={theme.softHex}
-                                strokeWidth="13"
-                                strokeDasharray={`${strokeDash} ${238.76 - strokeDash}`}
+                                strokeWidth="14"
+                                strokeDasharray={`${strokeDash} ${232.48 - strokeDash}`}
                                 strokeDashoffset={-offset}
                                 className="transition-all duration-500 hover:opacity-80"
                               />
@@ -599,8 +621,8 @@ export default function JobsTab({ lead, defaultTab = 'all' }: JobsTabProps) {
                       {/* Donut Center Overlay Text */}
                       <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
                         <span className="text-[10px] uppercase font-bold text-slate-400 dark:text-zinc-500 tracking-wider">Total</span>
-                        <span className="text-xl font-black text-slate-900 dark:text-zinc-100 leading-none my-0.5">{totalEmployees}</span>
-                        <span className="text-[10px] font-medium text-slate-500 dark:text-zinc-400">Employees</span>
+                        <span className="text-2xl font-black text-slate-900 dark:text-zinc-100 leading-none my-1">{totalEmployees}</span>
+                        <span className="text-xs font-medium text-slate-500 dark:text-zinc-400">Employees</span>
                       </div>
                     </div>
                   </div>
@@ -722,8 +744,13 @@ export default function JobsTab({ lead, defaultTab = 'all' }: JobsTabProps) {
                 const seniorKws = ['senior', 'lead', 'vp', 'director', 'head', 'manager', 'principal', 'chief'];
                 const seniorJobs = jobsList.filter((j: any) => seniorKws.some(kw => (j.title || '').toLowerCase().includes(kw)));
                 
-                // Sourced directly from backend JSON (insights.new_hires, insights.hiring_trend, or insights.senior_hiring_trend)
-                const backendTrend = insights?.new_hires || insights?.hiring_trend || insights?.senior_hiring_trend;
+                // Sourced directly from backend JSON (prioritize pre-calculated 6-mo hiring_trend / senior_hiring_trend over raw multi-year new_hires)
+                const backendTrend = (insights?.hiring_trend && insights.hiring_trend.length > 0)
+                  ? insights.hiring_trend
+                  : (insights?.senior_hiring_trend && insights.senior_hiring_trend.length > 0)
+                    ? insights.senior_hiring_trend
+                    : (insights?.new_hires || []);
+
                 let monthlyData: { month: string; count: number }[] = [];
 
                 const getHiresCount = (item: any) => (item.total_hires && item.total_hires > 0) ? item.total_hires : (item.senior_hires || item.count || 0);
@@ -743,25 +770,26 @@ export default function JobsTab({ lead, defaultTab = 'all' }: JobsTabProps) {
                 }
 
                 if (Array.isArray(backendTrend) && backendTrend.length > 0) {
-                  const isFromApify = Array.isArray(insights?.new_hires) && insights.new_hires.length > 0;
-                  const firstCount = getHiresCount(backendTrend[0]);
-                  const allFlat = backendTrend.every((item: any) => getHiresCount(item) === firstCount);
-
-                  if (isFromApify || !allFlat) {
-                    monthlyData = last6Months.map(mObj => {
-                      const match = backendTrend.find((item: any) => {
-                        const itemDate = String(item.date || item.month || '');
-                        const itemLabel = (item.label || getMonthAbbrev(itemDate)).toLowerCase();
-                        return mObj.dateKeys.some(k => itemDate === k || itemDate.startsWith(k)) || itemLabel === mObj.label.toLowerCase();
-                      });
-                      return {
-                        month: mObj.label,
-                        count: match ? getHiresCount(match) : 0
-                      };
+                  monthlyData = last6Months.map(mObj => {
+                    const match = backendTrend.find((item: any) => {
+                      const itemDate = String(item.date || item.month || '');
+                      const itemLabel = (item.label || getMonthAbbrev(itemDate)).toLowerCase();
+                      
+                      // Match strictly on Year-Month dateKeys first (e.g. 2026-3 or 2026-03)
+                      const dateMatch = mObj.dateKeys.some(k => itemDate === k || itemDate.startsWith(k));
+                      if (dateMatch) return true;
+                      
+                      // If itemDate has no year prefix (e.g. just month label), match label
+                      if (!itemDate.includes('-')) {
+                        return itemLabel === mObj.label.toLowerCase();
+                      }
+                      return false;
                     });
-                  } else {
-                    monthlyData = last6Months.map(mObj => ({ month: mObj.label, count: 0 }));
-                  }
+                    return {
+                      month: mObj.label,
+                      count: match ? getHiresCount(match) : 0
+                    };
+                  });
                 } else {
                   monthlyData = last6Months.map(mObj => ({ month: mObj.label, count: 0 }));
                 }
@@ -786,8 +814,9 @@ export default function JobsTab({ lead, defaultTab = 'all' }: JobsTabProps) {
 
                 return (
                   <div className="space-y-3">
-                    <div className="relative w-full bg-slate-50/60 dark:bg-zinc-950/40 rounded-2xl p-4 border border-slate-100 dark:border-zinc-800/60">
-                      <svg className="w-full h-52 overflow-visible" viewBox={`0 0 ${viewBoxWidth} ${viewBoxHeight}`}>
+                    <div className="relative w-full bg-slate-50/60 dark:bg-zinc-950/40 rounded-2xl p-4 border border-slate-100 dark:border-zinc-800/60 overflow-x-auto scrollbar-none">
+                      <div className="min-w-[620px] sm:min-w-0 sm:w-full">
+                        <svg className="w-full h-52 overflow-visible" viewBox={`0 0 ${viewBoxWidth} ${viewBoxHeight}`}>
                         <defs>
                           <linearGradient id="amberLineAreaGrad" x1="0" y1="0" x2="0" y2="1">
                             <stop offset="0%" stopColor="#f59e0b" stopOpacity="0.3" />
@@ -896,11 +925,11 @@ export default function JobsTab({ lead, defaultTab = 'all' }: JobsTabProps) {
                       </svg>
                     </div>
                   </div>
-                );
-              })()}
-            </div>
-
+                </div>
+              );
+            })()}
           </div>
+        </div>
         ) : (
           <div className="p-10 rounded-2xl border border-dashed border-slate-300 dark:border-zinc-700 bg-white dark:bg-zinc-900/30 flex flex-col items-center justify-center text-center space-y-3">
             <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-zinc-800 flex items-center justify-center text-slate-400 dark:text-zinc-500">

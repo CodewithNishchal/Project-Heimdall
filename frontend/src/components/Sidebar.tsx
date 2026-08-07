@@ -30,16 +30,16 @@ export default function Sidebar({ currentView, setCurrentView, status, isMobileO
   return (
     <>
       {/* ===== DESKTOP SIDEBAR (Visible on lg screens and up) ===== */}
-      <div className="group relative w-[62px] shrink-0 hidden lg:block z-30 mr-0.5">
+      <div className="group relative w-[66px] shrink-0 hidden lg:block z-30 mr-0.5">
         {/* Background Dim Overlay when hovering over desktop sidebar */}
         <div className="fixed inset-0 bg-slate-950/20 dark:bg-black/40 backdrop-blur-[1px] pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30" />
 
         {/* Floating Desktop Overlay Sidebar */}
-        <aside className="sidebar-container flex flex-col justify-between h-[calc(100vh-1.5rem)] w-[62px] group-hover:w-[255px] absolute top-0 left-0 transition-all duration-300 ease-in-out px-2 py-3.5 rounded-3xl font-sans z-30 overflow-hidden shadow-md group-hover:shadow-2xl border border-slate-200 dark:border-nexa-border">
+        <aside className="sidebar-container flex flex-col justify-between h-[calc(100vh-1.5rem)] w-[66px] group-hover:w-[255px] absolute top-0 left-0 transition-all duration-300 ease-in-out px-2 py-3.5 rounded-3xl font-sans z-30 overflow-hidden shadow-md group-hover:shadow-2xl border border-slate-200 dark:border-nexa-border">
           {/* 1. BRANDING: Prospector AI Name, Status & Shield Icon */}
           <div className="space-y-4 pt-1">
             <div className="flex items-center px-0 py-1 overflow-hidden transition-all duration-300">
-              <div className="w-[40px] shrink-0 flex items-center justify-center">
+              <div className="w-[46px] shrink-0 flex items-center justify-center">
                 <div
                   className={`relative flex h-9 w-9 items-center justify-center rounded-2xl border shadow-xs shrink-0 transition-all duration-300 ${
                     status === 'success'
@@ -92,7 +92,7 @@ export default function Sidebar({ currentView, setCurrentView, status, isMobileO
                       : 'text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-950 dark:hover:text-zinc-100 font-extrabold border border-transparent'
                   }`}
                 >
-                  <div className="w-[40px] h-[40px] shrink-0 flex items-center justify-center">
+                  <div className="w-[46px] h-[40px] shrink-0 flex items-center justify-center">
                     <Icon
                       size={22}
                       className={`transition-colors ${
@@ -121,7 +121,7 @@ export default function Sidebar({ currentView, setCurrentView, status, isMobileO
                   : 'text-slate-700 dark:text-zinc-300 hover:bg-slate-100 dark:hover:bg-white/5 hover:text-slate-950 dark:hover:text-zinc-100 font-extrabold border border-transparent'
               }`}
             >
-              <div className="w-[40px] h-[40px] shrink-0 flex items-center justify-center">
+              <div className="w-[46px] h-[40px] shrink-0 flex items-center justify-center">
                 <SettingsIcon
                   size={22}
                   className={`transition-colors ${

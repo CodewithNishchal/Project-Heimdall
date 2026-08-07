@@ -955,29 +955,63 @@ export default function LeadDetailDrawer({
                         </div>
 
                         <div className="w-full py-1 flex flex-col items-center justify-center text-center">
-                          <div className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-zinc-100 tracking-tight">
-                            {(() => {
-                              const rev = (lead.annual_revenue || '').trim();
-                              if (!rev || rev === 'N/A' || rev === 'Unknown' || rev.length > 25 || !/\d/.test(rev)) {
-                                return 'N/A';
-                              }
-                              let s = rev.replace(/\s*million\b/gi, 'M').replace(/\s*billion\b/gi, 'B').replace(/\s*thousand\b/gi, 'K');
-                              const match = s.match(/(~?\s*\$?\s*[\d\.]+(?:\s*-\s*\$?\s*[\d\.]+)?)\s*([MKBmkb])?/);
-                              if (match) {
-                                const rawNum = match[1].replace('~', '').replace('$', '').trim();
-                                let unit = (match[2] || '').toUpperCase();
-                                if (!unit) {
-                                  const parsed = parseFloat(rawNum.split('-')[0]);
-                                  if (!isNaN(parsed) && parsed > 0 && parsed < 1000) {
-                                    unit = 'M';
-                                  }
+                          {(() => {
+                            const rev = (lead.annual_revenue || '').trim();
+                            if (!rev || rev === 'N/A' || rev === 'Unknown' || !/\d/.test(rev)) {
+                              return (
+                                <div className="text-xl sm:text-2xl font-bold text-slate-400 dark:text-zinc-500 tracking-normal">
+                                  Not Disclosed
+                                </div>
+                              );
+                            }
+
+                            const prefix = rev.includes('~') ? '~$' : '$';
+                            const cleaned = rev.replace('~', '').replace(/\$/g, '').trim();
+
+                            const formatSingleVal = (valStr: string) => {
+                              let unit = '';
+                              if (/\bmillion\b/i.test(valStr) || /M\b/i.test(valStr)) unit = 'M';
+                              else if (/\bbillion\b/i.test(valStr) || /B\b/i.test(valStr)) unit = 'B';
+                              else if (/\bthousand\b/i.test(valStr) || /K\b/i.test(valStr)) unit = 'K';
+
+                              const rawNumStr = valStr.replace(/[a-zA-Z]/g, '').trim();
+                              let num = parseFloat(rawNumStr);
+                              if (isNaN(num)) return valStr;
+
+                              if (!unit) {
+                                if (num >= 1_000_000_000) {
+                                  num = num / 1_000_000_000;
+                                  unit = 'B';
+                                } else if (num >= 1_000_000) {
+                                  num = num / 1_000_000;
+                                  unit = 'M';
+                                } else if (num >= 1_000) {
+                                  num = num / 1_000;
+                                  unit = 'K';
+                                } else if (num > 0 && num < 1000) {
+                                  unit = 'M';
                                 }
-                                const prefix = s.includes('~') ? '~$' : '$';
-                                return `${prefix}${rawNum}${unit}`;
                               }
-                              return s;
-                            })()}
-                          </div>
+
+                              const formattedNum = Number.isInteger(num) ? num.toString() : Math.round(num) === num ? num.toString() : num.toFixed(1).replace(/\.0$/, '');
+                              return `${formattedNum}${unit}`;
+                            };
+
+                            let resultStr = '';
+                            if (cleaned.includes('-')) {
+                              const parts = cleaned.split('-').map(p => p.trim());
+                              const formattedParts = parts.map(formatSingleVal);
+                              resultStr = `${prefix}${formattedParts.join(' - $')}`;
+                            } else {
+                              resultStr = `${prefix}${formatSingleVal(cleaned)}`;
+                            }
+
+                            return (
+                              <div className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-zinc-100 tracking-tight">
+                                {resultStr}
+                              </div>
+                            );
+                          })()}
                           <div className="text-[10px] font-bold text-slate-400 dark:text-zinc-500 mt-1 uppercase tracking-wider">
                             ARR est.
                           </div>

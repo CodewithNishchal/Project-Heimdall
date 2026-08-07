@@ -1,0 +1,364 @@
+[
+  {
+    "company_name": "Rutter",
+    "company_id": "71995640",
+    "tagline": "Integrations & Agents to ship financial products in days, not months.",
+    "description": "Rutter powers financial use cases like Supplier Enablement, Bank Feeds, Bill Pay, and Underwriting for Fortune 500 companies and financial institutions.\n\nBuild one integration to read and write to 40+ commerce, accounting, and payment platforms with a Universal API, and leverage agentic workflows to power use cases like growing commercial card spend.\n\nWe provide domain expertise and the most flexible, customizable, and in-depth integration features that help companies serve the most complex needs of their customers. \n\nTrusted integration partner for leading fintech & commerce companies, including Ramp, Mercury, Airwallex, Parafin, Wayflyer, and more. Forward-looking companies chose Rutter to build the best products in SMB lending, expense management, AP/AR automation, shipping & fulfillment, marketplaces, and many more. ",
+    "logo_url": "https://media.licdn.com/dms/image/v2/D560BAQE_i79nqRRWJg/company-logo_400_400/company-logo_400_400/0/1683239913399/rutter_logo?e=1787788800&v=beta&t=wSsgHgoQccCd4nFaym61M6duUhngdaSfpPQTWNZX1qw",
+    "linkedin_url": "https://www.linkedin.com/company/rutterapi/",
+    "website": "https://www.rutter.com/",
+    "hq_full_address": "648 Broadway, Suite 200, New York City, NY 10013, US",
+    "hq_city": "New York City",
+    "hq_region": "NY",
+    "hq_country": "US",
+    "hq_postalcode": "10013",
+    "locations": [
+      {
+        "city": "New York City",
+        "country": "US",
+        "full_address": "648 Broadway, Suite 200, New York City, NY 10013, US",
+        "is_headquarter": true,
+        "line1": "648 Broadway",
+        "line2": "Suite 200",
+        "region": "NY",
+        "zipcode": "10013"
+      }
+    ],
+    "phone": "",
+    "email": "",
+    "domain": "rutter.com",
+    "industries": [
+      "Software Development"
+    ],
+    "specialties": "",
+    "year_founded": 2021,
+    "funding_info": {
+      "crunchbase_url": null,
+      "last_funding_round_amount": null,
+      "last_funding_round_currency": null,
+      "last_funding_round_month": null,
+      "last_funding_round_type": null,
+      "last_funding_round_year": null,
+      "num_funding_rounds": null
+    },
+    "employee_count": 42,
+    "employee_range": "11-50",
+    "follower_count": 7138,
+    "affiliated_companies": [],
+    "headcount_by_function": {
+      "Administrative": {
+        "count": 2,
+        "percentage": 5
+      },
+      "Arts and Design": {
+        "count": 1,
+        "percentage": 2
+      },
+      "Business Development": {
+        "count": 2,
+        "percentage": 5
+      },
+      "Engineering": {
+        "count": 15,
+        "percentage": 36
+      },
+      "Entrepreneurship": {
+        "count": 2,
+        "percentage": 5
+      },
+      "Finance": {
+        "count": 1,
+        "percentage": 2
+      },
+      "Information Technology": {
+        "count": 2,
+        "percentage": 5
+      },
+      "Marketing": {
+        "count": 3,
+        "percentage": 7
+      },
+      "Operations": {
+        "count": 1,
+        "percentage": 2
+      },
+      "Product Management": {
+        "count": 4,
+        "percentage": 10
+      },
+      "Sales": {
+        "count": 4,
+        "percentage": 10
+      }
+    },
+    "headcount_by_month": [
+      {
+        "date": "2024-8-1",
+        "employee_count": 30
+      },
+      {
+        "date": "2024-9-1",
+        "employee_count": 28
+      },
+      {
+        "date": "2024-10-1",
+        "employee_count": 27
+      },
+      {
+        "date": "2024-11-1",
+        "employee_count": 27
+      },
+      {
+        "date": "2024-12-1",
+        "employee_count": 27
+      },
+      {
+        "date": "2025-1-1",
+        "employee_count": 27
+      },
+      {
+        "date": "2025-2-1",
+        "employee_count": 27
+      },
+      {
+        "date": "2025-3-1",
+        "employee_count": 29
+      },
+      {
+        "date": "2025-4-1",
+        "employee_count": 30
+      },
+      {
+        "date": "2025-5-1",
+        "employee_count": 33
+      },
+      {
+        "date": "2025-6-1",
+        "employee_count": 35
+      },
+      {
+        "date": "2025-7-1",
+        "employee_count": 36
+      },
+      {
+        "date": "2025-8-1",
+        "employee_count": 37
+      },
+      {
+        "date": "2025-9-1",
+        "employee_count": 42
+      },
+      {
+        "date": "2025-10-1",
+        "employee_count": 41
+      },
+      {
+        "date": "2025-11-1",
+        "employee_count": 41
+      },
+      {
+        "date": "2025-12-1",
+        "employee_count": 41
+      },
+      {
+        "date": "2026-1-1",
+        "employee_count": 42
+      },
+      {
+        "date": "2026-2-1",
+        "employee_count": 42
+      },
+      {
+        "date": "2026-3-1",
+        "employee_count": 43
+      },
+      {
+        "date": "2026-4-1",
+        "employee_count": 43
+      },
+      {
+        "date": "2026-5-1",
+        "employee_count": 43
+      },
+      {
+        "date": "2026-6-1",
+        "employee_count": 42
+      },
+      {
+        "date": "2026-7-1",
+        "employee_count": 42
+      },
+      {
+        "date": "2026-8-1",
+        "employee_count": 42
+      }
+    ],
+    "headcount_growth": {
+      "1y": "14%",
+      "2y": "40%",
+      "6m": "0%"
+    },
+    "headcount_growth_by_function": {
+      "Administrative": {
+        "1y": "0%",
+        "6m": "0%"
+      },
+      "Arts and Design": {
+        "1y": "0%",
+        "6m": "0%"
+      },
+      "Business Development": {
+        "1y": "0%",
+        "6m": "0%"
+      },
+      "Engineering": {
+        "1y": "7%",
+        "6m": "0%"
+      },
+      "Entrepreneurship": {
+        "1y": "0%",
+        "6m": "0%"
+      },
+      "Finance": {
+        "1y": "0%",
+        "6m": "0%"
+      },
+      "Information Technology": {
+        "1y": "0%",
+        "6m": "0%"
+      },
+      "Marketing": {
+        "1y": "200%",
+        "6m": "0%"
+      },
+      "Operations": {
+        "1y": "0%",
+        "6m": "0%"
+      },
+      "Product Management": {
+        "1y": "100%",
+        "6m": "0%"
+      },
+      "Sales": {
+        "1y": "33%",
+        "6m": "0%"
+      }
+    },
+    "total_job_openings": 3,
+    "job_openings_by_function": [
+      {
+        "count_by_function": {
+          "Engineering": {
+            "count": 2,
+            "percentage": 100
+          }
+        },
+        "date": "2026-6",
+        "total_count": 2
+      },
+      {
+        "count_by_function": {
+          "Engineering": {
+            "count": 2,
+            "percentage": 67
+          }
+        },
+        "date": "2026-3",
+        "total_count": 3
+      },
+      {
+        "count_by_function": {
+          "Engineering": {
+            "count": 4,
+            "percentage": 50
+          }
+        },
+        "date": "2025-12",
+        "total_count": 8
+      }
+    ],
+    "job_openings_growth": {
+      "3m": "-33%",
+      "6m": "-75%"
+    },
+    "job_openings_growth_by_function": {
+      "Engineering": {
+        "3m": "0%",
+        "6m": "-50%"
+      }
+    },
+    "median_employee_tenure": 1.6,
+    "new_hires": [
+      {
+        "date": "2024-9",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2024-11",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2024-12",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2025-1",
+        "senior_hires": 0,
+        "total_hires": 2
+      },
+      {
+        "date": "2025-2",
+        "senior_hires": 0,
+        "total_hires": 2
+      },
+      {
+        "date": "2025-3",
+        "senior_hires": 0,
+        "total_hires": 2
+      },
+      {
+        "date": "2025-4",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2025-5",
+        "senior_hires": 0,
+        "total_hires": 3
+      },
+      {
+        "date": "2025-6",
+        "senior_hires": 0,
+        "total_hires": 3
+      },
+      {
+        "date": "2025-7",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2025-8",
+        "senior_hires": 0,
+        "total_hires": 2
+      },
+      {
+        "date": "2025-9",
+        "senior_hires": 0,
+        "total_hires": 6
+      },
+      {
+        "date": "2026-1",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2026-3",
+        "senior_hires": 0,
+        "total_hires": 1
+      }
+    ]
+  }
+]

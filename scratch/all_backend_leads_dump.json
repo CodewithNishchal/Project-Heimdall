@@ -1,0 +1,1441 @@
+  {
+    "id": "cc2e7600-95e5-494e-af6a-82743744e238",
+    "domain": "askreferral.io",
+    "company_name": "AI Automation",
+    "company_segment": "Enterprise",
+    "industry": "AI Automation / Agentic AI for Enterprise Operations",
+    "employee_count": 206,
+    "funding_stage": "Venture Backed",
+    "intent_score": 100,
+    "signal_freshness": 100,
+    "tier": "High",
+    "icp_fit": "Strong",
+    "badge": "new_today",
+    "social_segment": null,
+    "meta_ads_active": false,
+    "meta_ads_count": 0,
+    "bio_url": null,
+    "why_now": "HappyRobot recently closed a $150 million Series C round on August 4, 2026, which will fuel its expansion into new industries and broader enterprise deployments, necessitating a rapid scale-up of its workforce.",
+    "signal_tags": [
+      {
+        "tag": "$150M Series C Funding",
+        "category": "FUNDING",
+        "color_theme": "indigo"
+      },
+      {
+        "tag": "Scale agentic AI for enterprise operations",
+        "category": "EXPANSION",
+        "color_theme": "indigo"
+      },
+      {
+        "tag": "Broader growth beyond logistics",
+        "category": "EXPANSION",
+        "color_theme": "indigo"
+      },
+      {
+        "tag": "Redefining workforce composition",
+        "category": "HIRING",
+        "color_theme": "indigo"
+      }
+    ],
+    "ai_verdict": "HappyRobot is a rapidly growing AI automation company that recently secured a substantial $150 million Series C funding round, achieving unicorn status. This significant capital injection is earmarked for scaling its agentic AI platform across various enterprise sectors and expanding beyond its initial logistics focus. The company's aggressive growth trajectory and the explicit mention of 'redefining operating models and workforce composition' strongly suggest an immediate and substantial need for recruitment services to build out its teams. This is a very good business to reach out to for recruitment services.",
+    "company_linkedin_id": "90515076",
+    "annual_revenue": "5000000-9999999",
+    "company_insights": {
+      "email": "",
+      "phone": "",
+      "domain": "github.com",
+      "hq_city": "Seattle",
+      "tagline": "Follow for most updated info on Applied AI Automation and promote your AI research and Applied AI Solutions here free",
+      "website": "https://github.com/vivekkrishna/semantic-conflicts-benchmark",
+      "logo_url": "https://media.licdn.com/dms/image/v2/D560BAQFEbk-GFy1xiw/company-logo_100_100/B56Z1_SU80I8AQ-/0/1775957005095/appliedaiautomation_logo?e=1787788800&v=beta&t=k00QAaiDD21uGLSwLiNDM8ZavxnOq2kpFXXLmjKoMv8",
+      "hq_region": "Washington",
+      "locations": [
+        {
+          "city": "Seattle",
+          "line1": "",
+          "line2": "",
+          "region": "Washington",
+          "country": "US",
+          "zipcode": "98101",
+          "full_address": "Seattle, Washington 98101, US",
+          "is_headquarter": true
+        },
+        {
+          "city": "Seattle",
+          "line1": "",
+          "line2": "",
+          "region": "WA",
+          "country": "US",
+          "zipcode": "98121",
+          "full_address": "Seattle, WA 98121, US",
+          "is_headquarter": false
+        },
+        {
+          "city": "Hyderabad",
+          "line1": "",
+          "line2": "",
+          "region": "",
+          "country": "IN",
+          "zipcode": "",
+          "full_address": "Hyderabad, IN",
+          "is_headquarter": false
+        },
+        {
+          "city": "Sholinganallur",
+          "line1": "Perungudi Industrial Road",
+          "line2": "",
+          "region": "Tamil Nadu",
+          "country": "IN",
+          "zipcode": "600096",
+          "full_address": "Perungudi Industrial Road, Sholinganallur, Tamil Nadu 600096, IN",
+          "is_headquarter": false
+        }
+      ],
+      "new_hires": [
+        {
+          "date": "2024-8",
+          "total_hires": 4,
+          "senior_hires": 0
+        },
+        {
+          "date": "2024-10",
+          "total_hires": 1,
+          "senior_hires": 0
+        },
+        {
+          "date": "2024-12",
+          "total_hires": 6,
+          "senior_hires": 0
+        },
+        {
+          "date": "2025-1",
+          "total_hires": 9,
+          "senior_hires": 0
+        },
+        {
+          "date": "2025-2",
+          "total_hires": 5,
+          "senior_hires": 0
+        },
+        {
+          "date": "2025-3",
+          "total_hires": 3,
+          "senior_hires": 0
+        },
+        {
+          "date": "2025-4",
+          "total_hires": 4,
+          "senior_hires": 0
+        },
+        {
+          "date": "2025-5",
+          "total_hires": 6,
+          "senior_hires": 0
+        },
+        {
+          "date": "2025-6",
+          "total_hires": 4,
+          "senior_hires": 0
+        },
+        {
+          "date": "2025-7",
+          "total_hires": 6,
+          "senior_hires": 0
+        },
+        {
+          "date": "2025-8",
+          "total_hires": 5,
+          "senior_hires": 0
+        },
+        {
+          "date": "2025-9",
+          "total_hires": 6,
+          "senior_hires": 0
+        },
+        {
+          "date": "2025-10",
+          "total_hires": 3,
+          "senior_hires": 0
+        },
+        {
+          "date": "2025-11",
+          "total_hires": 1,
+          "senior_hires": 0
+        },
+        {
+          "date": "2025-12",
+          "total_hires": 2,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-1",
+          "total_hires": 9,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-2",
+          "total_hires": 7,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-3",
+          "total_hires": 9,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-4",
+          "total_hires": 20,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-5",
+          "total_hires": 7,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-6",
+          "total_hires": 18,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-7",
+          "total_hires": 14,
+          "senior_hires": 0
+        }
+      ],
+      "company_id": "90515076",
+      "hq_country": "US",
+      "industries": [
+        "Software Development"
+      ],
+      "description": "Follow for regular updates of Agentic AI Automation and Quality. https://github.com/vivekkrishna/semantic-conflicts-benchmark",
+      "specialties": "Agentic AI, Artificial Intelligence, Machine Learning, AI Quality, Responsible AI, Recommendation Systems",
+      "company_name": "AI Automation",
+      "funding_info": {
+        "crunchbase_url": null,
+        "num_funding_rounds": null,
+        "last_funding_round_type": null,
+        "last_funding_round_year": null,
+        "last_funding_round_month": null,
+        "last_funding_round_amount": null,
+        "last_funding_round_currency": null
+      },
+      "hiring_trend": [
+        {
+          "date": "2026-3",
+          "label": "Mar",
+          "total_hires": 9,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-4",
+          "label": "Apr",
+          "total_hires": 20,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-5",
+          "label": "May",
+          "total_hires": 7,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-6",
+          "label": "Jun",
+          "total_hires": 18,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-7",
+          "label": "Jul",
+          "total_hires": 14,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-8",
+          "label": "Aug",
+          "total_hires": 0,
+          "senior_hires": 0
+        }
+      ],
+      "linkedin_url": "https://www.linkedin.com/company/appliedaiautomation/",
+      "year_founded": 2022,
+      "hq_postalcode": "98101",
+      "employee_count": 206,
+      "employee_range": "0-1",
+      "follower_count": 248126,
+      "hq_full_address": "Seattle, Washington 98101, US",
+      "total_employees": 206,
+      "headcount_growth": {
+        "1y": "79%",
+        "2y": "190%",
+        "6m": "45%"
+      },
+      "headcount_by_month": [
+        {
+          "date": "2024-8-1",
+          "employee_count": 71
+        },
+        {
+          "date": "2024-9-1",
+          "employee_count": 70
+        },
+        {
+          "date": "2024-10-1",
+          "employee_count": 71
+        },
+        {
+          "date": "2024-11-1",
+          "employee_count": 71
+        },
+        {
+          "date": "2024-12-1",
+          "employee_count": 77
+        },
+        {
+          "date": "2025-1-1",
+          "employee_count": 84
+        },
+        {
+          "date": "2025-2-1",
+          "employee_count": 89
+        },
+        {
+          "date": "2025-3-1",
+          "employee_count": 92
+        },
+        {
+          "date": "2025-4-1",
+          "employee_count": 95
+        },
+        {
+          "date": "2025-5-1",
+          "employee_count": 100
+        },
+        {
+          "date": "2025-6-1",
+          "employee_count": 104
+        },
+        {
+          "date": "2025-7-1",
+          "employee_count": 110
+        },
+        {
+          "date": "2025-8-1",
+          "employee_count": 115
+        },
+        {
+          "date": "2025-9-1",
+          "employee_count": 121
+        },
+        {
+          "date": "2025-10-1",
+          "employee_count": 124
+        },
+        {
+          "date": "2025-11-1",
+          "employee_count": 125
+        },
+        {
+          "date": "2025-12-1",
+          "employee_count": 127
+        },
+        {
+          "date": "2026-1-1",
+          "employee_count": 135
+        },
+        {
+          "date": "2026-2-1",
+          "employee_count": 142
+        },
+        {
+          "date": "2026-3-1",
+          "employee_count": 151
+        },
+        {
+          "date": "2026-4-1",
+          "employee_count": 171
+        },
+        {
+          "date": "2026-5-1",
+          "employee_count": 176
+        },
+        {
+          "date": "2026-6-1",
+          "employee_count": 192
+        },
+        {
+          "date": "2026-7-1",
+          "employee_count": 206
+        },
+        {
+          "date": "2026-8-1",
+          "employee_count": 206
+        }
+      ],
+      "total_job_openings": 0,
+      "job_openings_growth": {},
+      "senior_hiring_trend": [
+        {
+          "date": "2026-3",
+          "label": "Mar",
+          "total_hires": 9,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-4",
+          "label": "Apr",
+          "total_hires": 20,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-5",
+          "label": "May",
+          "total_hires": 7,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-6",
+          "label": "Jun",
+          "total_hires": 18,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-7",
+          "label": "Jul",
+          "total_hires": 14,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-8",
+          "label": "Aug",
+          "total_hires": 0,
+          "senior_hires": 0
+        }
+      ],
+      "affiliated_companies": [
+        {
+          "name": "goodbrands.ai",
+          "company_id": "96581355",
+          "linkedin_url": "https://www.linkedin.com/company/goodbrandsai/"
+        }
+      ],
+      "headcount_by_function": {
+        "Sales": {
+          "count": 20,
+          "percentage": 10
+        },
+        "Research": {
+          "count": 4,
+          "percentage": 2
+        },
+        "Education": {
+          "count": 6,
+          "percentage": 3
+        },
+        "Marketing": {
+          "count": 21,
+          "percentage": 10
+        },
+        "Operations": {
+          "count": 11,
+          "percentage": 5
+        },
+        "Engineering": {
+          "count": 43,
+          "percentage": 21
+        },
+        "Administrative": {
+          "count": 13,
+          "percentage": 6
+        },
+        "Entrepreneurship": {
+          "count": 5,
+          "percentage": 2
+        },
+        "Healthcare Services": {
+          "count": 13,
+          "percentage": 6
+        },
+        "Business Development": {
+          "count": 20,
+          "percentage": 10
+        },
+        "Information Technology": {
+          "count": 4,
+          "percentage": 2
+        },
+        "Media and Communication": {
+          "count": 5,
+          "percentage": 2
+        }
+      },
+      "median_employee_tenure": 1.2,
+      "job_openings_by_function": [],
+      "headcount_growth_by_function": {
+        "Sales": {
+          "1y": "67%",
+          "6m": "33%"
+        },
+        "Research": {
+          "1y": "33%",
+          "6m": "33%"
+        },
+        "Education": {
+          "1y": "20%",
+          "6m": "20%"
+        },
+        "Marketing": {
+          "1y": "62%",
+          "6m": "0%"
+        },
+        "Operations": {
+          "1y": "83%",
+          "6m": "10%"
+        },
+        "Engineering": {
+          "1y": "169%",
+          "6m": "105%"
+        },
+        "Administrative": {
+          "1y": "86%",
+          "6m": "44%"
+        },
+        "Entrepreneurship": {
+          "1y": "150%",
+          "6m": "150%"
+        },
+        "Healthcare Services": {
+          "1y": "0%",
+          "6m": "0%"
+        },
+        "Business Development": {
+          "1y": "233%",
+          "6m": "233%"
+        },
+        "Information Technology": {
+          "1y": "300%",
+          "6m": "300%"
+        },
+        "Media and Communication": {
+          "1y": "67%",
+          "6m": "25%"
+        }
+      },
+      "job_openings_growth_by_function": {}
+    },
+    "job_openings": {
+      "total_results": 7,
+      "used_fallback": true,
+      "platform_stats": {
+        "jobs.lever.co": 0,
+        "jobs.ashbyhq.com": 0,
+        "apply.workable.com": 0,
+        "boards.greenhouse.io": 0
+      },
+      "qualified_jobs": [
+        {
+          "date": "2 days ago",
+          "link": "https://www.linkedin.com/jobs/view/senior-ai-automation-engineer-at-appliedhire-4449454760",
+          "title": "AppliedHire hiring Senior AI automation engineer in United ...",
+          "snippet": "AI Automation Engineer/ Sr. AI Automation Engineer. Applied Systems. United ... Similar Searches. Data Warehouse Project Manager jobs. 10,365 open jobs ...",
+          "ats_platform": "FALLBACK_SERP"
+        },
+        {
+          "date": "4 days ago",
+          "link": "https://www.linkedin.com/jobs/view/ai-automation-engineer-at-jobgether-4447977781",
+          "title": "Jobgether hiring AI Automation Engineer in United States",
+          "snippet": "AI Automation Engineer/ Sr. AI Automation Engineer. Applied Systems. United ... Electrical Department Manager jobs \u00b7 Automation Test Analyst jobs \u00b7 Senior ...",
+          "ats_platform": "FALLBACK_SERP"
+        },
+        {
+          "date": "1 day ago",
+          "link": "https://www.linkedin.com/jobs/view/ai-automation-engineer-at-leadary-4450231032",
+          "title": "Leadary hiring AI Automation Engineer in United States",
+          "snippet": "AI Automation Engineer/ Sr. AI Automation Engineer. Applied Systems. United ... Electrical Department Manager jobs \u00b7 Automation Test Analyst jobs \u00b7 Senior ...",
+          "ats_platform": "FALLBACK_SERP"
+        },
+        {
+          "date": "6 hours ago",
+          "link": "https://www.indeed.com/q-ai-automation-l-remote-jobs.html",
+          "title": "Ai Automation jobs in Remote",
+          "snippet": "AI Automation Engineer (Recent Grad / Student Welcome) Part-time. Easily apply. Hexstone. Remote. $50,563.59 - $115,087.34 a year. Digging into how a client's ...",
+          "ats_platform": "FALLBACK_SERP"
+        },
+        {
+          "date": "Jul 29, 2026",
+          "link": "https://www.linkedin.com/jobs/view/senior-ai-automation-engineer-lead-manager-at-ventures-unlimited-inc-4446421834",
+          "title": "Senior AI Automation Engineer/Lead/manager - Jobs",
+          "snippet": "Apply for Senior AI Automation Engineer/Lead/manager at Ventures Unlimited Inc in Irving, TX. Full-time Mid-Senior level role.",
+          "ats_platform": "FALLBACK_SERP"
+        },
+        {
+          "date": "Jul 30, 2026",
+          "link": "https://www.linkedin.com/jobs/view/ai-automation-engineer-at-ladders-4446746680",
+          "title": "Ladders hiring AI Automation Engineer in United States",
+          "snippet": "For our client, we are seeking a AI Automation Engineer to join the team of a leader in the Information Technology space. This role will lead work at the ...",
+          "ats_platform": "FALLBACK_SERP"
+        },
+        {
+          "date": "18 hours ago",
+          "link": "https://www.linkedin.com/jobs/view/ai-automation-engineer-20684-at-somewhere-4450609898",
+          "title": "Somewhere hiring AI Automation Engineer - 20684 in ...",
+          "snippet": "AI Automation Engineer/ Sr. AI Automation Engineer. Applied Systems. United ... Electrical Department Manager jobs \u00b7 Automation Test Analyst jobs \u00b7 Senior ...",
+          "ats_platform": "FALLBACK_SERP"
+        }
+      ]
+    },
+    "full_payload": {
+      "company_name": "AI Automation",
+      "industry": "AI Automation / Agentic AI for Enterprise Operations",
+      "company_segment": "Enterprise",
+      "intent_score": 100,
+      "intent_classification": "HOT",
+      "one_line_reason": "HappyRobot secured $150M Series C funding to scale its agentic AI platform for enterprise operations, indicating significant growth and potential hiring needs.",
+      "signal_freshness": 100,
+      "tier": "High",
+      "icp_fit": "Strong",
+      "adjacent_hiring_gap": false,
+      "signals": [
+        {
+          "signal_type": "Funding Round",
+          "verbatim_quote": "HappyRobot lands $150M Series C to scale agentic AI for enterprise operations",
+          "quote_validated": true,
+          "similarity_score": 100.0,
+          "source_url": "https://tech.eu/2026/08/04/happyrobot-lands-150m-series-c-to-scale-agentic-ai-for-enterprise-operations/",
+          "recency_label": "< 30 days",
+          "days_old": 3,
+          "score_contribution": 37.5
+        },
+        {
+          "signal_type": "Funding Round",
+          "verbatim_quote": "HappyRobot has secured a Series C funding of $150 million, valuing the company at $1.2 billion (unicorn status) in 20 months.",
+          "quote_validated": true,
+          "similarity_score": 100.0,
+          "source_url": "https://www.freightwaves.com/news/happyrobot-series-c-freighttech-unicorn",
+          "recency_label": "< 30 days",
+          "days_old": 3,
+          "score_contribution": 37.5
+        },
+        {
+          "signal_type": "Expansion",
+          "verbatim_quote": "The round supports broader growth beyond logistics into industries needing complex operational coordination (insurance, energy, telecoms, airlines, etc.).",
+          "quote_validated": true,
+          "similarity_score": 100.0,
+          "source_url": "https://tech.eu/2026/08/04/happyrobot-lands-150m-series-c-to-scale-agentic-ai-for-enterprise-operations/",
+          "recency_label": "< 30 days",
+          "days_old": 3,
+          "score_contribution": 37.5
+        },
+        {
+          "signal_type": "Hiring Implication / Workforce Change",
+          "verbatim_quote": "AI agents are moving from pilots to enterprise-scale workflows, redefining operating models and workforce composition in freight/logistics.",
+          "quote_validated": true,
+          "similarity_score": 100.0,
+          "source_url": "https://www.freightwaves.com/news/happyrobot-series-c-freighttech-unicorn",
+          "recency_label": "< 30 days",
+          "days_old": 3,
+          "score_contribution": 37.5
+        }
+      ],
+      "why_now": "HappyRobot recently closed a $150 million Series C round on August 4, 2026, which will fuel its expansion into new industries and broader enterprise deployments, necessitating a rapid scale-up of its workforce.",
+      "signal_tags": [
+        {
+          "tag": "$150M Series C Funding",
+          "category": "FUNDING",
+          "color_theme": "indigo"
+        },
+        {
+          "tag": "Scale agentic AI for enterprise operations",
+          "category": "EXPANSION",
+          "color_theme": "indigo"
+        },
+        {
+          "tag": "Broader growth beyond logistics",
+          "category": "EXPANSION",
+          "color_theme": "indigo"
+        },
+        {
+          "tag": "Redefining workforce composition",
+          "category": "HIRING",
+          "color_theme": "indigo"
+        }
+      ],
+      "gemini_token_usage": "Prompt: 3418 | Output: 781 | Total: 5622",
+      "scoring_breakdown": {
+        "base_ai_score": 85,
+        "multi_category_bonus": 15.0,
+        "adjacent_hiring_bonus": 0.0,
+        "signal_categories_detected": [
+          "EXPANSION",
+          "HIRING",
+          "FUNDING"
+        ],
+        "final_math_score": 100
+      },
+      "ai_verdict": "HappyRobot is a rapidly growing AI automation company that recently secured a substantial $150 million Series C funding round, achieving unicorn status. This significant capital injection is earmarked for scaling its agentic AI platform across various enterprise sectors and expanding beyond its initial logistics focus. The company's aggressive growth trajectory and the explicit mention of 'redefining operating models and workforce composition' strongly suggest an immediate and substantial need for recruitment services to build out its teams. This is a very good business to reach out to for recruitment services.",
+      "raw_gemini_output": {
+        "company_name": "AI Automation",
+        "industry": "AI Automation / Agentic AI for Enterprise Operations",
+        "company_segment": "Enterprise",
+        "intent_score": 85,
+        "intent_classification": "HOT",
+        "one_line_reason": "HappyRobot secured $150M Series C funding to scale its agentic AI platform for enterprise operations, indicating significant growth and potential hiring needs.",
+        "why_now": "HappyRobot recently closed a $150 million Series C round on August 4, 2026, which will fuel its expansion into new industries and broader enterprise deployments, necessitating a rapid scale-up of its workforce.",
+        "adjacent_hiring_gap": false,
+        "signal_tags": [
+          {
+            "tag": "$150M Series C Funding",
+            "category": "FUNDING"
+          },
+          {
+            "tag": "Scale agentic AI for enterprise operations",
+            "category": "EXPANSION"
+          },
+          {
+            "tag": "Broader growth beyond logistics",
+            "category": "EXPANSION"
+          },
+          {
+            "tag": "Redefining workforce composition",
+            "category": "HIRING"
+          }
+        ],
+        "signals": [
+          {
+            "signal_type": "Funding Round",
+            "verbatim_quote": "HappyRobot lands $150M Series C to scale agentic AI for enterprise operations",
+            "source_post_index": 0,
+            "event_date": "2026-08-04",
+            "is_grant": false
+          },
+          {
+            "signal_type": "Funding Round",
+            "verbatim_quote": "HappyRobot has secured a Series C funding of $150 million, valuing the company at $1.2 billion (unicorn status) in 20 months.",
+            "source_post_index": 1,
+            "event_date": "2026-08-04",
+            "is_grant": false
+          },
+          {
+            "signal_type": "Expansion",
+            "verbatim_quote": "The round supports broader growth beyond logistics into industries needing complex operational coordination (insurance, energy, telecoms, airlines, etc.).",
+            "source_post_index": 0,
+            "event_date": "2026-08-04",
+            "is_grant": false
+          },
+          {
+            "signal_type": "Hiring Implication / Workforce Change",
+            "verbatim_quote": "AI agents are moving from pilots to enterprise-scale workflows, redefining operating models and workforce composition in freight/logistics.",
+            "source_post_index": 1,
+            "event_date": "2026-08-04",
+            "is_grant": false
+          }
+        ],
+        "ai_verdict": "HappyRobot is a rapidly growing AI automation company that recently secured a substantial $150 million Series C funding round, achieving unicorn status. This significant capital injection is earmarked for scaling its agentic AI platform across various enterprise sectors and expanding beyond its initial logistics focus. The company's aggressive growth trajectory and the explicit mention of 'redefining operating models and workforce composition' strongly suggest an immediate and substantial need for recruitment services to build out its teams. This is a very good business to reach out to for recruitment services.",
+        "gemini_token_usage": {
+          "prompt_tokens": 3418,
+          "completion_tokens": 781,
+          "thinking_tokens": 0,
+          "total_tokens": 5622,
+          "raw_usage_metadata": {
+            "cached_content_token_count": null,
+            "candidates_token_count": 781,
+            "prompt_token_count": 3418,
+            "total_token_count": 5622
+          }
+        }
+      },
+      "id": "1fdbcf9a-bc45-4319-8688-e4da800578f8",
+      "domain": "askreferral.io",
+      "employee_count": 206,
+      "funding_stage": "Venture Backed",
+      "annual_revenue": "5000000-9999999",
+      "badge": "new_today",
+      "confidence": {
+        "label": "Verified Intention",
+        "color": "emerald",
+        "verified": 4,
+        "total": 4
+      },
+      "dns_audit": {
+        "spf": "Valid",
+        "dkim": "Missing",
+        "dmarc": "Missing",
+        "issues": [
+          "askreferral.io lacks a DMARC record - zero delivery visibility or sender spoofing safety blocks.",
+          "askreferral.io missing common cryptographic DKIM record configurations."
+        ]
+      },
+      "contacts": [
+        {
+          "name": "Nate Herk",
+          "title": "Founder & CEO @ Uppit AI",
+          "email": "nate.herk@askreferral.io",
+          "confidence": "generated",
+          "source": "linkedin_serper"
+        },
+        {
+          "name": "Cameron Sullivan",
+          "title": "Owner @ Techify AI | AI-Driven Strategies",
+          "email": "cameron.sullivan@askreferral.io",
+          "confidence": "generated",
+          "source": "linkedin_serper"
+        },
+        {
+          "name": "Steve Deol",
+          "title": "\ud83d\ude80 CEO & Co-Founder @ Drive By Automation AI",
+          "email": "steve.deol@askreferral.io",
+          "confidence": "generated",
+          "source": "linkedin_serper"
+        },
+        {
+          "name": "Jeff C.",
+          "title": "Enterprise AI Transformation Leader | From Zero to ...",
+          "email": "jeff.c.@askreferral.io",
+          "confidence": "generated",
+          "source": "linkedin_serper"
+        },
+        {
+          "name": "Mike Futia",
+          "title": "AI & Automation for DTC Brands & Agencies",
+          "email": "mike.futia@askreferral.io",
+          "confidence": "generated",
+          "source": "linkedin_serper"
+        },
+        {
+          "name": "shawn gregg",
+          "title": "Founder @ Neuronic AI Incorporated",
+          "email": "shawn.gregg@askreferral.io",
+          "confidence": "generated",
+          "source": "linkedin_serper"
+        },
+        {
+          "name": "Nikola Novella",
+          "title": "Founder of American AI || Building Mission ...",
+          "email": "nikola.novella@askreferral.io",
+          "confidence": "generated",
+          "source": "linkedin_serper"
+        },
+        {
+          "name": "Pascal BORNET",
+          "title": "#1 AI & Automation Thought Leader",
+          "email": "pascal.bornet@askreferral.io",
+          "confidence": "generated",
+          "source": "linkedin_serper"
+        },
+        {
+          "name": "Mike M.",
+          "title": "AI Automation CEO | Building and Scaling ...",
+          "email": "mike.m.@askreferral.io",
+          "confidence": "generated",
+          "source": "linkedin_serper"
+        },
+        {
+          "name": "Yashica Jain",
+          "title": "Founder & CEO @ Automatez AI",
+          "email": "yashica.jain@askreferral.io",
+          "confidence": "generated",
+          "source": "linkedin_serper"
+        }
+      ],
+      "last_updated": "2026-08-07T13:07:33.040239+00:00",
+      "groq_token_usage": "Prompt: 3418 | Output: 781 | Total: 5622",
+      "mistral_token_usage": "Prompt: 3418 | Output: 781 | Total: 5622",
+      "company_linkedin_id": "90515076",
+      "logo_url": "https://media.licdn.com/dms/image/v2/D560BAQFEbk-GFy1xiw/company-logo_100_100/B56Z1_SU80I8AQ-/0/1775957005095/appliedaiautomation_logo?e=1787788800&v=beta&t=k00QAaiDD21uGLSwLiNDM8ZavxnOq2kpFXXLmjKoMv8",
+      "tagline": "Follow for most updated info on Applied AI Automation and promote your AI research and Applied AI Solutions here free",
+      "description": "Follow for regular updates of Agentic AI Automation and Quality. https://github.com/vivekkrishna/semantic-conflicts-benchmark",
+      "hq_address": "Seattle, Washington 98101, US",
+      "locations": [
+        {
+          "city": "Seattle",
+          "country": "US",
+          "full_address": "Seattle, Washington 98101, US",
+          "is_headquarter": true,
+          "line1": "",
+          "line2": "",
+          "region": "Washington",
+          "zipcode": "98101"
+        },
+        {
+          "city": "Seattle",
+          "country": "US",
+          "full_address": "Seattle, WA 98121, US",
+          "is_headquarter": false,
+          "line1": "",
+          "line2": "",
+          "region": "WA",
+          "zipcode": "98121"
+        },
+        {
+          "city": "Hyderabad",
+          "country": "IN",
+          "full_address": "Hyderabad, IN",
+          "is_headquarter": false,
+          "line1": "",
+          "line2": "",
+          "region": "",
+          "zipcode": ""
+        },
+        {
+          "city": "Sholinganallur",
+          "country": "IN",
+          "full_address": "Perungudi Industrial Road, Sholinganallur, Tamil Nadu 600096, IN",
+          "is_headquarter": false,
+          "line1": "Perungudi Industrial Road",
+          "line2": "",
+          "region": "Tamil Nadu",
+          "zipcode": "600096"
+        }
+      ],
+      "year_founded": 2022,
+      "follower_count": 248126,
+      "company_insights": {
+        "company_name": "AI Automation",
+        "company_id": "90515076",
+        "tagline": "Follow for most updated info on Applied AI Automation and promote your AI research and Applied AI Solutions here free",
+        "description": "Follow for regular updates of Agentic AI Automation and Quality. https://github.com/vivekkrishna/semantic-conflicts-benchmark",
+        "logo_url": "https://media.licdn.com/dms/image/v2/D560BAQFEbk-GFy1xiw/company-logo_100_100/B56Z1_SU80I8AQ-/0/1775957005095/appliedaiautomation_logo?e=1787788800&v=beta&t=k00QAaiDD21uGLSwLiNDM8ZavxnOq2kpFXXLmjKoMv8",
+        "linkedin_url": "https://www.linkedin.com/company/appliedaiautomation/",
+        "website": "https://github.com/vivekkrishna/semantic-conflicts-benchmark",
+        "hq_full_address": "Seattle, Washington 98101, US",
+        "hq_city": "Seattle",
+        "hq_region": "Washington",
+        "hq_country": "US",
+        "hq_postalcode": "98101",
+        "locations": [
+          {
+            "city": "Seattle",
+            "country": "US",
+            "full_address": "Seattle, Washington 98101, US",
+            "is_headquarter": true,
+            "line1": "",
+            "line2": "",
+            "region": "Washington",
+            "zipcode": "98101"
+          },
+          {
+            "city": "Seattle",
+            "country": "US",
+            "full_address": "Seattle, WA 98121, US",
+            "is_headquarter": false,
+            "line1": "",
+            "line2": "",
+            "region": "WA",
+            "zipcode": "98121"
+          },
+          {
+            "city": "Hyderabad",
+            "country": "IN",
+            "full_address": "Hyderabad, IN",
+            "is_headquarter": false,
+            "line1": "",
+            "line2": "",
+            "region": "",
+            "zipcode": ""
+          },
+          {
+            "city": "Sholinganallur",
+            "country": "IN",
+            "full_address": "Perungudi Industrial Road, Sholinganallur, Tamil Nadu 600096, IN",
+            "is_headquarter": false,
+            "line1": "Perungudi Industrial Road",
+            "line2": "",
+            "region": "Tamil Nadu",
+            "zipcode": "600096"
+          }
+        ],
+        "phone": "",
+        "email": "",
+        "domain": "github.com",
+        "industries": [
+          "Software Development"
+        ],
+        "specialties": "Agentic AI, Artificial Intelligence, Machine Learning, AI Quality, Responsible AI, Recommendation Systems",
+        "year_founded": 2022,
+        "funding_info": {
+          "crunchbase_url": null,
+          "last_funding_round_amount": null,
+          "last_funding_round_currency": null,
+          "last_funding_round_month": null,
+          "last_funding_round_type": null,
+          "last_funding_round_year": null,
+          "num_funding_rounds": null
+        },
+        "employee_count": 206,
+        "employee_range": "0-1",
+        "follower_count": 248126,
+        "affiliated_companies": [
+          {
+            "company_id": "96581355",
+            "linkedin_url": "https://www.linkedin.com/company/goodbrandsai/",
+            "name": "goodbrands.ai"
+          }
+        ],
+        "headcount_by_function": {
+          "Administrative": {
+            "count": 13,
+            "percentage": 6
+          },
+          "Business Development": {
+            "count": 20,
+            "percentage": 10
+          },
+          "Education": {
+            "count": 6,
+            "percentage": 3
+          },
+          "Engineering": {
+            "count": 43,
+            "percentage": 21
+          },
+          "Entrepreneurship": {
+            "count": 5,
+            "percentage": 2
+          },
+          "Healthcare Services": {
+            "count": 13,
+            "percentage": 6
+          },
+          "Information Technology": {
+            "count": 4,
+            "percentage": 2
+          },
+          "Marketing": {
+            "count": 21,
+            "percentage": 10
+          },
+          "Media and Communication": {
+            "count": 5,
+            "percentage": 2
+          },
+          "Operations": {
+            "count": 11,
+            "percentage": 5
+          },
+          "Research": {
+            "count": 4,
+            "percentage": 2
+          },
+          "Sales": {
+            "count": 20,
+            "percentage": 10
+          }
+        },
+        "headcount_by_month": [
+          {
+            "date": "2024-8-1",
+            "employee_count": 71
+          },
+          {
+            "date": "2024-9-1",
+            "employee_count": 70
+          },
+          {
+            "date": "2024-10-1",
+            "employee_count": 71
+          },
+          {
+            "date": "2024-11-1",
+            "employee_count": 71
+          },
+          {
+            "date": "2024-12-1",
+            "employee_count": 77
+          },
+          {
+            "date": "2025-1-1",
+            "employee_count": 84
+          },
+          {
+            "date": "2025-2-1",
+            "employee_count": 89
+          },
+          {
+            "date": "2025-3-1",
+            "employee_count": 92
+          },
+          {
+            "date": "2025-4-1",
+            "employee_count": 95
+          },
+          {
+            "date": "2025-5-1",
+            "employee_count": 100
+          },
+          {
+            "date": "2025-6-1",
+            "employee_count": 104
+          },
+          {
+            "date": "2025-7-1",
+            "employee_count": 110
+          },
+          {
+            "date": "2025-8-1",
+            "employee_count": 115
+          },
+          {
+            "date": "2025-9-1",
+            "employee_count": 121
+          },
+          {
+            "date": "2025-10-1",
+            "employee_count": 124
+          },
+          {
+            "date": "2025-11-1",
+            "employee_count": 125
+          },
+          {
+            "date": "2025-12-1",
+            "employee_count": 127
+          },
+          {
+            "date": "2026-1-1",
+            "employee_count": 135
+          },
+          {
+            "date": "2026-2-1",
+            "employee_count": 142
+          },
+          {
+            "date": "2026-3-1",
+            "employee_count": 151
+          },
+          {
+            "date": "2026-4-1",
+            "employee_count": 171
+          },
+          {
+            "date": "2026-5-1",
+            "employee_count": 176
+          },
+          {
+            "date": "2026-6-1",
+            "employee_count": 192
+          },
+          {
+            "date": "2026-7-1",
+            "employee_count": 206
+          },
+          {
+            "date": "2026-8-1",
+            "employee_count": 206
+          }
+        ],
+        "headcount_growth": {
+          "1y": "79%",
+          "2y": "190%",
+          "6m": "45%"
+        },
+        "headcount_growth_by_function": {
+          "Administrative": {
+            "1y": "86%",
+            "6m": "44%"
+          },
+          "Business Development": {
+            "1y": "233%",
+            "6m": "233%"
+          },
+          "Education": {
+            "1y": "20%",
+            "6m": "20%"
+          },
+          "Engineering": {
+            "1y": "169%",
+            "6m": "105%"
+          },
+          "Entrepreneurship": {
+            "1y": "150%",
+            "6m": "150%"
+          },
+          "Healthcare Services": {
+            "1y": "0%",
+            "6m": "0%"
+          },
+          "Information Technology": {
+            "1y": "300%",
+            "6m": "300%"
+          },
+          "Marketing": {
+            "1y": "62%",
+            "6m": "0%"
+          },
+          "Media and Communication": {
+            "1y": "67%",
+            "6m": "25%"
+          },
+          "Operations": {
+            "1y": "83%",
+            "6m": "10%"
+          },
+          "Research": {
+            "1y": "33%",
+            "6m": "33%"
+          },
+          "Sales": {
+            "1y": "67%",
+            "6m": "33%"
+          }
+        },
+        "total_job_openings": 0,
+        "job_openings_by_function": [],
+        "job_openings_growth": {},
+        "job_openings_growth_by_function": {},
+        "median_employee_tenure": 1.2,
+        "new_hires": [
+          {
+            "date": "2024-8",
+            "senior_hires": 0,
+            "total_hires": 4
+          },
+          {
+            "date": "2024-10",
+            "senior_hires": 0,
+            "total_hires": 1
+          },
+          {
+            "date": "2024-12",
+            "senior_hires": 0,
+            "total_hires": 6
+          },
+          {
+            "date": "2025-1",
+            "senior_hires": 0,
+            "total_hires": 9
+          },
+          {
+            "date": "2025-2",
+            "senior_hires": 0,
+            "total_hires": 5
+          },
+          {
+            "date": "2025-3",
+            "senior_hires": 0,
+            "total_hires": 3
+          },
+          {
+            "date": "2025-4",
+            "senior_hires": 0,
+            "total_hires": 4
+          },
+          {
+            "date": "2025-5",
+            "senior_hires": 0,
+            "total_hires": 6
+          },
+          {
+            "date": "2025-6",
+            "senior_hires": 0,
+            "total_hires": 4
+          },
+          {
+            "date": "2025-7",
+            "senior_hires": 0,
+            "total_hires": 6
+          },
+          {
+            "date": "2025-8",
+            "senior_hires": 0,
+            "total_hires": 5
+          },
+          {
+            "date": "2025-9",
+            "senior_hires": 0,
+            "total_hires": 6
+          },
+          {
+            "date": "2025-10",
+            "senior_hires": 0,
+            "total_hires": 3
+          },
+          {
+            "date": "2025-11",
+            "senior_hires": 0,
+            "total_hires": 1
+          },
+          {
+            "date": "2025-12",
+            "senior_hires": 0,
+            "total_hires": 2
+          },
+          {
+            "date": "2026-1",
+            "senior_hires": 0,
+            "total_hires": 9
+          },
+          {
+            "date": "2026-2",
+            "senior_hires": 0,
+            "total_hires": 7
+          },
+          {
+            "date": "2026-3",
+            "senior_hires": 0,
+            "total_hires": 9
+          },
+          {
+            "date": "2026-4",
+            "senior_hires": 0,
+            "total_hires": 20
+          },
+          {
+            "date": "2026-5",
+            "senior_hires": 0,
+            "total_hires": 7
+          },
+          {
+            "date": "2026-6",
+            "senior_hires": 0,
+            "total_hires": 18
+          },
+          {
+            "date": "2026-7",
+            "senior_hires": 0,
+            "total_hires": 14
+          }
+        ],
+        "hiring_trend": [
+          {
+            "date": "2026-3",
+            "label": "Mar",
+            "senior_hires": 0,
+            "total_hires": 9
+          },
+          {
+            "date": "2026-4",
+            "label": "Apr",
+            "senior_hires": 0,
+            "total_hires": 20
+          },
+          {
+            "date": "2026-5",
+            "label": "May",
+            "senior_hires": 0,
+            "total_hires": 7
+          },
+          {
+            "date": "2026-6",
+            "label": "Jun",
+            "senior_hires": 0,
+            "total_hires": 18
+          },
+          {
+            "date": "2026-7",
+            "label": "Jul",
+            "senior_hires": 0,
+            "total_hires": 14
+          },
+          {
+            "date": "2026-8",
+            "label": "Aug",
+            "senior_hires": 0,
+            "total_hires": 0
+          }
+        ],
+        "senior_hiring_trend": [
+          {
+            "date": "2026-3",
+            "label": "Mar",
+            "senior_hires": 0,
+            "total_hires": 9
+          },
+          {
+            "date": "2026-4",
+            "label": "Apr",
+            "senior_hires": 0,
+            "total_hires": 20
+          },
+          {
+            "date": "2026-5",
+            "label": "May",
+            "senior_hires": 0,
+            "total_hires": 7
+          },
+          {
+            "date": "2026-6",
+            "label": "Jun",
+            "senior_hires": 0,
+            "total_hires": 18
+          },
+          {
+            "date": "2026-7",
+            "label": "Jul",
+            "senior_hires": 0,
+            "total_hires": 14
+          },
+          {
+            "date": "2026-8",
+            "label": "Aug",
+            "senior_hires": 0,
+            "total_hires": 0
+          }
+        ],
+        "total_employees": 206
+      },
+      "job_openings": {
+        "total_results": 7,
+        "used_fallback": true,
+        "platform_stats": {
+          "jobs.ashbyhq.com": 0,
+          "boards.greenhouse.io": 0,
+          "jobs.lever.co": 0,
+          "apply.workable.com": 0
+        },
+        "qualified_jobs": [
+          {
+            "title": "AppliedHire hiring Senior AI automation engineer in United ...",
+            "link": "https://www.linkedin.com/jobs/view/senior-ai-automation-engineer-at-appliedhire-4449454760",
+            "snippet": "AI Automation Engineer/ Sr. AI Automation Engineer. Applied Systems. United ... Similar Searches. Data Warehouse Project Manager jobs. 10,365 open jobs ...",
+            "date": "2 days ago",
+            "ats_platform": "FALLBACK_SERP"
+          },
+          {
+            "title": "Jobgether hiring AI Automation Engineer in United States",
+            "link": "https://www.linkedin.com/jobs/view/ai-automation-engineer-at-jobgether-4447977781",
+            "snippet": "AI Automation Engineer/ Sr. AI Automation Engineer. Applied Systems. United ... Electrical Department Manager jobs \u00b7 Automation Test Analyst jobs \u00b7 Senior ...",
+            "date": "4 days ago",
+            "ats_platform": "FALLBACK_SERP"
+          },
+          {
+            "title": "Leadary hiring AI Automation Engineer in United States",
+            "link": "https://www.linkedin.com/jobs/view/ai-automation-engineer-at-leadary-4450231032",
+            "snippet": "AI Automation Engineer/ Sr. AI Automation Engineer. Applied Systems. United ... Electrical Department Manager jobs \u00b7 Automation Test Analyst jobs \u00b7 Senior ...",
+            "date": "1 day ago",
+            "ats_platform": "FALLBACK_SERP"
+          },
+          {
+            "title": "Ai Automation jobs in Remote",
+            "link": "https://www.indeed.com/q-ai-automation-l-remote-jobs.html",
+            "snippet": "AI Automation Engineer (Recent Grad / Student Welcome) Part-time. Easily apply. Hexstone. Remote. $50,563.59 - $115,087.34 a year. Digging into how a client's ...",
+            "date": "6 hours ago",
+            "ats_platform": "FALLBACK_SERP"
+          },
+          {
+            "title": "Senior AI Automation Engineer/Lead/manager - Jobs",
+            "link": "https://www.linkedin.com/jobs/view/senior-ai-automation-engineer-lead-manager-at-ventures-unlimited-inc-4446421834",
+            "snippet": "Apply for Senior AI Automation Engineer/Lead/manager at Ventures Unlimited Inc in Irving, TX. Full-time Mid-Senior level role.",
+            "date": "Jul 29, 2026",
+            "ats_platform": "FALLBACK_SERP"
+          },
+          {
+            "title": "Ladders hiring AI Automation Engineer in United States",
+            "link": "https://www.linkedin.com/jobs/view/ai-automation-engineer-at-ladders-4446746680",
+            "snippet": "For our client, we are seeking a AI Automation Engineer to join the team of a leader in the Information Technology space. This role will lead work at the ...",
+            "date": "Jul 30, 2026",
+            "ats_platform": "FALLBACK_SERP"
+          },
+          {
+            "title": "Somewhere hiring AI Automation Engineer - 20684 in ...",
+            "link": "https://www.linkedin.com/jobs/view/ai-automation-engineer-20684-at-somewhere-4450609898",
+            "snippet": "AI Automation Engineer/ Sr. AI Automation Engineer. Applied Systems. United ... Electrical Department Manager jobs \u00b7 Automation Test Analyst jobs \u00b7 Senior ...",
+            "date": "18 hours ago",
+            "ats_platform": "FALLBACK_SERP"
+          }
+        ]
+      }
+    },
+    "last_updated": "2026-08-07T13:10:58.339680"
+  }
