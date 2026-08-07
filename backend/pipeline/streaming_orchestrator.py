@@ -575,6 +575,48 @@ async def process_single_company(
             # 2. Fetch LinkedIn Insights via Apify if ID resolved
             if company_id:
                 insights = await fetch_linkedin_company_insights(company_id, company_slug)
+                if isinstance(insights, dict):
+                    now_dt = datetime.now()
+                    hires_by_date = {}
+                    new_hires_raw = insights.get("new_hires", [])
+                    if isinstance(new_hires_raw, list):
+                        for item in new_hires_raw:
+                            d_str = str(item.get("date", "")).strip()
+                            if d_str:
+                                parts = d_str.split("-")
+                                if len(parts) >= 2:
+                                    try:
+                                        norm_key = f"{int(parts[0])}-{int(parts[1])}"
+                                        hires_by_date[norm_key] = item
+                                    except Exception:
+                                        pass
+
+                    trend = []
+                    for i in range(5, -1, -1):
+                        m_val = now_dt.month - i
+                        y_val = now_dt.year
+                        while m_val <= 0:
+                            m_val += 12
+                            y_val -= 1
+
+                        month_dt = datetime(y_val, m_val, 1)
+                        date_key = f"{y_val}-{m_val}"
+                        label = month_dt.strftime("%b")
+
+                        match_item = hires_by_date.get(date_key, {})
+                        s_hires = match_item.get("senior_hires", 0)
+                        t_hires = match_item.get("total_hires", 0)
+
+                        trend.append({
+                            "date": date_key,
+                            "label": label,
+                            "senior_hires": s_hires,
+                            "total_hires": t_hires
+                        })
+
+                    insights["hiring_trend"] = trend
+                    insights["senior_hiring_trend"] = trend
+
                 full_lead_payload["company_insights"] = insights
             else:
                 full_lead_payload["company_insights"] = None

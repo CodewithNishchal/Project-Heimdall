@@ -1,0 +1,3101 @@
+{
+  "Valence": {
+    "company_name": "Valence",
+    "domain": "getvalence.com",
+    "linkedin_id": "77018625",
+    "raw_file": "scratch\\apify_insights_getvalence.json",
+    "insights_summary": {
+      "total_employees": 10,
+      "median_employee_tenure": 3.8,
+      "new_hires_count": 5
+    },
+    "payload": [
+      {
+        "data": {
+          "headcount_by_function": {
+            "Business Development": {
+              "count": 3,
+              "percentage": 30
+            },
+            "Engineering": {
+              "count": 3,
+              "percentage": 30
+            },
+            "Finance": {
+              "count": 1,
+              "percentage": 10
+            },
+            "Information Technology": {
+              "count": 1,
+              "percentage": 10
+            },
+            "Marketing": {
+              "count": 1,
+              "percentage": 10
+            },
+            "Operations": {
+              "count": 1,
+              "percentage": 10
+            },
+            "Product Management": {
+              "count": 1,
+              "percentage": 10
+            },
+            "Program and Project Management": {
+              "count": 1,
+              "percentage": 10
+            }
+          },
+          "headcount_by_month": [
+            {
+              "date": "2024-8-1",
+              "employee_count": 14
+            },
+            {
+              "date": "2024-9-1",
+              "employee_count": 14
+            },
+            {
+              "date": "2024-10-1",
+              "employee_count": 13
+            },
+            {
+              "date": "2024-11-1",
+              "employee_count": 13
+            },
+            {
+              "date": "2024-12-1",
+              "employee_count": 14
+            },
+            {
+              "date": "2025-1-1",
+              "employee_count": 15
+            },
+            {
+              "date": "2025-2-1",
+              "employee_count": 16
+            },
+            {
+              "date": "2025-3-1",
+              "employee_count": 16
+            },
+            {
+              "date": "2025-4-1",
+              "employee_count": 15
+            },
+            {
+              "date": "2025-5-1",
+              "employee_count": 14
+            },
+            {
+              "date": "2025-6-1",
+              "employee_count": 14
+            },
+            {
+              "date": "2025-7-1",
+              "employee_count": 14
+            },
+            {
+              "date": "2025-8-1",
+              "employee_count": 14
+            },
+            {
+              "date": "2025-9-1",
+              "employee_count": 14
+            },
+            {
+              "date": "2025-10-1",
+              "employee_count": 13
+            },
+            {
+              "date": "2025-11-1",
+              "employee_count": 13
+            },
+            {
+              "date": "2025-12-1",
+              "employee_count": 13
+            },
+            {
+              "date": "2026-1-1",
+              "employee_count": 11
+            },
+            {
+              "date": "2026-2-1",
+              "employee_count": 12
+            },
+            {
+              "date": "2026-3-1",
+              "employee_count": 11
+            },
+            {
+              "date": "2026-4-1",
+              "employee_count": 11
+            },
+            {
+              "date": "2026-5-1",
+              "employee_count": 11
+            },
+            {
+              "date": "2026-6-1",
+              "employee_count": 10
+            },
+            {
+              "date": "2026-7-1",
+              "employee_count": 10
+            },
+            {
+              "date": "2026-8-1",
+              "employee_count": 10
+            }
+          ],
+          "headcount_growth": {
+            "1y": "-29%",
+            "2y": "-29%",
+            "6m": "-17%"
+          },
+          "headcount_growth_by_function": {
+            "Business Development": {
+              "1y": "0%",
+              "6m": "0%"
+            },
+            "Engineering": {
+              "1y": "-50%",
+              "6m": "0%"
+            },
+            "Finance": {
+              "1y": "-50%",
+              "6m": "-50%"
+            },
+            "Information Technology": {
+              "1y": "0%",
+              "6m": "0%"
+            },
+            "Marketing": {
+              "1y": "0%",
+              "6m": "0%"
+            },
+            "Operations": {
+              "6m": "0%"
+            },
+            "Product Management": {
+              "1y": "0%",
+              "6m": "0%"
+            },
+            "Program and Project Management": {}
+          },
+          "job_openings": {
+            "job_openings_by_function": [
+              {
+                "count_by_function": {
+                  "Administrative": {
+                    "count": 9,
+                    "percentage": 6
+                  },
+                  "Arts and Design": {
+                    "count": 10,
+                    "percentage": 7
+                  },
+                  "Business Development": {
+                    "count": 4,
+                    "percentage": 3
+                  },
+                  "Engineering": {
+                    "count": 14,
+                    "percentage": 9
+                  },
+                  "Human Resources": {
+                    "count": 3,
+                    "percentage": 2
+                  },
+                  "Information Technology": {
+                    "count": 3,
+                    "percentage": 2
+                  },
+                  "Operations": {
+                    "count": 35,
+                    "percentage": 24
+                  },
+                  "Program and Project Management": {
+                    "count": 3,
+                    "percentage": 2
+                  },
+                  "Quality Assurance": {
+                    "count": 15,
+                    "percentage": 10
+                  },
+                  "Research": {
+                    "count": 40,
+                    "percentage": 27
+                  },
+                  "Support": {
+                    "count": 6,
+                    "percentage": 4
+                  }
+                },
+                "date": "2026-6",
+                "total_count": 148
+              },
+              {
+                "count_by_function": {
+                  "Administrative": {
+                    "count": 2,
+                    "percentage": 2
+                  },
+                  "Arts and Design": {
+                    "count": 4,
+                    "percentage": 4
+                  },
+                  "Business Development": {
+                    "count": 0,
+                    "percentage": 0
+                  },
+                  "Engineering": {
+                    "count": 4,
+                    "percentage": 4
+                  },
+                  "Human Resources": {
+                    "count": 3,
+                    "percentage": 3
+                  },
+                  "Information Technology": {
+                    "count": 0,
+                    "percentage": 0
+                  },
+                  "Operations": {
+                    "count": 29,
+                    "percentage": 30
+                  },
+                  "Program and Project Management": {
+                    "count": 0,
+                    "percentage": 0
+                  },
+                  "Quality Assurance": {
+                    "count": 10,
+                    "percentage": 10
+                  },
+                  "Research": {
+                    "count": 41,
+                    "percentage": 42
+                  },
+                  "Support": {
+                    "count": 2,
+                    "percentage": 2
+                  }
+                },
+                "date": "2026-3",
+                "total_count": 97
+              },
+              {
+                "count_by_function": {
+                  "Administrative": {
+                    "count": 0,
+                    "percentage": 0
+                  },
+                  "Arts and Design": {
+                    "count": 2,
+                    "percentage": 2
+                  },
+                  "Business Development": {
+                    "count": 1,
+                    "percentage": 1
+                  },
+                  "Engineering": {
+                    "count": 12,
+                    "percentage": 13
+                  },
+                  "Human Resources": {
+                    "count": 2,
+                    "percentage": 2
+                  },
+                  "Information Technology": {
+                    "count": 4,
+                    "percentage": 4
+                  },
+                  "Operations": {
+                    "count": 21,
+                    "percentage": 24
+                  },
+                  "Program and Project Management": {
+                    "count": 0,
+                    "percentage": 0
+                  },
+                  "Quality Assurance": {
+                    "count": 8,
+                    "percentage": 9
+                  },
+                  "Research": {
+                    "count": 33,
+                    "percentage": 37
+                  },
+                  "Support": {
+                    "count": 0,
+                    "percentage": 0
+                  }
+                },
+                "date": "2025-12",
+                "total_count": 89
+              }
+            ],
+            "job_openings_growth": {
+              "3m": "53%",
+              "6m": "66%"
+            },
+            "job_openings_growth_by_function": {
+              "Administrative": {
+                "3m": "350%",
+                "6m": "900%"
+              },
+              "Arts and Design": {
+                "3m": "150%",
+                "6m": "400%"
+              },
+              "Business Development": {
+                "3m": "400%",
+                "6m": "300%"
+              },
+              "Engineering": {
+                "3m": "250%",
+                "6m": "17%"
+              },
+              "Human Resources": {
+                "3m": "0%",
+                "6m": "50%"
+              },
+              "Information Technology": {
+                "3m": "300%",
+                "6m": "-25%"
+              },
+              "Operations": {
+                "3m": "21%",
+                "6m": "67%"
+              },
+              "Program and Project Management": {
+                "3m": "300%",
+                "6m": "300%"
+              },
+              "Quality Assurance": {
+                "3m": "50%",
+                "6m": "88%"
+              },
+              "Research": {
+                "3m": "-2%",
+                "6m": "21%"
+              },
+              "Support": {
+                "3m": "200%",
+                "6m": "600%"
+              }
+            }
+          },
+          "median_employee_tenure": 3.8,
+          "new_hires": [
+            {
+              "date": "2024-11",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2024-12",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2025-1",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2025-2",
+              "senior_hires": 0,
+              "total_hires": 2
+            },
+            {
+              "date": "2026-2",
+              "senior_hires": 0,
+              "total_hires": 1
+            }
+          ],
+          "total_employees": 10
+        },
+        "message": "ok"
+      }
+    ]
+  },
+  "Jigx": {
+    "company_name": "Jigx",
+    "domain": "jigx.com",
+    "linkedin_id": "66317269",
+    "raw_file": "scratch\\apify_insights_jigx.json",
+    "insights_summary": {
+      "total_employees": 24,
+      "median_employee_tenure": 4.9,
+      "new_hires_count": 4
+    },
+    "payload": [
+      {
+        "data": {
+          "headcount_by_function": {
+            "Arts and Design": {
+              "count": 1,
+              "percentage": 4
+            },
+            "Business Development": {
+              "count": 4,
+              "percentage": 17
+            },
+            "Engineering": {
+              "count": 12,
+              "percentage": 50
+            },
+            "Marketing": {
+              "count": 1,
+              "percentage": 4
+            },
+            "Operations": {
+              "count": 1,
+              "percentage": 4
+            },
+            "Product Management": {
+              "count": 2,
+              "percentage": 8
+            },
+            "Quality Assurance": {
+              "count": 2,
+              "percentage": 8
+            },
+            "Research": {
+              "count": 1,
+              "percentage": 4
+            },
+            "Sales": {
+              "count": 1,
+              "percentage": 4
+            },
+            "Support": {
+              "count": 1,
+              "percentage": 4
+            }
+          },
+          "headcount_by_month": [
+            {
+              "date": "2024-8-1",
+              "employee_count": 32
+            },
+            {
+              "date": "2024-9-1",
+              "employee_count": 32
+            },
+            {
+              "date": "2024-10-1",
+              "employee_count": 29
+            },
+            {
+              "date": "2024-11-1",
+              "employee_count": 29
+            },
+            {
+              "date": "2024-12-1",
+              "employee_count": 28
+            },
+            {
+              "date": "2025-1-1",
+              "employee_count": 28
+            },
+            {
+              "date": "2025-2-1",
+              "employee_count": 27
+            },
+            {
+              "date": "2025-3-1",
+              "employee_count": 27
+            },
+            {
+              "date": "2025-4-1",
+              "employee_count": 26
+            },
+            {
+              "date": "2025-5-1",
+              "employee_count": 26
+            },
+            {
+              "date": "2025-6-1",
+              "employee_count": 28
+            },
+            {
+              "date": "2025-7-1",
+              "employee_count": 27
+            },
+            {
+              "date": "2025-8-1",
+              "employee_count": 27
+            },
+            {
+              "date": "2025-9-1",
+              "employee_count": 27
+            },
+            {
+              "date": "2025-10-1",
+              "employee_count": 27
+            },
+            {
+              "date": "2025-11-1",
+              "employee_count": 27
+            },
+            {
+              "date": "2025-12-1",
+              "employee_count": 26
+            },
+            {
+              "date": "2026-1-1",
+              "employee_count": 26
+            },
+            {
+              "date": "2026-2-1",
+              "employee_count": 25
+            },
+            {
+              "date": "2026-3-1",
+              "employee_count": 26
+            },
+            {
+              "date": "2026-4-1",
+              "employee_count": 23
+            },
+            {
+              "date": "2026-5-1",
+              "employee_count": 23
+            },
+            {
+              "date": "2026-6-1",
+              "employee_count": 24
+            },
+            {
+              "date": "2026-7-1",
+              "employee_count": 24
+            },
+            {
+              "date": "2026-8-1",
+              "employee_count": 24
+            }
+          ],
+          "headcount_growth": {
+            "1y": "-11%",
+            "2y": "-25%",
+            "6m": "-4%"
+          },
+          "headcount_growth_by_function": {
+            "Arts and Design": {
+              "1y": "-67%",
+              "6m": "-67%"
+            },
+            "Business Development": {
+              "1y": "0%",
+              "6m": "0%"
+            },
+            "Engineering": {
+              "1y": "-14%",
+              "6m": "-14%"
+            },
+            "Marketing": {
+              "1y": "0%",
+              "6m": "0%"
+            },
+            "Operations": {
+              "6m": "0%"
+            },
+            "Product Management": {
+              "1y": "0%",
+              "6m": "0%"
+            },
+            "Quality Assurance": {
+              "1y": "100%",
+              "6m": "100%"
+            },
+            "Research": {},
+            "Sales": {
+              "1y": "0%",
+              "6m": "0%"
+            },
+            "Support": {
+              "1y": "0%",
+              "6m": "0%"
+            }
+          },
+          "job_openings": {
+            "job_openings_by_function": [],
+            "job_openings_growth": {},
+            "job_openings_growth_by_function": {}
+          },
+          "median_employee_tenure": 4.9,
+          "new_hires": [
+            {
+              "date": "2025-6",
+              "senior_hires": 0,
+              "total_hires": 2
+            },
+            {
+              "date": "2025-10",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2026-3",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2026-6",
+              "senior_hires": 0,
+              "total_hires": 1
+            }
+          ],
+          "total_employees": 24
+        },
+        "message": "ok"
+      }
+    ]
+  },
+  "Netstock": {
+    "company_name": "Netstock",
+    "domain": "netstock.com",
+    "linkedin_id": "2195029",
+    "raw_file": "scratch\\apify_insights_netstock.json",
+    "insights_summary": {
+      "total_employees": 208,
+      "median_employee_tenure": 3.3,
+      "new_hires_count": 24
+    },
+    "payload": [
+      {
+        "data": {
+          "headcount_by_function": {
+            "Accounting": {
+              "count": 9,
+              "percentage": 4
+            },
+            "Business Development": {
+              "count": 20,
+              "percentage": 10
+            },
+            "Consulting": {
+              "count": 11,
+              "percentage": 5
+            },
+            "Engineering": {
+              "count": 19,
+              "percentage": 9
+            },
+            "Information Technology": {
+              "count": 36,
+              "percentage": 17
+            },
+            "Marketing": {
+              "count": 8,
+              "percentage": 4
+            },
+            "Operations": {
+              "count": 12,
+              "percentage": 6
+            },
+            "Product Management": {
+              "count": 4,
+              "percentage": 2
+            },
+            "Sales": {
+              "count": 45,
+              "percentage": 22
+            },
+            "Support": {
+              "count": 32,
+              "percentage": 15
+            }
+          },
+          "headcount_by_month": [
+            {
+              "date": "2024-8-1",
+              "employee_count": 149
+            },
+            {
+              "date": "2024-9-1",
+              "employee_count": 150
+            },
+            {
+              "date": "2024-10-1",
+              "employee_count": 151
+            },
+            {
+              "date": "2024-11-1",
+              "employee_count": 154
+            },
+            {
+              "date": "2024-12-1",
+              "employee_count": 157
+            },
+            {
+              "date": "2025-1-1",
+              "employee_count": 158
+            },
+            {
+              "date": "2025-2-1",
+              "employee_count": 157
+            },
+            {
+              "date": "2025-3-1",
+              "employee_count": 160
+            },
+            {
+              "date": "2025-4-1",
+              "employee_count": 166
+            },
+            {
+              "date": "2025-5-1",
+              "employee_count": 166
+            },
+            {
+              "date": "2025-6-1",
+              "employee_count": 166
+            },
+            {
+              "date": "2025-7-1",
+              "employee_count": 168
+            },
+            {
+              "date": "2025-8-1",
+              "employee_count": 172
+            },
+            {
+              "date": "2025-9-1",
+              "employee_count": 174
+            },
+            {
+              "date": "2025-10-1",
+              "employee_count": 178
+            },
+            {
+              "date": "2025-11-1",
+              "employee_count": 185
+            },
+            {
+              "date": "2025-12-1",
+              "employee_count": 188
+            },
+            {
+              "date": "2026-1-1",
+              "employee_count": 198
+            },
+            {
+              "date": "2026-2-1",
+              "employee_count": 201
+            },
+            {
+              "date": "2026-3-1",
+              "employee_count": 201
+            },
+            {
+              "date": "2026-4-1",
+              "employee_count": 203
+            },
+            {
+              "date": "2026-5-1",
+              "employee_count": 208
+            },
+            {
+              "date": "2026-6-1",
+              "employee_count": 207
+            },
+            {
+              "date": "2026-7-1",
+              "employee_count": 208
+            },
+            {
+              "date": "2026-8-1",
+              "employee_count": 208
+            }
+          ],
+          "headcount_growth": {
+            "1y": "21%",
+            "2y": "40%",
+            "6m": "3%"
+          },
+          "headcount_growth_by_function": {
+            "Accounting": {
+              "1y": "13%",
+              "6m": "13%"
+            },
+            "Business Development": {
+              "1y": "25%",
+              "6m": "0%"
+            },
+            "Consulting": {
+              "1y": "38%",
+              "6m": "10%"
+            },
+            "Engineering": {
+              "1y": "0%",
+              "6m": "-5%"
+            },
+            "Information Technology": {
+              "1y": "16%",
+              "6m": "-3%"
+            },
+            "Marketing": {
+              "1y": "0%",
+              "6m": "14%"
+            },
+            "Operations": {
+              "1y": "20%",
+              "6m": "20%"
+            },
+            "Product Management": {
+              "1y": "100%",
+              "6m": "0%"
+            },
+            "Sales": {
+              "1y": "41%",
+              "6m": "10%"
+            },
+            "Support": {
+              "1y": "45%",
+              "6m": "14%"
+            }
+          },
+          "job_openings": {
+            "job_openings_by_function": [],
+            "job_openings_growth": {},
+            "job_openings_growth_by_function": {}
+          },
+          "median_employee_tenure": 3.3,
+          "new_hires": [
+            {
+              "date": "2024-8",
+              "senior_hires": 0,
+              "total_hires": 3
+            },
+            {
+              "date": "2024-9",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2024-10",
+              "senior_hires": 0,
+              "total_hires": 2
+            },
+            {
+              "date": "2024-11",
+              "senior_hires": 0,
+              "total_hires": 3
+            },
+            {
+              "date": "2024-12",
+              "senior_hires": 0,
+              "total_hires": 3
+            },
+            {
+              "date": "2025-1",
+              "senior_hires": 0,
+              "total_hires": 3
+            },
+            {
+              "date": "2025-2",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2025-3",
+              "senior_hires": 0,
+              "total_hires": 4
+            },
+            {
+              "date": "2025-4",
+              "senior_hires": 1,
+              "total_hires": 9
+            },
+            {
+              "date": "2025-5",
+              "senior_hires": 0,
+              "total_hires": 3
+            },
+            {
+              "date": "2025-6",
+              "senior_hires": 0,
+              "total_hires": 2
+            },
+            {
+              "date": "2025-7",
+              "senior_hires": 0,
+              "total_hires": 5
+            },
+            {
+              "date": "2025-8",
+              "senior_hires": 0,
+              "total_hires": 6
+            },
+            {
+              "date": "2025-9",
+              "senior_hires": 0,
+              "total_hires": 2
+            },
+            {
+              "date": "2025-10",
+              "senior_hires": 0,
+              "total_hires": 7
+            },
+            {
+              "date": "2025-11",
+              "senior_hires": 0,
+              "total_hires": 7
+            },
+            {
+              "date": "2025-12",
+              "senior_hires": 0,
+              "total_hires": 4
+            },
+            {
+              "date": "2026-1",
+              "senior_hires": 0,
+              "total_hires": 10
+            },
+            {
+              "date": "2026-2",
+              "senior_hires": 0,
+              "total_hires": 3
+            },
+            {
+              "date": "2026-3",
+              "senior_hires": 0,
+              "total_hires": 2
+            },
+            {
+              "date": "2026-4",
+              "senior_hires": 0,
+              "total_hires": 4
+            },
+            {
+              "date": "2026-5",
+              "senior_hires": 0,
+              "total_hires": 5
+            },
+            {
+              "date": "2026-6",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2026-7",
+              "senior_hires": 0,
+              "total_hires": 1
+            }
+          ],
+          "total_employees": 208
+        },
+        "message": "ok"
+      }
+    ]
+  },
+  "Sei AI": {
+    "company_name": "Sei AI",
+    "domain": "seiright.com",
+    "linkedin_id": "97400216",
+    "raw_file": "scratch\\apify_insights_seiright.json",
+    "insights_summary": {
+      "total_employees": 18,
+      "median_employee_tenure": 1.4,
+      "new_hires_count": 13
+    },
+    "payload": [
+      {
+        "data": {
+          "headcount_by_function": {
+            "Business Development": {
+              "count": 2,
+              "percentage": 11
+            },
+            "Engineering": {
+              "count": 7,
+              "percentage": 39
+            },
+            "Entrepreneurship": {
+              "count": 1,
+              "percentage": 6
+            },
+            "Finance": {
+              "count": 3,
+              "percentage": 17
+            },
+            "Operations": {
+              "count": 1,
+              "percentage": 6
+            }
+          },
+          "headcount_by_month": [
+            {
+              "date": "2024-8-1",
+              "employee_count": 7
+            },
+            {
+              "date": "2024-9-1",
+              "employee_count": 7
+            },
+            {
+              "date": "2024-10-1",
+              "employee_count": 8
+            },
+            {
+              "date": "2024-11-1",
+              "employee_count": 8
+            },
+            {
+              "date": "2024-12-1",
+              "employee_count": 9
+            },
+            {
+              "date": "2025-1-1",
+              "employee_count": 10
+            },
+            {
+              "date": "2025-2-1",
+              "employee_count": 11
+            },
+            {
+              "date": "2025-3-1",
+              "employee_count": 11
+            },
+            {
+              "date": "2025-4-1",
+              "employee_count": 14
+            },
+            {
+              "date": "2025-5-1",
+              "employee_count": 15
+            },
+            {
+              "date": "2025-6-1",
+              "employee_count": 15
+            },
+            {
+              "date": "2025-7-1",
+              "employee_count": 16
+            },
+            {
+              "date": "2025-8-1",
+              "employee_count": 17
+            },
+            {
+              "date": "2025-9-1",
+              "employee_count": 18
+            },
+            {
+              "date": "2025-10-1",
+              "employee_count": 17
+            },
+            {
+              "date": "2025-11-1",
+              "employee_count": 17
+            },
+            {
+              "date": "2025-12-1",
+              "employee_count": 17
+            },
+            {
+              "date": "2026-1-1",
+              "employee_count": 18
+            },
+            {
+              "date": "2026-2-1",
+              "employee_count": 17
+            },
+            {
+              "date": "2026-3-1",
+              "employee_count": 15
+            },
+            {
+              "date": "2026-4-1",
+              "employee_count": 15
+            },
+            {
+              "date": "2026-5-1",
+              "employee_count": 18
+            },
+            {
+              "date": "2026-6-1",
+              "employee_count": 18
+            },
+            {
+              "date": "2026-7-1",
+              "employee_count": 18
+            },
+            {
+              "date": "2026-8-1",
+              "employee_count": 18
+            }
+          ],
+          "headcount_growth": {
+            "1y": "6%",
+            "2y": "157%",
+            "6m": "6%"
+          },
+          "headcount_growth_by_function": {
+            "Business Development": {
+              "1y": "100%",
+              "6m": "0%"
+            },
+            "Engineering": {
+              "1y": "-12%",
+              "6m": "-12%"
+            },
+            "Entrepreneurship": {
+              "1y": "0%",
+              "6m": "0%"
+            },
+            "Finance": {
+              "1y": "50%",
+              "6m": "50%"
+            },
+            "Operations": {
+              "1y": "0%",
+              "6m": "0%"
+            }
+          },
+          "job_openings": {
+            "job_openings_by_function": [],
+            "job_openings_growth": {},
+            "job_openings_growth_by_function": {}
+          },
+          "median_employee_tenure": 1.4,
+          "new_hires": [
+            {
+              "date": "2024-10",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2024-12",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2025-1",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2025-2",
+              "senior_hires": 0,
+              "total_hires": 2
+            },
+            {
+              "date": "2025-4",
+              "senior_hires": 0,
+              "total_hires": 3
+            },
+            {
+              "date": "2025-5",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2025-7",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2025-8",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2025-9",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2026-1",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2026-2",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2026-4",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2026-5",
+              "senior_hires": 0,
+              "total_hires": 3
+            }
+          ],
+          "total_employees": 18
+        },
+        "message": "ok"
+      }
+    ]
+  },
+  "Rutter": {
+    "company_name": "Rutter",
+    "domain": "rutter.com",
+    "linkedin_id": "71995640",
+    "raw_file": "scratch\\apify_insights_rutter.json",
+    "insights_summary": {
+      "total_employees": 42,
+      "median_employee_tenure": 1.6,
+      "new_hires_count": 14
+    },
+    "payload": [
+      {
+        "data": {
+          "headcount_by_function": {
+            "Administrative": {
+              "count": 2,
+              "percentage": 5
+            },
+            "Arts and Design": {
+              "count": 1,
+              "percentage": 2
+            },
+            "Business Development": {
+              "count": 2,
+              "percentage": 5
+            },
+            "Engineering": {
+              "count": 15,
+              "percentage": 36
+            },
+            "Entrepreneurship": {
+              "count": 2,
+              "percentage": 5
+            },
+            "Finance": {
+              "count": 1,
+              "percentage": 2
+            },
+            "Information Technology": {
+              "count": 2,
+              "percentage": 5
+            },
+            "Marketing": {
+              "count": 3,
+              "percentage": 7
+            },
+            "Operations": {
+              "count": 1,
+              "percentage": 2
+            },
+            "Product Management": {
+              "count": 4,
+              "percentage": 10
+            },
+            "Sales": {
+              "count": 4,
+              "percentage": 10
+            }
+          },
+          "headcount_by_month": [
+            {
+              "date": "2024-8-1",
+              "employee_count": 30
+            },
+            {
+              "date": "2024-9-1",
+              "employee_count": 28
+            },
+            {
+              "date": "2024-10-1",
+              "employee_count": 27
+            },
+            {
+              "date": "2024-11-1",
+              "employee_count": 27
+            },
+            {
+              "date": "2024-12-1",
+              "employee_count": 27
+            },
+            {
+              "date": "2025-1-1",
+              "employee_count": 27
+            },
+            {
+              "date": "2025-2-1",
+              "employee_count": 27
+            },
+            {
+              "date": "2025-3-1",
+              "employee_count": 29
+            },
+            {
+              "date": "2025-4-1",
+              "employee_count": 30
+            },
+            {
+              "date": "2025-5-1",
+              "employee_count": 33
+            },
+            {
+              "date": "2025-6-1",
+              "employee_count": 35
+            },
+            {
+              "date": "2025-7-1",
+              "employee_count": 36
+            },
+            {
+              "date": "2025-8-1",
+              "employee_count": 37
+            },
+            {
+              "date": "2025-9-1",
+              "employee_count": 42
+            },
+            {
+              "date": "2025-10-1",
+              "employee_count": 41
+            },
+            {
+              "date": "2025-11-1",
+              "employee_count": 41
+            },
+            {
+              "date": "2025-12-1",
+              "employee_count": 41
+            },
+            {
+              "date": "2026-1-1",
+              "employee_count": 42
+            },
+            {
+              "date": "2026-2-1",
+              "employee_count": 42
+            },
+            {
+              "date": "2026-3-1",
+              "employee_count": 43
+            },
+            {
+              "date": "2026-4-1",
+              "employee_count": 43
+            },
+            {
+              "date": "2026-5-1",
+              "employee_count": 43
+            },
+            {
+              "date": "2026-6-1",
+              "employee_count": 42
+            },
+            {
+              "date": "2026-7-1",
+              "employee_count": 42
+            },
+            {
+              "date": "2026-8-1",
+              "employee_count": 42
+            }
+          ],
+          "headcount_growth": {
+            "1y": "14%",
+            "2y": "40%",
+            "6m": "0%"
+          },
+          "headcount_growth_by_function": {
+            "Administrative": {
+              "1y": "0%",
+              "6m": "0%"
+            },
+            "Arts and Design": {
+              "1y": "0%",
+              "6m": "0%"
+            },
+            "Business Development": {
+              "1y": "0%",
+              "6m": "0%"
+            },
+            "Engineering": {
+              "1y": "7%",
+              "6m": "0%"
+            },
+            "Entrepreneurship": {
+              "1y": "0%",
+              "6m": "0%"
+            },
+            "Finance": {
+              "1y": "0%",
+              "6m": "0%"
+            },
+            "Information Technology": {
+              "1y": "0%",
+              "6m": "0%"
+            },
+            "Marketing": {
+              "1y": "200%",
+              "6m": "0%"
+            },
+            "Operations": {
+              "1y": "0%",
+              "6m": "0%"
+            },
+            "Product Management": {
+              "1y": "100%",
+              "6m": "0%"
+            },
+            "Sales": {
+              "1y": "33%",
+              "6m": "0%"
+            }
+          },
+          "job_openings": {
+            "job_openings_by_function": [
+              {
+                "count_by_function": {
+                  "Engineering": {
+                    "count": 2,
+                    "percentage": 100
+                  }
+                },
+                "date": "2026-6",
+                "total_count": 2
+              },
+              {
+                "count_by_function": {
+                  "Engineering": {
+                    "count": 2,
+                    "percentage": 67
+                  }
+                },
+                "date": "2026-3",
+                "total_count": 3
+              },
+              {
+                "count_by_function": {
+                  "Engineering": {
+                    "count": 4,
+                    "percentage": 50
+                  }
+                },
+                "date": "2025-12",
+                "total_count": 8
+              }
+            ],
+            "job_openings_growth": {
+              "3m": "-33%",
+              "6m": "-75%"
+            },
+            "job_openings_growth_by_function": {
+              "Engineering": {
+                "3m": "0%",
+                "6m": "-50%"
+              }
+            }
+          },
+          "median_employee_tenure": 1.6,
+          "new_hires": [
+            {
+              "date": "2024-9",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2024-11",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2024-12",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2025-1",
+              "senior_hires": 0,
+              "total_hires": 2
+            },
+            {
+              "date": "2025-2",
+              "senior_hires": 0,
+              "total_hires": 2
+            },
+            {
+              "date": "2025-3",
+              "senior_hires": 0,
+              "total_hires": 2
+            },
+            {
+              "date": "2025-4",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2025-5",
+              "senior_hires": 0,
+              "total_hires": 3
+            },
+            {
+              "date": "2025-6",
+              "senior_hires": 0,
+              "total_hires": 3
+            },
+            {
+              "date": "2025-7",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2025-8",
+              "senior_hires": 0,
+              "total_hires": 2
+            },
+            {
+              "date": "2025-9",
+              "senior_hires": 0,
+              "total_hires": 6
+            },
+            {
+              "date": "2026-1",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2026-3",
+              "senior_hires": 0,
+              "total_hires": 1
+            }
+          ],
+          "total_employees": 42
+        },
+        "message": "ok"
+      }
+    ]
+  },
+  "InfoWebUSA Technologies": {
+    "company_name": "InfoWebUSA Technologies",
+    "domain": "infowebusa.com",
+    "linkedin_id": "101653241",
+    "raw_file": "scratch\\apify_insights_infowebusa.json",
+    "insights_summary": {
+      "total_employees": 45,
+      "median_employee_tenure": 1.3,
+      "new_hires_count": 19
+    },
+    "payload": [
+      {
+        "data": {
+          "headcount_by_function": {
+            "Arts and Design": {
+              "count": 2,
+              "percentage": 4
+            },
+            "Business Development": {
+              "count": 6,
+              "percentage": 13
+            },
+            "Consulting": {
+              "count": 1,
+              "percentage": 2
+            },
+            "Engineering": {
+              "count": 6,
+              "percentage": 13
+            },
+            "Human Resources": {
+              "count": 3,
+              "percentage": 7
+            },
+            "Marketing": {
+              "count": 22,
+              "percentage": 49
+            },
+            "Media and Communication": {
+              "count": 1,
+              "percentage": 2
+            },
+            "Program and Project Management": {
+              "count": 3,
+              "percentage": 7
+            },
+            "Support": {
+              "count": 2,
+              "percentage": 4
+            }
+          },
+          "headcount_by_month": [
+            {
+              "date": "2024-8-1",
+              "employee_count": 19
+            },
+            {
+              "date": "2024-9-1",
+              "employee_count": 21
+            },
+            {
+              "date": "2024-10-1",
+              "employee_count": 25
+            },
+            {
+              "date": "2024-11-1",
+              "employee_count": 28
+            },
+            {
+              "date": "2024-12-1",
+              "employee_count": 26
+            },
+            {
+              "date": "2025-1-1",
+              "employee_count": 30
+            },
+            {
+              "date": "2025-2-1",
+              "employee_count": 29
+            },
+            {
+              "date": "2025-3-1",
+              "employee_count": 30
+            },
+            {
+              "date": "2025-4-1",
+              "employee_count": 35
+            },
+            {
+              "date": "2025-5-1",
+              "employee_count": 34
+            },
+            {
+              "date": "2025-6-1",
+              "employee_count": 37
+            },
+            {
+              "date": "2025-7-1",
+              "employee_count": 37
+            },
+            {
+              "date": "2025-8-1",
+              "employee_count": 40
+            },
+            {
+              "date": "2025-9-1",
+              "employee_count": 42
+            },
+            {
+              "date": "2025-10-1",
+              "employee_count": 39
+            },
+            {
+              "date": "2025-11-1",
+              "employee_count": 41
+            },
+            {
+              "date": "2025-12-1",
+              "employee_count": 40
+            },
+            {
+              "date": "2026-1-1",
+              "employee_count": 41
+            },
+            {
+              "date": "2026-2-1",
+              "employee_count": 44
+            },
+            {
+              "date": "2026-3-1",
+              "employee_count": 44
+            },
+            {
+              "date": "2026-4-1",
+              "employee_count": 45
+            },
+            {
+              "date": "2026-5-1",
+              "employee_count": 47
+            },
+            {
+              "date": "2026-6-1",
+              "employee_count": 45
+            },
+            {
+              "date": "2026-7-1",
+              "employee_count": 45
+            },
+            {
+              "date": "2026-8-1",
+              "employee_count": 45
+            }
+          ],
+          "headcount_growth": {
+            "1y": "13%",
+            "2y": "137%",
+            "6m": "2%"
+          },
+          "headcount_growth_by_function": {
+            "Arts and Design": {
+              "1y": "0%",
+              "6m": "0%"
+            },
+            "Business Development": {
+              "1y": "0%",
+              "6m": "0%"
+            },
+            "Consulting": {},
+            "Engineering": {
+              "1y": "100%",
+              "6m": "0%"
+            },
+            "Human Resources": {
+              "1y": "200%",
+              "6m": "50%"
+            },
+            "Marketing": {
+              "1y": "22%",
+              "6m": "16%"
+            },
+            "Media and Communication": {
+              "1y": "0%",
+              "6m": "0%"
+            },
+            "Program and Project Management": {
+              "1y": "0%",
+              "6m": "0%"
+            },
+            "Support": {
+              "1y": "0%",
+              "6m": "0%"
+            }
+          },
+          "job_openings": {
+            "job_openings_by_function": [],
+            "job_openings_growth": {},
+            "job_openings_growth_by_function": {}
+          },
+          "median_employee_tenure": 1.3,
+          "new_hires": [
+            {
+              "date": "2024-8",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2024-9",
+              "senior_hires": 0,
+              "total_hires": 2
+            },
+            {
+              "date": "2024-10",
+              "senior_hires": 0,
+              "total_hires": 4
+            },
+            {
+              "date": "2024-11",
+              "senior_hires": 0,
+              "total_hires": 3
+            },
+            {
+              "date": "2025-1",
+              "senior_hires": 0,
+              "total_hires": 4
+            },
+            {
+              "date": "2025-3",
+              "senior_hires": 0,
+              "total_hires": 2
+            },
+            {
+              "date": "2025-4",
+              "senior_hires": 0,
+              "total_hires": 7
+            },
+            {
+              "date": "2025-5",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2025-6",
+              "senior_hires": 0,
+              "total_hires": 5
+            },
+            {
+              "date": "2025-7",
+              "senior_hires": 0,
+              "total_hires": 3
+            },
+            {
+              "date": "2025-8",
+              "senior_hires": 0,
+              "total_hires": 3
+            },
+            {
+              "date": "2025-9",
+              "senior_hires": 0,
+              "total_hires": 2
+            },
+            {
+              "date": "2025-10",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2025-11",
+              "senior_hires": 0,
+              "total_hires": 4
+            },
+            {
+              "date": "2026-1",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2026-2",
+              "senior_hires": 0,
+              "total_hires": 3
+            },
+            {
+              "date": "2026-3",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2026-4",
+              "senior_hires": 0,
+              "total_hires": 2
+            },
+            {
+              "date": "2026-5",
+              "senior_hires": 0,
+              "total_hires": 2
+            }
+          ],
+          "total_employees": 45
+        },
+        "message": "ok"
+      }
+    ]
+  },
+  "Remark": {
+    "company_name": "Remark",
+    "domain": "withremark.com",
+    "linkedin_id": "88169192",
+    "raw_file": "scratch\\apify_insights_withremark.json",
+    "insights_summary": {
+      "total_employees": 47,
+      "median_employee_tenure": 1.3,
+      "new_hires_count": 20
+    },
+    "payload": [
+      {
+        "data": {
+          "headcount_by_function": {
+            "Administrative": {
+              "count": 1,
+              "percentage": 2
+            },
+            "Arts and Design": {
+              "count": 2,
+              "percentage": 4
+            },
+            "Business Development": {
+              "count": 8,
+              "percentage": 17
+            },
+            "Community and Social Services": {
+              "count": 1,
+              "percentage": 2
+            },
+            "Education": {
+              "count": 1,
+              "percentage": 2
+            },
+            "Engineering": {
+              "count": 9,
+              "percentage": 19
+            },
+            "Entrepreneurship": {
+              "count": 1,
+              "percentage": 2
+            },
+            "Human Resources": {
+              "count": 1,
+              "percentage": 2
+            },
+            "Marketing": {
+              "count": 4,
+              "percentage": 9
+            },
+            "Media and Communication": {
+              "count": 2,
+              "percentage": 4
+            },
+            "Operations": {
+              "count": 3,
+              "percentage": 6
+            },
+            "Sales": {
+              "count": 10,
+              "percentage": 21
+            }
+          },
+          "headcount_by_month": [
+            {
+              "date": "2024-8-1",
+              "employee_count": 34
+            },
+            {
+              "date": "2024-9-1",
+              "employee_count": 35
+            },
+            {
+              "date": "2024-10-1",
+              "employee_count": 37
+            },
+            {
+              "date": "2024-11-1",
+              "employee_count": 36
+            },
+            {
+              "date": "2024-12-1",
+              "employee_count": 36
+            },
+            {
+              "date": "2025-1-1",
+              "employee_count": 36
+            },
+            {
+              "date": "2025-2-1",
+              "employee_count": 37
+            },
+            {
+              "date": "2025-3-1",
+              "employee_count": 37
+            },
+            {
+              "date": "2025-4-1",
+              "employee_count": 39
+            },
+            {
+              "date": "2025-5-1",
+              "employee_count": 42
+            },
+            {
+              "date": "2025-6-1",
+              "employee_count": 45
+            },
+            {
+              "date": "2025-7-1",
+              "employee_count": 45
+            },
+            {
+              "date": "2025-8-1",
+              "employee_count": 46
+            },
+            {
+              "date": "2025-9-1",
+              "employee_count": 48
+            },
+            {
+              "date": "2025-10-1",
+              "employee_count": 49
+            },
+            {
+              "date": "2025-11-1",
+              "employee_count": 51
+            },
+            {
+              "date": "2025-12-1",
+              "employee_count": 53
+            },
+            {
+              "date": "2026-1-1",
+              "employee_count": 54
+            },
+            {
+              "date": "2026-2-1",
+              "employee_count": 54
+            },
+            {
+              "date": "2026-3-1",
+              "employee_count": 48
+            },
+            {
+              "date": "2026-4-1",
+              "employee_count": 49
+            },
+            {
+              "date": "2026-5-1",
+              "employee_count": 50
+            },
+            {
+              "date": "2026-6-1",
+              "employee_count": 48
+            },
+            {
+              "date": "2026-7-1",
+              "employee_count": 47
+            },
+            {
+              "date": "2026-8-1",
+              "employee_count": 47
+            }
+          ],
+          "headcount_growth": {
+            "1y": "2%",
+            "2y": "38%",
+            "6m": "-13%"
+          },
+          "headcount_growth_by_function": {
+            "Administrative": {
+              "1y": "0%",
+              "6m": "0%"
+            },
+            "Arts and Design": {
+              "1y": "0%",
+              "6m": "0%"
+            },
+            "Business Development": {
+              "1y": "60%",
+              "6m": "33%"
+            },
+            "Community and Social Services": {
+              "6m": "0%"
+            },
+            "Education": {},
+            "Engineering": {
+              "1y": "50%",
+              "6m": "0%"
+            },
+            "Entrepreneurship": {},
+            "Human Resources": {
+              "1y": "0%",
+              "6m": "0%"
+            },
+            "Marketing": {
+              "1y": "33%",
+              "6m": "-20%"
+            },
+            "Media and Communication": {
+              "1y": "100%",
+              "6m": "0%"
+            },
+            "Operations": {
+              "1y": "50%",
+              "6m": "-25%"
+            },
+            "Sales": {
+              "1y": "-9%",
+              "6m": "-9%"
+            }
+          },
+          "job_openings": {
+            "job_openings_by_function": [],
+            "job_openings_growth": {},
+            "job_openings_growth_by_function": {}
+          },
+          "median_employee_tenure": 1.3,
+          "new_hires": [
+            {
+              "date": "2024-8",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2024-9",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2024-10",
+              "senior_hires": 0,
+              "total_hires": 2
+            },
+            {
+              "date": "2024-12",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2025-1",
+              "senior_hires": 0,
+              "total_hires": 2
+            },
+            {
+              "date": "2025-2",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2025-4",
+              "senior_hires": 0,
+              "total_hires": 2
+            },
+            {
+              "date": "2025-5",
+              "senior_hires": 0,
+              "total_hires": 4
+            },
+            {
+              "date": "2025-6",
+              "senior_hires": 0,
+              "total_hires": 4
+            },
+            {
+              "date": "2025-7",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2025-8",
+              "senior_hires": 0,
+              "total_hires": 3
+            },
+            {
+              "date": "2025-9",
+              "senior_hires": 0,
+              "total_hires": 4
+            },
+            {
+              "date": "2025-10",
+              "senior_hires": 0,
+              "total_hires": 2
+            },
+            {
+              "date": "2025-11",
+              "senior_hires": 0,
+              "total_hires": 3
+            },
+            {
+              "date": "2025-12",
+              "senior_hires": 0,
+              "total_hires": 3
+            },
+            {
+              "date": "2026-1",
+              "senior_hires": 0,
+              "total_hires": 3
+            },
+            {
+              "date": "2026-2",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2026-4",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2026-5",
+              "senior_hires": 0,
+              "total_hires": 4
+            },
+            {
+              "date": "2026-6",
+              "senior_hires": 0,
+              "total_hires": 1
+            }
+          ],
+          "total_employees": 47
+        },
+        "message": "ok"
+      }
+    ]
+  },
+  "Azion": {
+    "company_name": "Azion",
+    "domain": "azion.com",
+    "linkedin_id": "10206226",
+    "raw_file": "scratch\\apify_insights_azion.json",
+    "insights_summary": {
+      "total_employees": 5,
+      "median_employee_tenure": 3.3,
+      "new_hires_count": 1
+    },
+    "payload": [
+      {
+        "data": {
+          "headcount_by_function": {
+            "Business Development": {
+              "count": 1,
+              "percentage": 20
+            },
+            "Engineering": {
+              "count": 2,
+              "percentage": 40
+            },
+            "Operations": {
+              "count": 1,
+              "percentage": 20
+            }
+          },
+          "headcount_by_month": [
+            {
+              "date": "2024-8-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2024-9-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2024-10-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2024-11-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2024-12-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2025-1-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2025-2-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2025-3-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2025-4-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2025-5-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2025-6-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2025-7-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2025-8-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2025-9-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2025-10-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2025-11-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2025-12-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2026-1-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2026-2-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2026-3-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2026-4-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2026-5-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2026-6-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2026-7-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2026-8-1",
+              "employee_count": 5
+            }
+          ],
+          "headcount_growth": {
+            "1y": "0%",
+            "2y": "0%",
+            "6m": "0%"
+          },
+          "headcount_growth_by_function": {
+            "Business Development": {
+              "1y": "0%",
+              "6m": "0%"
+            },
+            "Engineering": {
+              "1y": "0%",
+              "6m": "0%"
+            },
+            "Operations": {
+              "1y": "0%",
+              "6m": "0%"
+            }
+          },
+          "job_openings": {
+            "job_openings_by_function": [],
+            "job_openings_growth": {},
+            "job_openings_growth_by_function": {}
+          },
+          "median_employee_tenure": 3.3,
+          "new_hires": [
+            {
+              "date": "2024-8",
+              "senior_hires": 0,
+              "total_hires": 1
+            }
+          ],
+          "total_employees": 5
+        },
+        "message": "ok"
+      }
+    ]
+  },
+  "SurePoint Technologies": {
+    "company_name": "SurePoint Technologies",
+    "domain": "surepoint.com",
+    "linkedin_id": "2661743",
+    "raw_file": "scratch\\apify_insights_surepoint.json",
+    "insights_summary": {
+      "total_employees": 5,
+      "median_employee_tenure": 8.3,
+      "new_hires_count": 0
+    },
+    "payload": [
+      {
+        "data": {
+          "headcount_by_function": {
+            "Education": {
+              "count": 1,
+              "percentage": 20
+            },
+            "Engineering": {
+              "count": 1,
+              "percentage": 20
+            },
+            "Operations": {
+              "count": 1,
+              "percentage": 20
+            }
+          },
+          "headcount_by_month": [
+            {
+              "date": "2024-8-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2024-9-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2024-10-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2024-11-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2024-12-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2025-1-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2025-2-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2025-3-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2025-4-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2025-5-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2025-6-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2025-7-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2025-8-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2025-9-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2025-10-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2025-11-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2025-12-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2026-1-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2026-2-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2026-3-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2026-4-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2026-5-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2026-6-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2026-7-1",
+              "employee_count": 5
+            },
+            {
+              "date": "2026-8-1",
+              "employee_count": 5
+            }
+          ],
+          "headcount_growth": {
+            "1y": "0%",
+            "2y": "0%",
+            "6m": "0%"
+          },
+          "headcount_growth_by_function": {
+            "Education": {
+              "1y": "0%",
+              "6m": "0%"
+            },
+            "Engineering": {
+              "1y": "0%",
+              "6m": "0%"
+            },
+            "Operations": {
+              "1y": "0%",
+              "6m": "0%"
+            }
+          },
+          "job_openings": {
+            "job_openings_by_function": [],
+            "job_openings_growth": {},
+            "job_openings_growth_by_function": {}
+          },
+          "median_employee_tenure": 8.3,
+          "new_hires": [],
+          "total_employees": 5
+        },
+        "message": "ok"
+      }
+    ]
+  },
+  "Baxter Clewis Cybersecurity": {
+    "company_name": "Baxter Clewis Cybersecurity",
+    "domain": "baxterclewis.com",
+    "linkedin_id": "71375703",
+    "raw_file": "scratch\\apify_insights_baxterclewis.json",
+    "insights_summary": {
+      "total_employees": 175,
+      "median_employee_tenure": 3.5,
+      "new_hires_count": 8
+    },
+    "payload": [
+      {
+        "data": {
+          "headcount_by_function": {
+            "Business Development": {
+              "count": 6,
+              "percentage": 3
+            },
+            "Consulting": {
+              "count": 24,
+              "percentage": 14
+            },
+            "Engineering": {
+              "count": 9,
+              "percentage": 5
+            },
+            "Finance": {
+              "count": 6,
+              "percentage": 3
+            },
+            "Information Technology": {
+              "count": 101,
+              "percentage": 58
+            },
+            "Legal": {
+              "count": 11,
+              "percentage": 6
+            }
+          },
+          "headcount_by_month": [
+            {
+              "date": "2024-8-1",
+              "employee_count": 262
+            },
+            {
+              "date": "2024-9-1",
+              "employee_count": 254
+            },
+            {
+              "date": "2024-10-1",
+              "employee_count": 249
+            },
+            {
+              "date": "2024-11-1",
+              "employee_count": 244
+            },
+            {
+              "date": "2024-12-1",
+              "employee_count": 227
+            },
+            {
+              "date": "2025-1-1",
+              "employee_count": 213
+            },
+            {
+              "date": "2025-2-1",
+              "employee_count": 211
+            },
+            {
+              "date": "2025-3-1",
+              "employee_count": 208
+            },
+            {
+              "date": "2025-4-1",
+              "employee_count": 206
+            },
+            {
+              "date": "2025-5-1",
+              "employee_count": 204
+            },
+            {
+              "date": "2025-6-1",
+              "employee_count": 197
+            },
+            {
+              "date": "2025-7-1",
+              "employee_count": 193
+            },
+            {
+              "date": "2025-8-1",
+              "employee_count": 192
+            },
+            {
+              "date": "2025-9-1",
+              "employee_count": 193
+            },
+            {
+              "date": "2025-10-1",
+              "employee_count": 192
+            },
+            {
+              "date": "2025-11-1",
+              "employee_count": 189
+            },
+            {
+              "date": "2025-12-1",
+              "employee_count": 185
+            },
+            {
+              "date": "2026-1-1",
+              "employee_count": 185
+            },
+            {
+              "date": "2026-2-1",
+              "employee_count": 180
+            },
+            {
+              "date": "2026-3-1",
+              "employee_count": 177
+            },
+            {
+              "date": "2026-4-1",
+              "employee_count": 177
+            },
+            {
+              "date": "2026-5-1",
+              "employee_count": 177
+            },
+            {
+              "date": "2026-6-1",
+              "employee_count": 177
+            },
+            {
+              "date": "2026-7-1",
+              "employee_count": 176
+            },
+            {
+              "date": "2026-8-1",
+              "employee_count": 175
+            }
+          ],
+          "headcount_growth": {
+            "1y": "-9%",
+            "2y": "-33%",
+            "6m": "-3%"
+          },
+          "headcount_growth_by_function": {
+            "Business Development": {
+              "1y": "-25%",
+              "6m": "0%"
+            },
+            "Consulting": {
+              "1y": "-14%",
+              "6m": "-4%"
+            },
+            "Engineering": {
+              "1y": "-18%",
+              "6m": "-10%"
+            },
+            "Finance": {
+              "1y": "0%",
+              "6m": "0%"
+            },
+            "Information Technology": {
+              "1y": "-6%",
+              "6m": "-6%"
+            },
+            "Legal": {
+              "1y": "0%",
+              "6m": "0%"
+            }
+          },
+          "job_openings": {
+            "job_openings_by_function": [],
+            "job_openings_growth": {},
+            "job_openings_growth_by_function": {}
+          },
+          "median_employee_tenure": 3.5,
+          "new_hires": [
+            {
+              "date": "2024-8",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2024-9",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2024-10",
+              "senior_hires": 0,
+              "total_hires": 2
+            },
+            {
+              "date": "2025-1",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2025-3",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2025-5",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2025-7",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2025-9",
+              "senior_hires": 0,
+              "total_hires": 1
+            }
+          ],
+          "total_employees": 175
+        },
+        "message": "ok"
+      }
+    ]
+  },
+  "AI Automation": {
+    "company_name": "AI Automation",
+    "domain": "askreferral.io",
+    "linkedin_id": "90515076",
+    "raw_file": "scratch\\apify_insights_askreferral.json",
+    "insights_summary": {
+      "total_employees": 206,
+      "median_employee_tenure": 1.2,
+      "new_hires_count": 22
+    },
+    "payload": [
+      {
+        "data": {
+          "headcount_by_function": {
+            "Administrative": {
+              "count": 13,
+              "percentage": 6
+            },
+            "Business Development": {
+              "count": 20,
+              "percentage": 10
+            },
+            "Education": {
+              "count": 6,
+              "percentage": 3
+            },
+            "Engineering": {
+              "count": 43,
+              "percentage": 21
+            },
+            "Entrepreneurship": {
+              "count": 5,
+              "percentage": 2
+            },
+            "Healthcare Services": {
+              "count": 13,
+              "percentage": 6
+            },
+            "Information Technology": {
+              "count": 4,
+              "percentage": 2
+            },
+            "Marketing": {
+              "count": 21,
+              "percentage": 10
+            },
+            "Media and Communication": {
+              "count": 5,
+              "percentage": 2
+            },
+            "Operations": {
+              "count": 11,
+              "percentage": 5
+            },
+            "Research": {
+              "count": 4,
+              "percentage": 2
+            },
+            "Sales": {
+              "count": 20,
+              "percentage": 10
+            }
+          },
+          "headcount_by_month": [
+            {
+              "date": "2024-8-1",
+              "employee_count": 71
+            },
+            {
+              "date": "2024-9-1",
+              "employee_count": 70
+            },
+            {
+              "date": "2024-10-1",
+              "employee_count": 71
+            },
+            {
+              "date": "2024-11-1",
+              "employee_count": 71
+            },
+            {
+              "date": "2024-12-1",
+              "employee_count": 77
+            },
+            {
+              "date": "2025-1-1",
+              "employee_count": 84
+            },
+            {
+              "date": "2025-2-1",
+              "employee_count": 89
+            },
+            {
+              "date": "2025-3-1",
+              "employee_count": 92
+            },
+            {
+              "date": "2025-4-1",
+              "employee_count": 95
+            },
+            {
+              "date": "2025-5-1",
+              "employee_count": 100
+            },
+            {
+              "date": "2025-6-1",
+              "employee_count": 104
+            },
+            {
+              "date": "2025-7-1",
+              "employee_count": 110
+            },
+            {
+              "date": "2025-8-1",
+              "employee_count": 115
+            },
+            {
+              "date": "2025-9-1",
+              "employee_count": 121
+            },
+            {
+              "date": "2025-10-1",
+              "employee_count": 124
+            },
+            {
+              "date": "2025-11-1",
+              "employee_count": 125
+            },
+            {
+              "date": "2025-12-1",
+              "employee_count": 127
+            },
+            {
+              "date": "2026-1-1",
+              "employee_count": 135
+            },
+            {
+              "date": "2026-2-1",
+              "employee_count": 142
+            },
+            {
+              "date": "2026-3-1",
+              "employee_count": 151
+            },
+            {
+              "date": "2026-4-1",
+              "employee_count": 171
+            },
+            {
+              "date": "2026-5-1",
+              "employee_count": 176
+            },
+            {
+              "date": "2026-6-1",
+              "employee_count": 192
+            },
+            {
+              "date": "2026-7-1",
+              "employee_count": 206
+            },
+            {
+              "date": "2026-8-1",
+              "employee_count": 206
+            }
+          ],
+          "headcount_growth": {
+            "1y": "79%",
+            "2y": "190%",
+            "6m": "45%"
+          },
+          "headcount_growth_by_function": {
+            "Administrative": {
+              "1y": "86%",
+              "6m": "44%"
+            },
+            "Business Development": {
+              "1y": "233%",
+              "6m": "233%"
+            },
+            "Education": {
+              "1y": "20%",
+              "6m": "20%"
+            },
+            "Engineering": {
+              "1y": "169%",
+              "6m": "105%"
+            },
+            "Entrepreneurship": {
+              "1y": "150%",
+              "6m": "150%"
+            },
+            "Healthcare Services": {
+              "1y": "0%",
+              "6m": "0%"
+            },
+            "Information Technology": {
+              "1y": "300%",
+              "6m": "300%"
+            },
+            "Marketing": {
+              "1y": "62%",
+              "6m": "0%"
+            },
+            "Media and Communication": {
+              "1y": "67%",
+              "6m": "25%"
+            },
+            "Operations": {
+              "1y": "83%",
+              "6m": "10%"
+            },
+            "Research": {
+              "1y": "33%",
+              "6m": "33%"
+            },
+            "Sales": {
+              "1y": "67%",
+              "6m": "33%"
+            }
+          },
+          "job_openings": {
+            "job_openings_by_function": [],
+            "job_openings_growth": {},
+            "job_openings_growth_by_function": {}
+          },
+          "median_employee_tenure": 1.2,
+          "new_hires": [
+            {
+              "date": "2024-8",
+              "senior_hires": 0,
+              "total_hires": 4
+            },
+            {
+              "date": "2024-10",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2024-12",
+              "senior_hires": 0,
+              "total_hires": 6
+            },
+            {
+              "date": "2025-1",
+              "senior_hires": 0,
+              "total_hires": 9
+            },
+            {
+              "date": "2025-2",
+              "senior_hires": 0,
+              "total_hires": 5
+            },
+            {
+              "date": "2025-3",
+              "senior_hires": 0,
+              "total_hires": 3
+            },
+            {
+              "date": "2025-4",
+              "senior_hires": 0,
+              "total_hires": 4
+            },
+            {
+              "date": "2025-5",
+              "senior_hires": 0,
+              "total_hires": 6
+            },
+            {
+              "date": "2025-6",
+              "senior_hires": 0,
+              "total_hires": 4
+            },
+            {
+              "date": "2025-7",
+              "senior_hires": 0,
+              "total_hires": 6
+            },
+            {
+              "date": "2025-8",
+              "senior_hires": 0,
+              "total_hires": 5
+            },
+            {
+              "date": "2025-9",
+              "senior_hires": 0,
+              "total_hires": 6
+            },
+            {
+              "date": "2025-10",
+              "senior_hires": 0,
+              "total_hires": 3
+            },
+            {
+              "date": "2025-11",
+              "senior_hires": 0,
+              "total_hires": 1
+            },
+            {
+              "date": "2025-12",
+              "senior_hires": 0,
+              "total_hires": 2
+            },
+            {
+              "date": "2026-1",
+              "senior_hires": 0,
+              "total_hires": 9
+            },
+            {
+              "date": "2026-2",
+              "senior_hires": 0,
+              "total_hires": 7
+            },
+            {
+              "date": "2026-3",
+              "senior_hires": 0,
+              "total_hires": 9
+            },
+            {
+              "date": "2026-4",
+              "senior_hires": 0,
+              "total_hires": 20
+            },
+            {
+              "date": "2026-5",
+              "senior_hires": 0,
+              "total_hires": 7
+            },
+            {
+              "date": "2026-6",
+              "senior_hires": 0,
+              "total_hires": 18
+            },
+            {
+              "date": "2026-7",
+              "senior_hires": 0,
+              "total_hires": 14
+            }
+          ],
+          "total_employees": 206
+        },
+        "message": "ok"
+      }
+    ]
+  }
+}

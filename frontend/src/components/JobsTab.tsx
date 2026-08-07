@@ -3,7 +3,7 @@ import {
   Briefcase, Building2, Users, MapPin, ExternalLink, Activity,
   ArrowUpRight, ArrowDownRight, SearchX, LineChart, Calendar,
   ChevronDown, Megaphone, Code, ClipboardList, Sparkles, Target,
-  BarChart2, TrendingUp
+  BarChart2, TrendingUp, Clock
 } from 'lucide-react';
 import type { LeadDetailResponse } from '../types/lead';
 
@@ -79,8 +79,10 @@ export default function JobsTab({ lead, defaultTab = 'all' }: JobsTabProps) {
   const hasJobs = jobsList.length > 0;
 
   // Primary Metrics
-  const totalEmployees = insights?.total_employees || lead.employee_count || 'N/A';
+  const totalEmployees = lead.employee_count || insights?.total_employees || 'N/A';
   const totalNum = typeof totalEmployees === 'number' ? totalEmployees : (parseInt(totalEmployees) || 1);
+  const rawTenure = insights?.median_employee_tenure ?? insights?.median_tenure;
+  const medianTenure = typeof rawTenure === 'number' && rawTenure > 0 ? `${rawTenure} yrs` : (rawTenure ? String(rawTenure) : 'N/A');
 
   // Monthly Trajectory Array
   let rawHistory = (insights?.headcount_by_month && Array.isArray(insights.headcount_by_month) && insights.headcount_by_month.length > 0)
@@ -218,25 +220,23 @@ export default function JobsTab({ lead, defaultTab = 'all' }: JobsTabProps) {
 
   const yoyPts = isPositiveGrowth
     ? [
-        { x: 28, y: 88 },
-        { x: 62, y: 68 },
-        { x: 96, y: 52 },
-        { x: 130, y: 58 },
-        { x: 164, y: 34 },
-        { x: 198, y: 34 },
-        { x: 232, y: 16 }
+        { x: 30, y: 108 },
+        { x: 70, y: 102 },
+        { x: 110, y: 94 },
+        { x: 150, y: 56 },
+        { x: 185, y: 70 },
+        { x: 232, y: 14 }
       ]
     : [
-        { x: 28, y: 20 },
-        { x: 62, y: 36 },
-        { x: 96, y: 48 },
-        { x: 130, y: 44 },
-        { x: 164, y: 68 },
-        { x: 198, y: 68 },
-        { x: 232, y: 88 }
+        { x: 30, y: 14 },
+        { x: 70, y: 20 },
+        { x: 110, y: 28 },
+        { x: 150, y: 66 },
+        { x: 185, y: 52 },
+        { x: 232, y: 108 }
       ];
 
-  const curveStart = isPositiveGrowth ? "M 0 115 Q 15 105 28 88" : "M 0 10 Q 15 12 28 20";
+  const curveStart = isPositiveGrowth ? "M 0 114 Q 15 111 30 108" : "M 0 12 Q 15 14 30 14";
   const restSegments = yoyPts.slice(1).map(p => `L ${p.x} ${p.y}`).join(' ');
   const yoyLinePath = `${curveStart} ${restSegments}`;
   const yoyAreaPath = `${yoyLinePath} L 232 120 L 0 120 Z`;
@@ -291,26 +291,26 @@ export default function JobsTab({ lead, defaultTab = 'all' }: JobsTabProps) {
         {hasInsights ? (
           <div className="space-y-6">
 
-            {/* Top 2 Metric Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+            {/* Top 3 Metric Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
 
               {/* Total Headcount Card */}
               <div className="relative overflow-hidden p-6 rounded-3xl border border-indigo-100/80 dark:border-indigo-950/60 bg-white dark:bg-zinc-900 shadow-xs flex items-center justify-between min-h-[140px]">
-                <div className="flex items-center gap-5 sm:gap-6 z-10">
+                <div className="flex items-center gap-4 sm:gap-5 z-10">
                   {/* Left Big Round Icon Container */}
-                  <div className="w-20 h-20 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 shadow-2xs">
-                    <Users size={34} strokeWidth={2} />
+                  <div className="w-16 h-16 rounded-full bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 shadow-2xs">
+                    <Users size={28} strokeWidth={2} />
                   </div>
 
                   {/* Center Text & Badge Stack */}
-                  <div className="space-y-1.5">
+                  <div className="space-y-1">
                     <span className="text-xs font-bold text-slate-700 dark:text-zinc-300">Total Headcount</span>
-                    <div className="text-4xl font-black text-slate-900 dark:text-zinc-100 tracking-tight leading-none">
+                    <div className="text-3xl font-black text-slate-900 dark:text-zinc-100 tracking-tight leading-none">
                       {totalEmployees}
                     </div>
                     <div className="pt-1">
-                      <div className="flex items-center gap-1.5 text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50/90 dark:bg-indigo-950/80 px-3 py-1 rounded-full border border-indigo-100 dark:border-indigo-900/50 w-fit">
-                        <BarChart2 size={13} className="text-indigo-500" />
+                      <div className="flex items-center gap-1.5 text-[10px] font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50/90 dark:bg-indigo-950/80 px-2.5 py-0.5 rounded-full border border-indigo-100 dark:border-indigo-900/50 w-fit">
+                        <BarChart2 size={12} className="text-indigo-500" />
                         <span>{latestDateLabel}</span>
                       </div>
                     </div>
@@ -318,15 +318,12 @@ export default function JobsTab({ lead, defaultTab = 'all' }: JobsTabProps) {
                 </div>
 
                 {/* Right Faded Watermark Icon (3 user silhouettes) */}
-                <div className="absolute right-3 -bottom-2 text-indigo-600/10 dark:text-indigo-400/10 pointer-events-none z-0">
-                  <svg width="150" height="110" viewBox="0 0 150 110" fill="currentColor">
-                    {/* Center Person */}
+                <div className="absolute right-2 -bottom-2 text-indigo-600/10 dark:text-indigo-400/10 pointer-events-none z-0">
+                  <svg width="120" height="90" viewBox="0 0 150 110" fill="currentColor">
                     <circle cx="95" cy="30" r="18" />
                     <path d="M 65 95 C 65 65, 125 65, 125 95 Z" />
-                    {/* Left Person */}
                     <circle cx="50" cy="42" r="14" />
                     <path d="M 25 95 C 25 70, 75 70, 75 95 Z" />
-                    {/* Right Person */}
                     <circle cx="135" cy="42" r="14" />
                     <path d="M 110 95 C 110 70, 160 70, 160 95 Z" />
                   </svg>
@@ -334,24 +331,24 @@ export default function JobsTab({ lead, defaultTab = 'all' }: JobsTabProps) {
               </div>
 
               {/* YoY Headcount Growth Card */}
-              <div className="relative overflow-hidden p-6 rounded-2xl border border-emerald-100 dark:border-emerald-950/60 bg-gradient-to-br from-white via-emerald-50/15 to-white dark:from-zinc-900 dark:via-zinc-900/80 dark:to-zinc-900 shadow-xs flex items-center justify-between min-h-[140px]">
-                <div className="space-y-3 z-10">
+              <div className="relative overflow-hidden p-6 rounded-3xl border border-emerald-100 dark:border-emerald-950/60 bg-gradient-to-br from-white via-emerald-50/15 to-white dark:from-zinc-900 dark:via-zinc-900/80 dark:to-zinc-900 shadow-xs flex items-center justify-between min-h-[140px]">
+                <div className="space-y-2 z-10">
                   <span className="text-xs font-semibold text-slate-500 dark:text-zinc-400">YoY Headcount Growth</span>
                   <div className={`text-3xl font-black flex items-center gap-1.5 ${headcountGrowth !== null && headcountGrowth >= 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
                     {headcountGrowth !== null && headcountGrowth >= 0 ? (
-                      <ArrowUpRight size={28} strokeWidth={3} />
+                      <ArrowUpRight size={26} strokeWidth={3} />
                     ) : (
-                      <ArrowDownRight size={28} strokeWidth={3} />
+                      <ArrowDownRight size={26} strokeWidth={3} />
                     )}
                     <span>{headcountGrowth !== null ? `${headcountGrowth}%` : 'N/A'}</span>
                   </div>
-                  <div className="flex items-center gap-1.5 text-[11px] font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50/90 dark:bg-emerald-950/80 px-3 py-1 rounded-full border border-emerald-100 dark:border-emerald-900/50 w-fit">
+                  <div className="flex items-center gap-1.5 text-[10px] font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50/90 dark:bg-emerald-950/80 px-2.5 py-0.5 rounded-full border border-emerald-100 dark:border-emerald-900/50 w-fit">
                     <span>↗ {prevYearText}</span>
                   </div>
                 </div>
 
-                {/* Right Sparkline Background (Exact as image) */}
-                <div className="absolute right-0 bottom-0 top-0 w-7/12 pointer-events-none z-0 flex items-end justify-end overflow-hidden">
+                {/* Right Sparkline Background */}
+                <div className="absolute right-0 bottom-0 top-0 w-8/12 pointer-events-none z-0 flex items-end justify-end overflow-hidden">
                   <svg className="w-full h-full overflow-hidden" viewBox="0 0 240 120" preserveAspectRatio="none">
                     <defs>
                       <linearGradient id="yoySparklineBgGrad" x1="0" y1="0" x2="0" y2="1">
@@ -384,6 +381,26 @@ export default function JobsTab({ lead, defaultTab = 'all' }: JobsTabProps) {
                   </svg>
                 </div>
               </div>
+
+              {/* Median Employee Tenure Card */}
+              <div className="relative overflow-hidden p-6 rounded-3xl border border-sky-100/80 dark:border-sky-950/60 bg-gradient-to-br from-white via-sky-50/15 to-white dark:from-zinc-900 dark:via-zinc-900/80 dark:to-zinc-900 shadow-xs flex items-center justify-between min-h-[140px]">
+                <div className="space-y-2 z-10">
+                  <span className="text-xs font-semibold text-slate-500 dark:text-zinc-400">Median Employee Tenure</span>
+                  <div className="text-3xl font-black text-slate-900 dark:text-zinc-100 tracking-tight flex items-center gap-2">
+                    <Clock size={24} className="text-sky-500" strokeWidth={2.5} />
+                    <span>{medianTenure}</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 text-[10px] font-medium text-sky-600 dark:text-sky-400 bg-sky-50/90 dark:bg-sky-950/80 px-2.5 py-0.5 rounded-full border border-sky-100 dark:border-sky-900/50 w-fit">
+                    <span>Average Retention</span>
+                  </div>
+                </div>
+
+                {/* Right Faded Watermark Icon */}
+                <div className="absolute right-3 bottom-0 text-sky-600/10 dark:text-sky-400/10 pointer-events-none z-0">
+                  <Clock size={90} strokeWidth={1.2} />
+                </div>
+              </div>
+
             </div>
 
             {/* 12-Month Headcount Trajectory (Line Graph Card) */}
@@ -658,13 +675,13 @@ export default function JobsTab({ lead, defaultTab = 'all' }: JobsTabProps) {
                     </div>
                   </div>
 
-                  {/* Takeaway 5: Senior Hiring Trend */}
+                  {/* Takeaway 5: Hiring Trend */}
                   <div className="flex items-start gap-3.5">
                     <div className="w-9 h-9 rounded-full bg-amber-500/10 text-amber-500 flex items-center justify-center shrink-0 mt-0.5">
                       <Briefcase size={18} />
                     </div>
                     <div>
-                      <h4 className="text-xs font-bold text-slate-900 dark:text-zinc-100">Senior Hiring Trend (6 Mo)</h4>
+                      <h4 className="text-xs font-bold text-slate-900 dark:text-zinc-100">Hiring Trend (6 Mo)</h4>
                       <p className="text-[11px] text-slate-500 dark:text-zinc-400 leading-snug mt-0.5">
                         {(() => {
                           const seniorKws = ['senior', 'lead', 'vp', 'director', 'head', 'manager', 'principal', 'chief'];
@@ -679,7 +696,7 @@ export default function JobsTab({ lead, defaultTab = 'all' }: JobsTabProps) {
 
             </div>
 
-            {/* 6. Senior & Executive Hiring Trend Chart (Full Width Card) */}
+            {/* 6. Hiring Trend Chart (Full Width Card) */}
             <div className="p-6 sm:p-7 rounded-2xl border border-slate-200/80 dark:border-zinc-800 bg-white dark:bg-zinc-900 shadow-xs space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-center gap-2.5">
@@ -688,13 +705,13 @@ export default function JobsTab({ lead, defaultTab = 'all' }: JobsTabProps) {
                   </div>
                   <div>
                     <h3 className="text-sm font-bold text-slate-900 dark:text-zinc-100 flex items-center gap-2">
-                      Senior & Executive Hiring Trend
+                      Hiring Trend
                       <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/80 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-700/60 uppercase tracking-wider">
                         Past 6 Months
                       </span>
                     </h3>
                     <p className="text-xs text-slate-500 dark:text-zinc-400 mt-0.5">
-                      Monthly volume of senior, lead, and executive job postings detected across ATS channels.
+                      Monthly volume of total new hires detected across workforce analytics.
                     </p>
                   </div>
                 </div>
@@ -707,39 +724,48 @@ export default function JobsTab({ lead, defaultTab = 'all' }: JobsTabProps) {
                 const seniorKws = ['senior', 'lead', 'vp', 'director', 'head', 'manager', 'principal', 'chief'];
                 const seniorJobs = jobsList.filter((j: any) => seniorKws.some(kw => (j.title || '').toLowerCase().includes(kw)));
                 
-                // Sourced directly from backend JSON (insights.senior_hiring_trend or insights.new_hires)
-                const backendTrend = insights?.senior_hiring_trend || insights?.new_hires;
+                // Sourced directly from backend JSON (insights.new_hires, insights.hiring_trend, or insights.senior_hiring_trend)
+                const backendTrend = insights?.new_hires || insights?.hiring_trend || insights?.senior_hiring_trend;
                 let monthlyData: { month: string; count: number }[] = [];
 
-                if (Array.isArray(backendTrend) && backendTrend.length > 0) {
-                  const sliced = backendTrend.slice(-6);
-                  const totalSeniorHires = sliced.reduce((acc: number, item: any) => acc + (item.senior_hires ?? item.count ?? 0), 0);
+                const getHiresCount = (item: any) => (item.total_hires && item.total_hires > 0) ? item.total_hires : (item.senior_hires || item.count || 0);
 
-                  monthlyData = sliced.map((item: any, idx: number) => {
-                    const monthLabel = item.label || getMonthAbbrev(item.date || item.month);
-                    let count = item.senior_hires ?? item.count ?? 0;
-
-                    if (totalSeniorHires === 0 && seniorJobs.length > 0) {
-                      const weights = [0.1, 0.15, 0.2, 0.25, 0.15, 0.15];
-                      count = Math.max(0, Math.round(seniorJobs.length * weights[idx])) || (idx % 2 === 1 || idx === sliced.length - 1 ? 1 : 0);
-                    }
-                    return { month: monthLabel, count };
+                // Always generate the last 6 calendar months (e.g. Mar, Apr, May, Jun, Jul, Aug)
+                const now = new Date();
+                const last6Months: { label: string; dateKeys: string[] }[] = [];
+                for (let i = 5; i >= 0; i--) {
+                  const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+                  const mLabel = d.toLocaleString('default', { month: 'short' });
+                  const yNum = d.getFullYear();
+                  const mNum = d.getMonth() + 1;
+                  last6Months.push({
+                    label: mLabel,
+                    dateKeys: [`${yNum}-${mNum}`, `${yNum}-${String(mNum).padStart(2, '0')}`]
                   });
-                } else {
-                  // Fallback calculation from ATS senior job openings
-                  const months = [];
-                  const now = new Date();
-                  for (let i = 5; i >= 0; i--) {
-                    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-                    months.push(d.toLocaleString('default', { month: 'short' }));
-                  }
+                }
 
-                  const baseCount = seniorJobs.length;
-                  const weights = [0.1, 0.15, 0.2, 0.25, 0.15, 0.15];
-                  monthlyData = months.map((m, idx) => ({
-                    month: m,
-                    count: baseCount === 0 ? 0 : (Math.max(0, Math.round(baseCount * weights[idx])) || (idx % 2 === 1 || idx === 5 ? 1 : 0))
-                  }));
+                if (Array.isArray(backendTrend) && backendTrend.length > 0) {
+                  const isFromApify = Array.isArray(insights?.new_hires) && insights.new_hires.length > 0;
+                  const firstCount = getHiresCount(backendTrend[0]);
+                  const allFlat = backendTrend.every((item: any) => getHiresCount(item) === firstCount);
+
+                  if (isFromApify || !allFlat) {
+                    monthlyData = last6Months.map(mObj => {
+                      const match = backendTrend.find((item: any) => {
+                        const itemDate = String(item.date || item.month || '');
+                        const itemLabel = (item.label || getMonthAbbrev(itemDate)).toLowerCase();
+                        return mObj.dateKeys.some(k => itemDate === k || itemDate.startsWith(k)) || itemLabel === mObj.label.toLowerCase();
+                      });
+                      return {
+                        month: mObj.label,
+                        count: match ? getHiresCount(match) : 0
+                      };
+                    });
+                  } else {
+                    monthlyData = last6Months.map(mObj => ({ month: mObj.label, count: 0 }));
+                  }
+                } else {
+                  monthlyData = last6Months.map(mObj => ({ month: mObj.label, count: 0 }));
                 }
 
                 const maxCount = Math.max(1, ...monthlyData.map(d => d.count));
@@ -871,30 +897,6 @@ export default function JobsTab({ lead, defaultTab = 'all' }: JobsTabProps) {
                         ))}
                       </svg>
                     </div>
-
-                    {/* Identified Senior Roles List */}
-                    {seniorJobs.length > 0 && (
-                      <div className="pt-2">
-                        <div className="text-[11px] font-bold text-slate-500 dark:text-zinc-400 uppercase tracking-wider mb-2">
-                          Recent Senior Openings Identified
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          {seniorJobs.slice(0, 6).map((job: any, idx: number) => (
-                            <span
-                              key={idx}
-                              className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-zinc-800 text-slate-700 dark:text-zinc-300 border border-slate-200/80 dark:border-zinc-700/60"
-                            >
-                              {job.title}
-                            </span>
-                          ))}
-                          {seniorJobs.length > 6 && (
-                            <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
-                              +{seniorJobs.length - 6} more
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    )}
                   </div>
                 );
               })()}

@@ -1,0 +1,411 @@
+[
+  {
+    "data": {
+      "headcount_by_function": {
+        "Business Development": {
+          "count": 3,
+          "percentage": 30
+        },
+        "Engineering": {
+          "count": 3,
+          "percentage": 30
+        },
+        "Finance": {
+          "count": 1,
+          "percentage": 10
+        },
+        "Information Technology": {
+          "count": 1,
+          "percentage": 10
+        },
+        "Marketing": {
+          "count": 1,
+          "percentage": 10
+        },
+        "Operations": {
+          "count": 1,
+          "percentage": 10
+        },
+        "Product Management": {
+          "count": 1,
+          "percentage": 10
+        },
+        "Program and Project Management": {
+          "count": 1,
+          "percentage": 10
+        }
+      },
+      "headcount_by_month": [
+        {
+          "date": "2024-8-1",
+          "employee_count": 14
+        },
+        {
+          "date": "2024-9-1",
+          "employee_count": 14
+        },
+        {
+          "date": "2024-10-1",
+          "employee_count": 13
+        },
+        {
+          "date": "2024-11-1",
+          "employee_count": 13
+        },
+        {
+          "date": "2024-12-1",
+          "employee_count": 14
+        },
+        {
+          "date": "2025-1-1",
+          "employee_count": 15
+        },
+        {
+          "date": "2025-2-1",
+          "employee_count": 16
+        },
+        {
+          "date": "2025-3-1",
+          "employee_count": 16
+        },
+        {
+          "date": "2025-4-1",
+          "employee_count": 15
+        },
+        {
+          "date": "2025-5-1",
+          "employee_count": 14
+        },
+        {
+          "date": "2025-6-1",
+          "employee_count": 14
+        },
+        {
+          "date": "2025-7-1",
+          "employee_count": 14
+        },
+        {
+          "date": "2025-8-1",
+          "employee_count": 14
+        },
+        {
+          "date": "2025-9-1",
+          "employee_count": 14
+        },
+        {
+          "date": "2025-10-1",
+          "employee_count": 13
+        },
+        {
+          "date": "2025-11-1",
+          "employee_count": 13
+        },
+        {
+          "date": "2025-12-1",
+          "employee_count": 13
+        },
+        {
+          "date": "2026-1-1",
+          "employee_count": 11
+        },
+        {
+          "date": "2026-2-1",
+          "employee_count": 12
+        },
+        {
+          "date": "2026-3-1",
+          "employee_count": 11
+        },
+        {
+          "date": "2026-4-1",
+          "employee_count": 11
+        },
+        {
+          "date": "2026-5-1",
+          "employee_count": 11
+        },
+        {
+          "date": "2026-6-1",
+          "employee_count": 10
+        },
+        {
+          "date": "2026-7-1",
+          "employee_count": 10
+        },
+        {
+          "date": "2026-8-1",
+          "employee_count": 10
+        }
+      ],
+      "headcount_growth": {
+        "1y": "-29%",
+        "2y": "-29%",
+        "6m": "-17%"
+      },
+      "headcount_growth_by_function": {
+        "Business Development": {
+          "1y": "0%",
+          "6m": "0%"
+        },
+        "Engineering": {
+          "1y": "-50%",
+          "6m": "0%"
+        },
+        "Finance": {
+          "1y": "-50%",
+          "6m": "-50%"
+        },
+        "Information Technology": {
+          "1y": "0%",
+          "6m": "0%"
+        },
+        "Marketing": {
+          "1y": "0%",
+          "6m": "0%"
+        },
+        "Operations": {
+          "6m": "0%"
+        },
+        "Product Management": {
+          "1y": "0%",
+          "6m": "0%"
+        },
+        "Program and Project Management": {}
+      },
+      "job_openings": {
+        "job_openings_by_function": [
+          {
+            "count_by_function": {
+              "Administrative": {
+                "count": 9,
+                "percentage": 6
+              },
+              "Arts and Design": {
+                "count": 10,
+                "percentage": 7
+              },
+              "Business Development": {
+                "count": 4,
+                "percentage": 3
+              },
+              "Engineering": {
+                "count": 14,
+                "percentage": 9
+              },
+              "Human Resources": {
+                "count": 3,
+                "percentage": 2
+              },
+              "Information Technology": {
+                "count": 3,
+                "percentage": 2
+              },
+              "Operations": {
+                "count": 35,
+                "percentage": 24
+              },
+              "Program and Project Management": {
+                "count": 3,
+                "percentage": 2
+              },
+              "Quality Assurance": {
+                "count": 15,
+                "percentage": 10
+              },
+              "Research": {
+                "count": 40,
+                "percentage": 27
+              },
+              "Support": {
+                "count": 6,
+                "percentage": 4
+              }
+            },
+            "date": "2026-6",
+            "total_count": 148
+          },
+          {
+            "count_by_function": {
+              "Administrative": {
+                "count": 2,
+                "percentage": 2
+              },
+              "Arts and Design": {
+                "count": 4,
+                "percentage": 4
+              },
+              "Business Development": {
+                "count": 0,
+                "percentage": 0
+              },
+              "Engineering": {
+                "count": 4,
+                "percentage": 4
+              },
+              "Human Resources": {
+                "count": 3,
+                "percentage": 3
+              },
+              "Information Technology": {
+                "count": 0,
+                "percentage": 0
+              },
+              "Operations": {
+                "count": 29,
+                "percentage": 30
+              },
+              "Program and Project Management": {
+                "count": 0,
+                "percentage": 0
+              },
+              "Quality Assurance": {
+                "count": 10,
+                "percentage": 10
+              },
+              "Research": {
+                "count": 41,
+                "percentage": 42
+              },
+              "Support": {
+                "count": 2,
+                "percentage": 2
+              }
+            },
+            "date": "2026-3",
+            "total_count": 97
+          },
+          {
+            "count_by_function": {
+              "Administrative": {
+                "count": 0,
+                "percentage": 0
+              },
+              "Arts and Design": {
+                "count": 2,
+                "percentage": 2
+              },
+              "Business Development": {
+                "count": 1,
+                "percentage": 1
+              },
+              "Engineering": {
+                "count": 12,
+                "percentage": 13
+              },
+              "Human Resources": {
+                "count": 2,
+                "percentage": 2
+              },
+              "Information Technology": {
+                "count": 4,
+                "percentage": 4
+              },
+              "Operations": {
+                "count": 21,
+                "percentage": 24
+              },
+              "Program and Project Management": {
+                "count": 0,
+                "percentage": 0
+              },
+              "Quality Assurance": {
+                "count": 8,
+                "percentage": 9
+              },
+              "Research": {
+                "count": 33,
+                "percentage": 37
+              },
+              "Support": {
+                "count": 0,
+                "percentage": 0
+              }
+            },
+            "date": "2025-12",
+            "total_count": 89
+          }
+        ],
+        "job_openings_growth": {
+          "3m": "53%",
+          "6m": "66%"
+        },
+        "job_openings_growth_by_function": {
+          "Administrative": {
+            "3m": "350%",
+            "6m": "900%"
+          },
+          "Arts and Design": {
+            "3m": "150%",
+            "6m": "400%"
+          },
+          "Business Development": {
+            "3m": "400%",
+            "6m": "300%"
+          },
+          "Engineering": {
+            "3m": "250%",
+            "6m": "17%"
+          },
+          "Human Resources": {
+            "3m": "0%",
+            "6m": "50%"
+          },
+          "Information Technology": {
+            "3m": "300%",
+            "6m": "-25%"
+          },
+          "Operations": {
+            "3m": "21%",
+            "6m": "67%"
+          },
+          "Program and Project Management": {
+            "3m": "300%",
+            "6m": "300%"
+          },
+          "Quality Assurance": {
+            "3m": "50%",
+            "6m": "88%"
+          },
+          "Research": {
+            "3m": "-2%",
+            "6m": "21%"
+          },
+          "Support": {
+            "3m": "200%",
+            "6m": "600%"
+          }
+        }
+      },
+      "median_employee_tenure": 3.8,
+      "new_hires": [
+        {
+          "date": "2024-11",
+          "senior_hires": 0,
+          "total_hires": 1
+        },
+        {
+          "date": "2024-12",
+          "senior_hires": 0,
+          "total_hires": 1
+        },
+        {
+          "date": "2025-1",
+          "senior_hires": 0,
+          "total_hires": 1
+        },
+        {
+          "date": "2025-2",
+          "senior_hires": 0,
+          "total_hires": 2
+        },
+        {
+          "date": "2026-2",
+          "senior_hires": 0,
+          "total_hires": 1
+        }
+      ],
+      "total_employees": 10
+    },
+    "message": "ok"
+  }
+]

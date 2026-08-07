@@ -1,0 +1,1544 @@
+[
+  {
+    "company_name": "Valence",
+    "domain": "getvalence.com",
+    "linkedin_id": "77018625",
+    "status": "Fetched & Updated",
+    "total_employees": 10,
+    "headcount_growth": {
+      "1y": "-29%",
+      "2y": "-29%",
+      "6m": "-17%"
+    },
+    "new_hires": [
+      {
+        "date": "2024-11",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2024-12",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2025-1",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2025-2",
+        "senior_hires": 0,
+        "total_hires": 2
+      },
+      {
+        "date": "2026-2",
+        "senior_hires": 0,
+        "total_hires": 1
+      }
+    ],
+    "last_6_months_trend": [
+      {
+        "date": "2026-3",
+        "label": "Mar",
+        "senior_hires": 0,
+        "total_hires": 0
+      },
+      {
+        "date": "2026-4",
+        "label": "Apr",
+        "senior_hires": 0,
+        "total_hires": 0
+      },
+      {
+        "date": "2026-5",
+        "label": "May",
+        "senior_hires": 0,
+        "total_hires": 0
+      },
+      {
+        "date": "2026-6",
+        "label": "Jun",
+        "senior_hires": 0,
+        "total_hires": 0
+      },
+      {
+        "date": "2026-7",
+        "label": "Jul",
+        "senior_hires": 0,
+        "total_hires": 0
+      },
+      {
+        "date": "2026-8",
+        "label": "Aug",
+        "senior_hires": 0,
+        "total_hires": 0
+      }
+    ]
+  },
+  {
+    "company_name": "RAMYRO Inc.",
+    "domain": "ramyro.com",
+    "status": "Skipped (Unresolved LinkedIn ID)",
+    "data": {
+      "senior_hiring_trend": [
+        {
+          "date": "2026-03",
+          "label": "Mar",
+          "total_hires": 2,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-04",
+          "label": "Apr",
+          "total_hires": 2,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-05",
+          "label": "May",
+          "total_hires": 2,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-06",
+          "label": "Jun",
+          "total_hires": 2,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-07",
+          "label": "Jul",
+          "total_hires": 2,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-08",
+          "label": "Aug",
+          "total_hires": 2,
+          "senior_hires": 0
+        }
+      ]
+    }
+  },
+  {
+    "company_name": "GameRamp",
+    "domain": "www.gameramp.com",
+    "status": "Skipped (Unresolved LinkedIn ID)",
+    "data": {
+      "senior_hiring_trend": [
+        {
+          "date": "2026-03",
+          "label": "Mar",
+          "total_hires": 2,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-04",
+          "label": "Apr",
+          "total_hires": 2,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-05",
+          "label": "May",
+          "total_hires": 2,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-06",
+          "label": "Jun",
+          "total_hires": 2,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-07",
+          "label": "Jul",
+          "total_hires": 2,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-08",
+          "label": "Aug",
+          "total_hires": 2,
+          "senior_hires": 0
+        }
+      ]
+    }
+  },
+  {
+    "company_name": "Baxter Clewis Cybersecurity",
+    "domain": "baxterclewis.com",
+    "linkedin_id": "71375703",
+    "status": "Fetched & Updated",
+    "total_employees": 175,
+    "headcount_growth": {
+      "1y": "-9%",
+      "2y": "-33%",
+      "6m": "-3%"
+    },
+    "new_hires": [
+      {
+        "date": "2024-8",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2024-9",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2024-10",
+        "senior_hires": 0,
+        "total_hires": 2
+      },
+      {
+        "date": "2025-1",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2025-3",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2025-5",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2025-7",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2025-9",
+        "senior_hires": 0,
+        "total_hires": 1
+      }
+    ],
+    "last_6_months_trend": [
+      {
+        "date": "2026-3",
+        "label": "Mar",
+        "senior_hires": 0,
+        "total_hires": 0
+      },
+      {
+        "date": "2026-4",
+        "label": "Apr",
+        "senior_hires": 0,
+        "total_hires": 0
+      },
+      {
+        "date": "2026-5",
+        "label": "May",
+        "senior_hires": 0,
+        "total_hires": 0
+      },
+      {
+        "date": "2026-6",
+        "label": "Jun",
+        "senior_hires": 0,
+        "total_hires": 0
+      },
+      {
+        "date": "2026-7",
+        "label": "Jul",
+        "senior_hires": 0,
+        "total_hires": 0
+      },
+      {
+        "date": "2026-8",
+        "label": "Aug",
+        "senior_hires": 0,
+        "total_hires": 0
+      }
+    ]
+  },
+  {
+    "company_name": "Sei AI",
+    "domain": "seiright.com",
+    "linkedin_id": "97400216",
+    "status": "Fetched & Updated",
+    "total_employees": 18,
+    "headcount_growth": {
+      "1y": "6%",
+      "2y": "157%",
+      "6m": "6%"
+    },
+    "new_hires": [
+      {
+        "date": "2024-10",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2024-12",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2025-1",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2025-2",
+        "senior_hires": 0,
+        "total_hires": 2
+      },
+      {
+        "date": "2025-4",
+        "senior_hires": 0,
+        "total_hires": 3
+      },
+      {
+        "date": "2025-5",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2025-7",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2025-8",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2025-9",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2026-1",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2026-2",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2026-4",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2026-5",
+        "senior_hires": 0,
+        "total_hires": 3
+      }
+    ],
+    "last_6_months_trend": [
+      {
+        "date": "2026-3",
+        "label": "Mar",
+        "senior_hires": 0,
+        "total_hires": 0
+      },
+      {
+        "date": "2026-4",
+        "label": "Apr",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2026-5",
+        "label": "May",
+        "senior_hires": 0,
+        "total_hires": 3
+      },
+      {
+        "date": "2026-6",
+        "label": "Jun",
+        "senior_hires": 0,
+        "total_hires": 0
+      },
+      {
+        "date": "2026-7",
+        "label": "Jul",
+        "senior_hires": 0,
+        "total_hires": 0
+      },
+      {
+        "date": "2026-8",
+        "label": "Aug",
+        "senior_hires": 0,
+        "total_hires": 0
+      }
+    ]
+  },
+  {
+    "company_name": "Plural",
+    "domain": "plural.sh",
+    "status": "Skipped (Unresolved LinkedIn ID)",
+    "data": {
+      "senior_hiring_trend": [
+        {
+          "date": "2026-03",
+          "label": "Mar",
+          "total_hires": 2,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-04",
+          "label": "Apr",
+          "total_hires": 2,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-05",
+          "label": "May",
+          "total_hires": 2,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-06",
+          "label": "Jun",
+          "total_hires": 2,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-07",
+          "label": "Jul",
+          "total_hires": 2,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-08",
+          "label": "Aug",
+          "total_hires": 2,
+          "senior_hires": 0
+        }
+      ]
+    }
+  },
+  {
+    "company_name": "Sports GameX",
+    "domain": "sportsgamex.com",
+    "status": "Skipped (Unresolved LinkedIn ID)",
+    "data": {
+      "senior_hiring_trend": [
+        {
+          "date": "2026-03",
+          "label": "Mar",
+          "total_hires": 2,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-04",
+          "label": "Apr",
+          "total_hires": 2,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-05",
+          "label": "May",
+          "total_hires": 2,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-06",
+          "label": "Jun",
+          "total_hires": 2,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-07",
+          "label": "Jul",
+          "total_hires": 2,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-08",
+          "label": "Aug",
+          "total_hires": 2,
+          "senior_hires": 0
+        }
+      ]
+    }
+  },
+  {
+    "company_name": "Bizzi App",
+    "domain": "bizfluenceapp.com",
+    "status": "Skipped (Unresolved LinkedIn ID)",
+    "data": {
+      "senior_hiring_trend": [
+        {
+          "date": "2026-03",
+          "label": "Mar",
+          "total_hires": 2,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-04",
+          "label": "Apr",
+          "total_hires": 2,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-05",
+          "label": "May",
+          "total_hires": 2,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-06",
+          "label": "Jun",
+          "total_hires": 2,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-07",
+          "label": "Jul",
+          "total_hires": 2,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-08",
+          "label": "Aug",
+          "total_hires": 2,
+          "senior_hires": 0
+        }
+      ]
+    }
+  },
+  {
+    "company_name": "AI Automation",
+    "domain": "askreferral.io",
+    "linkedin_id": "90515076",
+    "status": "Fetched & Updated",
+    "total_employees": 206,
+    "headcount_growth": {
+      "1y": "79%",
+      "2y": "190%",
+      "6m": "45%"
+    },
+    "new_hires": [
+      {
+        "date": "2024-8",
+        "senior_hires": 0,
+        "total_hires": 4
+      },
+      {
+        "date": "2024-10",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2024-12",
+        "senior_hires": 0,
+        "total_hires": 6
+      },
+      {
+        "date": "2025-1",
+        "senior_hires": 0,
+        "total_hires": 9
+      },
+      {
+        "date": "2025-2",
+        "senior_hires": 0,
+        "total_hires": 5
+      },
+      {
+        "date": "2025-3",
+        "senior_hires": 0,
+        "total_hires": 3
+      },
+      {
+        "date": "2025-4",
+        "senior_hires": 0,
+        "total_hires": 4
+      },
+      {
+        "date": "2025-5",
+        "senior_hires": 0,
+        "total_hires": 6
+      },
+      {
+        "date": "2025-6",
+        "senior_hires": 0,
+        "total_hires": 4
+      },
+      {
+        "date": "2025-7",
+        "senior_hires": 0,
+        "total_hires": 6
+      },
+      {
+        "date": "2025-8",
+        "senior_hires": 0,
+        "total_hires": 5
+      },
+      {
+        "date": "2025-9",
+        "senior_hires": 0,
+        "total_hires": 6
+      },
+      {
+        "date": "2025-10",
+        "senior_hires": 0,
+        "total_hires": 3
+      },
+      {
+        "date": "2025-11",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2025-12",
+        "senior_hires": 0,
+        "total_hires": 2
+      },
+      {
+        "date": "2026-1",
+        "senior_hires": 0,
+        "total_hires": 9
+      },
+      {
+        "date": "2026-2",
+        "senior_hires": 0,
+        "total_hires": 7
+      },
+      {
+        "date": "2026-3",
+        "senior_hires": 0,
+        "total_hires": 9
+      },
+      {
+        "date": "2026-4",
+        "senior_hires": 0,
+        "total_hires": 20
+      },
+      {
+        "date": "2026-5",
+        "senior_hires": 0,
+        "total_hires": 7
+      },
+      {
+        "date": "2026-6",
+        "senior_hires": 0,
+        "total_hires": 18
+      },
+      {
+        "date": "2026-7",
+        "senior_hires": 0,
+        "total_hires": 14
+      }
+    ],
+    "last_6_months_trend": [
+      {
+        "date": "2026-3",
+        "label": "Mar",
+        "senior_hires": 0,
+        "total_hires": 9
+      },
+      {
+        "date": "2026-4",
+        "label": "Apr",
+        "senior_hires": 0,
+        "total_hires": 20
+      },
+      {
+        "date": "2026-5",
+        "label": "May",
+        "senior_hires": 0,
+        "total_hires": 7
+      },
+      {
+        "date": "2026-6",
+        "label": "Jun",
+        "senior_hires": 0,
+        "total_hires": 18
+      },
+      {
+        "date": "2026-7",
+        "label": "Jul",
+        "senior_hires": 0,
+        "total_hires": 14
+      },
+      {
+        "date": "2026-8",
+        "label": "Aug",
+        "senior_hires": 0,
+        "total_hires": 0
+      }
+    ]
+  },
+  {
+    "company_name": "Karini AI",
+    "domain": "karini.ai",
+    "status": "Skipped (Unresolved LinkedIn ID)",
+    "data": {
+      "senior_hiring_trend": [
+        {
+          "date": "2026-03",
+          "label": "Mar",
+          "total_hires": 2,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-04",
+          "label": "Apr",
+          "total_hires": 2,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-05",
+          "label": "May",
+          "total_hires": 2,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-06",
+          "label": "Jun",
+          "total_hires": 2,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-07",
+          "label": "Jul",
+          "total_hires": 2,
+          "senior_hires": 0
+        },
+        {
+          "date": "2026-08",
+          "label": "Aug",
+          "total_hires": 2,
+          "senior_hires": 0
+        }
+      ]
+    }
+  },
+  {
+    "company_name": "InfoWebUSA Technologies",
+    "domain": "infowebusa.com",
+    "linkedin_id": "101653241",
+    "status": "Fetched & Updated",
+    "total_employees": 45,
+    "headcount_growth": {
+      "1y": "13%",
+      "2y": "137%",
+      "6m": "2%"
+    },
+    "new_hires": [
+      {
+        "date": "2024-8",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2024-9",
+        "senior_hires": 0,
+        "total_hires": 2
+      },
+      {
+        "date": "2024-10",
+        "senior_hires": 0,
+        "total_hires": 4
+      },
+      {
+        "date": "2024-11",
+        "senior_hires": 0,
+        "total_hires": 3
+      },
+      {
+        "date": "2025-1",
+        "senior_hires": 0,
+        "total_hires": 4
+      },
+      {
+        "date": "2025-3",
+        "senior_hires": 0,
+        "total_hires": 2
+      },
+      {
+        "date": "2025-4",
+        "senior_hires": 0,
+        "total_hires": 7
+      },
+      {
+        "date": "2025-5",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2025-6",
+        "senior_hires": 0,
+        "total_hires": 5
+      },
+      {
+        "date": "2025-7",
+        "senior_hires": 0,
+        "total_hires": 3
+      },
+      {
+        "date": "2025-8",
+        "senior_hires": 0,
+        "total_hires": 3
+      },
+      {
+        "date": "2025-9",
+        "senior_hires": 0,
+        "total_hires": 2
+      },
+      {
+        "date": "2025-10",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2025-11",
+        "senior_hires": 0,
+        "total_hires": 4
+      },
+      {
+        "date": "2026-1",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2026-2",
+        "senior_hires": 0,
+        "total_hires": 3
+      },
+      {
+        "date": "2026-3",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2026-4",
+        "senior_hires": 0,
+        "total_hires": 2
+      },
+      {
+        "date": "2026-5",
+        "senior_hires": 0,
+        "total_hires": 2
+      }
+    ],
+    "last_6_months_trend": [
+      {
+        "date": "2026-3",
+        "label": "Mar",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2026-4",
+        "label": "Apr",
+        "senior_hires": 0,
+        "total_hires": 2
+      },
+      {
+        "date": "2026-5",
+        "label": "May",
+        "senior_hires": 0,
+        "total_hires": 2
+      },
+      {
+        "date": "2026-6",
+        "label": "Jun",
+        "senior_hires": 0,
+        "total_hires": 0
+      },
+      {
+        "date": "2026-7",
+        "label": "Jul",
+        "senior_hires": 0,
+        "total_hires": 0
+      },
+      {
+        "date": "2026-8",
+        "label": "Aug",
+        "senior_hires": 0,
+        "total_hires": 0
+      }
+    ]
+  },
+  {
+    "company_name": "Rutter",
+    "domain": "rutter.com",
+    "linkedin_id": "71995640",
+    "status": "Fetched & Updated",
+    "total_employees": 42,
+    "headcount_growth": {
+      "1y": "14%",
+      "2y": "40%",
+      "6m": "0%"
+    },
+    "new_hires": [
+      {
+        "date": "2024-9",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2024-11",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2024-12",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2025-1",
+        "senior_hires": 0,
+        "total_hires": 2
+      },
+      {
+        "date": "2025-2",
+        "senior_hires": 0,
+        "total_hires": 2
+      },
+      {
+        "date": "2025-3",
+        "senior_hires": 0,
+        "total_hires": 2
+      },
+      {
+        "date": "2025-4",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2025-5",
+        "senior_hires": 0,
+        "total_hires": 3
+      },
+      {
+        "date": "2025-6",
+        "senior_hires": 0,
+        "total_hires": 3
+      },
+      {
+        "date": "2025-7",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2025-8",
+        "senior_hires": 0,
+        "total_hires": 2
+      },
+      {
+        "date": "2025-9",
+        "senior_hires": 0,
+        "total_hires": 6
+      },
+      {
+        "date": "2026-1",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2026-3",
+        "senior_hires": 0,
+        "total_hires": 1
+      }
+    ],
+    "last_6_months_trend": [
+      {
+        "date": "2026-3",
+        "label": "Mar",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2026-4",
+        "label": "Apr",
+        "senior_hires": 0,
+        "total_hires": 0
+      },
+      {
+        "date": "2026-5",
+        "label": "May",
+        "senior_hires": 0,
+        "total_hires": 0
+      },
+      {
+        "date": "2026-6",
+        "label": "Jun",
+        "senior_hires": 0,
+        "total_hires": 0
+      },
+      {
+        "date": "2026-7",
+        "label": "Jul",
+        "senior_hires": 0,
+        "total_hires": 0
+      },
+      {
+        "date": "2026-8",
+        "label": "Aug",
+        "senior_hires": 0,
+        "total_hires": 0
+      }
+    ]
+  },
+  {
+    "company_name": "Remark",
+    "domain": "withremark.com",
+    "linkedin_id": "88169192",
+    "status": "Fetched & Updated",
+    "total_employees": 47,
+    "headcount_growth": {
+      "1y": "2%",
+      "2y": "38%",
+      "6m": "-13%"
+    },
+    "new_hires": [
+      {
+        "date": "2024-8",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2024-9",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2024-10",
+        "senior_hires": 0,
+        "total_hires": 2
+      },
+      {
+        "date": "2024-12",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2025-1",
+        "senior_hires": 0,
+        "total_hires": 2
+      },
+      {
+        "date": "2025-2",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2025-4",
+        "senior_hires": 0,
+        "total_hires": 2
+      },
+      {
+        "date": "2025-5",
+        "senior_hires": 0,
+        "total_hires": 4
+      },
+      {
+        "date": "2025-6",
+        "senior_hires": 0,
+        "total_hires": 4
+      },
+      {
+        "date": "2025-7",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2025-8",
+        "senior_hires": 0,
+        "total_hires": 3
+      },
+      {
+        "date": "2025-9",
+        "senior_hires": 0,
+        "total_hires": 4
+      },
+      {
+        "date": "2025-10",
+        "senior_hires": 0,
+        "total_hires": 2
+      },
+      {
+        "date": "2025-11",
+        "senior_hires": 0,
+        "total_hires": 3
+      },
+      {
+        "date": "2025-12",
+        "senior_hires": 0,
+        "total_hires": 3
+      },
+      {
+        "date": "2026-1",
+        "senior_hires": 0,
+        "total_hires": 3
+      },
+      {
+        "date": "2026-2",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2026-4",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2026-5",
+        "senior_hires": 0,
+        "total_hires": 4
+      },
+      {
+        "date": "2026-6",
+        "senior_hires": 0,
+        "total_hires": 1
+      }
+    ],
+    "last_6_months_trend": [
+      {
+        "date": "2026-3",
+        "label": "Mar",
+        "senior_hires": 0,
+        "total_hires": 0
+      },
+      {
+        "date": "2026-4",
+        "label": "Apr",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2026-5",
+        "label": "May",
+        "senior_hires": 0,
+        "total_hires": 4
+      },
+      {
+        "date": "2026-6",
+        "label": "Jun",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2026-7",
+        "label": "Jul",
+        "senior_hires": 0,
+        "total_hires": 0
+      },
+      {
+        "date": "2026-8",
+        "label": "Aug",
+        "senior_hires": 0,
+        "total_hires": 0
+      }
+    ]
+  },
+  {
+    "company_name": "Azion",
+    "domain": "azion.com",
+    "linkedin_id": "10206226",
+    "status": "Fetched & Updated",
+    "total_employees": 5,
+    "headcount_growth": {
+      "1y": "0%",
+      "2y": "0%",
+      "6m": "0%"
+    },
+    "new_hires": [
+      {
+        "date": "2024-8",
+        "senior_hires": 0,
+        "total_hires": 1
+      }
+    ],
+    "last_6_months_trend": [
+      {
+        "date": "2026-3",
+        "label": "Mar",
+        "senior_hires": 0,
+        "total_hires": 0
+      },
+      {
+        "date": "2026-4",
+        "label": "Apr",
+        "senior_hires": 0,
+        "total_hires": 0
+      },
+      {
+        "date": "2026-5",
+        "label": "May",
+        "senior_hires": 0,
+        "total_hires": 0
+      },
+      {
+        "date": "2026-6",
+        "label": "Jun",
+        "senior_hires": 0,
+        "total_hires": 0
+      },
+      {
+        "date": "2026-7",
+        "label": "Jul",
+        "senior_hires": 0,
+        "total_hires": 0
+      },
+      {
+        "date": "2026-8",
+        "label": "Aug",
+        "senior_hires": 0,
+        "total_hires": 0
+      }
+    ]
+  },
+  {
+    "company_name": "Netstock",
+    "domain": "netstock.com",
+    "linkedin_id": "2195029",
+    "status": "Fetched & Updated",
+    "total_employees": 208,
+    "headcount_growth": {
+      "1y": "21%",
+      "2y": "40%",
+      "6m": "3%"
+    },
+    "new_hires": [
+      {
+        "date": "2024-8",
+        "senior_hires": 0,
+        "total_hires": 3
+      },
+      {
+        "date": "2024-9",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2024-10",
+        "senior_hires": 0,
+        "total_hires": 2
+      },
+      {
+        "date": "2024-11",
+        "senior_hires": 0,
+        "total_hires": 3
+      },
+      {
+        "date": "2024-12",
+        "senior_hires": 0,
+        "total_hires": 3
+      },
+      {
+        "date": "2025-1",
+        "senior_hires": 0,
+        "total_hires": 3
+      },
+      {
+        "date": "2025-2",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2025-3",
+        "senior_hires": 0,
+        "total_hires": 4
+      },
+      {
+        "date": "2025-4",
+        "senior_hires": 1,
+        "total_hires": 9
+      },
+      {
+        "date": "2025-5",
+        "senior_hires": 0,
+        "total_hires": 3
+      },
+      {
+        "date": "2025-6",
+        "senior_hires": 0,
+        "total_hires": 2
+      },
+      {
+        "date": "2025-7",
+        "senior_hires": 0,
+        "total_hires": 5
+      },
+      {
+        "date": "2025-8",
+        "senior_hires": 0,
+        "total_hires": 6
+      },
+      {
+        "date": "2025-9",
+        "senior_hires": 0,
+        "total_hires": 2
+      },
+      {
+        "date": "2025-10",
+        "senior_hires": 0,
+        "total_hires": 7
+      },
+      {
+        "date": "2025-11",
+        "senior_hires": 0,
+        "total_hires": 7
+      },
+      {
+        "date": "2025-12",
+        "senior_hires": 0,
+        "total_hires": 4
+      },
+      {
+        "date": "2026-1",
+        "senior_hires": 0,
+        "total_hires": 10
+      },
+      {
+        "date": "2026-2",
+        "senior_hires": 0,
+        "total_hires": 3
+      },
+      {
+        "date": "2026-3",
+        "senior_hires": 0,
+        "total_hires": 2
+      },
+      {
+        "date": "2026-4",
+        "senior_hires": 0,
+        "total_hires": 4
+      },
+      {
+        "date": "2026-5",
+        "senior_hires": 0,
+        "total_hires": 5
+      },
+      {
+        "date": "2026-6",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2026-7",
+        "senior_hires": 0,
+        "total_hires": 1
+      }
+    ],
+    "last_6_months_trend": [
+      {
+        "date": "2026-3",
+        "label": "Mar",
+        "senior_hires": 0,
+        "total_hires": 2
+      },
+      {
+        "date": "2026-4",
+        "label": "Apr",
+        "senior_hires": 0,
+        "total_hires": 4
+      },
+      {
+        "date": "2026-5",
+        "label": "May",
+        "senior_hires": 0,
+        "total_hires": 5
+      },
+      {
+        "date": "2026-6",
+        "label": "Jun",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2026-7",
+        "label": "Jul",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2026-8",
+        "label": "Aug",
+        "senior_hires": 0,
+        "total_hires": 0
+      }
+    ]
+  },
+  {
+    "company_name": "Jigx",
+    "domain": "jigx.com",
+    "linkedin_id": "66317269",
+    "status": "Fetched & Updated",
+    "total_employees": 24,
+    "headcount_growth": {
+      "1y": "-11%",
+      "2y": "-25%",
+      "6m": "-4%"
+    },
+    "new_hires": [
+      {
+        "date": "2025-6",
+        "senior_hires": 0,
+        "total_hires": 2
+      },
+      {
+        "date": "2025-10",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2026-3",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2026-6",
+        "senior_hires": 0,
+        "total_hires": 1
+      }
+    ],
+    "last_6_months_trend": [
+      {
+        "date": "2026-3",
+        "label": "Mar",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2026-4",
+        "label": "Apr",
+        "senior_hires": 0,
+        "total_hires": 0
+      },
+      {
+        "date": "2026-5",
+        "label": "May",
+        "senior_hires": 0,
+        "total_hires": 0
+      },
+      {
+        "date": "2026-6",
+        "label": "Jun",
+        "senior_hires": 0,
+        "total_hires": 1
+      },
+      {
+        "date": "2026-7",
+        "label": "Jul",
+        "senior_hires": 0,
+        "total_hires": 0
+      },
+      {
+        "date": "2026-8",
+        "label": "Aug",
+        "senior_hires": 0,
+        "total_hires": 0
+      }
+    ]
+  },
+  {
+    "company_name": "Chalk",
+    "domain": "chalk.ai",
+    "linkedin_id": "688588",
+    "status": "Fetched & Updated",
+    "total_employees": 5,
+    "headcount_growth": {
+      "1y": "0%",
+      "2y": "0%",
+      "6m": "0%"
+    },
+    "new_hires": [],
+    "last_6_months_trend": [
+      {
+        "date": "2026-3",
+        "label": "Mar",
+        "senior_hires": 0,
+        "total_hires": 0
+      },
+      {
+        "date": "2026-4",
+        "label": "Apr",
+        "senior_hires": 0,
+        "total_hires": 0
+      },
+      {
+        "date": "2026-5",
+        "label": "May",
+        "senior_hires": 0,
+        "total_hires": 0
+      },
+      {
+        "date": "2026-6",
+        "label": "Jun",
+        "senior_hires": 0,
+        "total_hires": 0
+      },
+      {
+        "date": "2026-7",
+        "label": "Jul",
+        "senior_hires": 0,
+        "total_hires": 0
+      },
+      {
+        "date": "2026-8",
+        "label": "Aug",
+        "senior_hires": 0,
+        "total_hires": 0
+      }
+    ]
+  },
+  {
+    "company_name": "SurePoint Technologies",
+    "domain": "surepoint.com",
+    "linkedin_id": "2661743",
+    "status": "Fetched & Updated",
+    "total_employees": 5,
+    "headcount_growth": {
+      "1y": "0%",
+      "2y": "0%",
+      "6m": "0%"
+    },
+    "new_hires": [],
+    "last_6_months_trend": [
+      {
+        "date": "2026-3",
+        "label": "Mar",
+        "senior_hires": 0,
+        "total_hires": 0
+      },
+      {
+        "date": "2026-4",
+        "label": "Apr",
+        "senior_hires": 0,
+        "total_hires": 0
+      },
+      {
+        "date": "2026-5",
+        "label": "May",
+        "senior_hires": 0,
+        "total_hires": 0
+      },
+      {
+        "date": "2026-6",
+        "label": "Jun",
+        "senior_hires": 0,
+        "total_hires": 0
+      },
+      {
+        "date": "2026-7",
+        "label": "Jul",
+        "senior_hires": 0,
+        "total_hires": 0
+      },
+      {
+        "date": "2026-8",
+        "label": "Aug",
+        "senior_hires": 0,
+        "total_hires": 0
+      }
+    ]
+  }
+]

@@ -124,6 +124,8 @@ def list_all_leads():
             if not lead.full_payload:
                 continue
             payload = dict(lead.full_payload)
+            if lead.company_linkedin_id:
+                payload["company_linkedin_id"] = lead.company_linkedin_id
             if lead.annual_revenue:
                 payload["annual_revenue"] = lead.annual_revenue
             if lead.job_openings is not None:
@@ -200,6 +202,8 @@ def get_lead_profile_details(lead_id: str):
                 detail="Requested lead tracking index not found."
             )
         payload = dict(lead.full_payload)
+        if lead.company_linkedin_id:
+            payload["company_linkedin_id"] = lead.company_linkedin_id
         if lead.annual_revenue:
             payload["annual_revenue"] = lead.annual_revenue
         if lead.job_openings is not None:

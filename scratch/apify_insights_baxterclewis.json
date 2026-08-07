@@ -1,0 +1,215 @@
+[
+  {
+    "data": {
+      "headcount_by_function": {
+        "Business Development": {
+          "count": 6,
+          "percentage": 3
+        },
+        "Consulting": {
+          "count": 24,
+          "percentage": 14
+        },
+        "Engineering": {
+          "count": 9,
+          "percentage": 5
+        },
+        "Finance": {
+          "count": 6,
+          "percentage": 3
+        },
+        "Information Technology": {
+          "count": 101,
+          "percentage": 58
+        },
+        "Legal": {
+          "count": 11,
+          "percentage": 6
+        }
+      },
+      "headcount_by_month": [
+        {
+          "date": "2024-8-1",
+          "employee_count": 262
+        },
+        {
+          "date": "2024-9-1",
+          "employee_count": 254
+        },
+        {
+          "date": "2024-10-1",
+          "employee_count": 249
+        },
+        {
+          "date": "2024-11-1",
+          "employee_count": 244
+        },
+        {
+          "date": "2024-12-1",
+          "employee_count": 227
+        },
+        {
+          "date": "2025-1-1",
+          "employee_count": 213
+        },
+        {
+          "date": "2025-2-1",
+          "employee_count": 211
+        },
+        {
+          "date": "2025-3-1",
+          "employee_count": 208
+        },
+        {
+          "date": "2025-4-1",
+          "employee_count": 206
+        },
+        {
+          "date": "2025-5-1",
+          "employee_count": 204
+        },
+        {
+          "date": "2025-6-1",
+          "employee_count": 197
+        },
+        {
+          "date": "2025-7-1",
+          "employee_count": 193
+        },
+        {
+          "date": "2025-8-1",
+          "employee_count": 192
+        },
+        {
+          "date": "2025-9-1",
+          "employee_count": 193
+        },
+        {
+          "date": "2025-10-1",
+          "employee_count": 192
+        },
+        {
+          "date": "2025-11-1",
+          "employee_count": 189
+        },
+        {
+          "date": "2025-12-1",
+          "employee_count": 185
+        },
+        {
+          "date": "2026-1-1",
+          "employee_count": 185
+        },
+        {
+          "date": "2026-2-1",
+          "employee_count": 180
+        },
+        {
+          "date": "2026-3-1",
+          "employee_count": 177
+        },
+        {
+          "date": "2026-4-1",
+          "employee_count": 177
+        },
+        {
+          "date": "2026-5-1",
+          "employee_count": 177
+        },
+        {
+          "date": "2026-6-1",
+          "employee_count": 177
+        },
+        {
+          "date": "2026-7-1",
+          "employee_count": 176
+        },
+        {
+          "date": "2026-8-1",
+          "employee_count": 175
+        }
+      ],
+      "headcount_growth": {
+        "1y": "-9%",
+        "2y": "-33%",
+        "6m": "-3%"
+      },
+      "headcount_growth_by_function": {
+        "Business Development": {
+          "1y": "-25%",
+          "6m": "0%"
+        },
+        "Consulting": {
+          "1y": "-14%",
+          "6m": "-4%"
+        },
+        "Engineering": {
+          "1y": "-18%",
+          "6m": "-10%"
+        },
+        "Finance": {
+          "1y": "0%",
+          "6m": "0%"
+        },
+        "Information Technology": {
+          "1y": "-6%",
+          "6m": "-6%"
+        },
+        "Legal": {
+          "1y": "0%",
+          "6m": "0%"
+        }
+      },
+      "job_openings": {
+        "job_openings_by_function": [],
+        "job_openings_growth": {},
+        "job_openings_growth_by_function": {}
+      },
+      "median_employee_tenure": 3.5,
+      "new_hires": [
+        {
+          "date": "2024-8",
+          "senior_hires": 0,
+          "total_hires": 1
+        },
+        {
+          "date": "2024-9",
+          "senior_hires": 0,
+          "total_hires": 1
+        },
+        {
+          "date": "2024-10",
+          "senior_hires": 0,
+          "total_hires": 2
+        },
+        {
+          "date": "2025-1",
+          "senior_hires": 0,
+          "total_hires": 1
+        },
+        {
+          "date": "2025-3",
+          "senior_hires": 0,
+          "total_hires": 1
+        },
+        {
+          "date": "2025-5",
+          "senior_hires": 0,
+          "total_hires": 1
+        },
+        {
+          "date": "2025-7",
+          "senior_hires": 0,
+          "total_hires": 1
+        },
+        {
+          "date": "2025-9",
+          "senior_hires": 0,
+          "total_hires": 1
+        }
+      ],
+      "total_employees": 175
+    },
+    "message": "ok"
+  }
+]
