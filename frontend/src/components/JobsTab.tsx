@@ -143,9 +143,7 @@ export default function JobsTab({ lead, defaultTab = 'all' }: JobsTabProps) {
     dateRangeText = `${fMonth} ${firstObj.getFullYear()} - ${lMonth} ${lastObj.getFullYear()}`;
     latestDateLabel = `As of ${lMonth} ${lastObj.getFullYear()}`;
 
-    const prevYearStart = `${fMonth} ${firstObj.getFullYear() - 1}`;
-    const prevYearEnd = `${lMonth} ${lastObj.getFullYear() - 1}`;
-    prevYearText = `vs ${prevYearStart} - ${prevYearEnd}`;
+    prevYearText = `${fMonth} ${firstObj.getFullYear()} - ${lMonth} ${lastObj.getFullYear()}`;
   }
 
   // Trajectory Bounds

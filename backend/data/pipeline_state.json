@@ -1,8 +1,8 @@
 {
-  "current_offset": 85,
+  "current_offset": 200,
   "daily_target": 30,
-  "daily_processed_count": 100,
-  "last_run_timestamp": "2026-08-05T18:31:27.639296+00:00",
+  "daily_processed_count": 125,
+  "last_run_timestamp": "2026-08-07T09:50:28.110316+00:00",
   "total_records_in_airtable": 487,
-  "next_offset_token": null
+  "next_offset_token": "itruFHLP6YGjXWRLk/rec1OlYDLDyvkXzOY"
 }

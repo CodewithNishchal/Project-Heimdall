@@ -1,0 +1,21 @@
+{
+  "company_name": "Sports GameX",
+  "domain": "sportsgamex.com",
+  "slugs_tested": [
+    "sportsgamex",
+    "sports-gamex",
+    "sportsgamex-com",
+    "sportsgamexcom",
+    "sportxglobal"
+  ],
+  "serper_urls_found": [
+    "https://www.linkedin.com/company/sportxglobal",
+    "https://www.linkedin.com/company/xgames",
+    "https://www.linkedin.com/company/sports-comlive",
+    "https://www.linkedin.com/company/home-game-sports",
+    "https://www.linkedin.com/company/sportsxco",
+    "https://www.linkedin.com/company/gameon-sports-network"
+  ],
+  "resolved_id": "17902832",
+  "winning_slug": "sportxglobal"
+}

@@ -144,11 +144,12 @@ def is_valid_company_job(title: str, link: str, snippet: str, company_name: str,
 
 
 async def fetch_linkedin_company_insights(company_id: str, company_slug: str) -> Optional[Dict[str, Any]]:
-    if not APIFY_INSIGHTS_API_KEY or not company_id:
+    api_key = APIFY_INSIGHTS_API_KEY or os.getenv("APIFY_API_KEY")
+    if not api_key or not company_id:
         return None
 
     url = "https://api.apify.com/v2/acts/freshdata~linkedin-company-insights-scraper/run-sync-get-dataset-items"
-    params = {"token": APIFY_INSIGHTS_API_KEY}
+    params = {"token": api_key}
     payload = {"company_id": company_id, "company_name": company_slug}
 
     try:
@@ -162,6 +163,66 @@ async def fetch_linkedin_company_insights(company_id: str, company_slug: str) ->
                     return data.get("data")
     except Exception as e:
         logger.error(f"Error fetching Apify LinkedIn Insights for company_id {company_id}: {e}")
+
+async def fetch_company_jobs_apify(company_name: str, domain: str, company_slug: str) -> Optional[Dict[str, Any]]:
+    """
+    Fetches active jobs using Apify piotrv1001/company-career-page-scraper actor.
+    Returns standard qualified_jobs format or None if error / 0 results.
+    """
+    api_key = APIFY_INSIGHTS_API_KEY or os.getenv("APIFY_API_KEY")
+    if not api_key:
+        logger.info("Apify API key not configured. Skipping Apify Career Scraper.")
+        return None
+
+    if not domain:
+        return None
+
+    clean_dom = domain.replace("https://", "").replace("http://", "").strip("/")
+    target_url = f"https://{clean_dom}"
+    url = "https://api.apify.com/v2/acts/piotrv1001~company-career-page-scraper/run-sync-get-dataset-items"
+    params = {"token": api_key}
+    payload = {
+        "startUrls": [{"url": target_url}]
+    }
+
+    try:
+        async with httpx.AsyncClient(timeout=45.0) as client:
+            resp = await client.post(url, params=params, json=payload)
+            if resp.status_code in [200, 201]:
+                items = resp.json()
+                if isinstance(items, list) and len(items) > 0:
+                    qualified_jobs = []
+                    for item in items:
+                        t = item.get("title") or ""
+                        c_url = item.get("careersUrl") or item.get("url") or f"https://{clean_dom}"
+                        desc = item.get("descriptionHtml") or item.get("snippet") or ""
+                        snippet_clean = re.sub(r'<[^>]+>', ' ', str(desc))
+                        snippet_clean = ' '.join(snippet_clean.split())[:250]
+                        
+                        if t or snippet_clean:
+                            qualified_jobs.append({
+                                "title": t if t and t != "Search Jobs" else "Position Open",
+                                "link": c_url,
+                                "snippet": snippet_clean or f"Active position at {company_name}",
+                                "date": "Recent",
+                                "ats_platform": "Apify Career Scraper",
+                                "location": item.get("location") or item.get("locationCity") or "",
+                                "seniority": item.get("seniority") or "mid_level"
+                            })
+                    if qualified_jobs:
+                        logger.info(f"🎯 Apify Career Scraper successfully returned {len(qualified_jobs)} job(s) for {company_name}")
+                        return {
+                            "total_results": len(qualified_jobs),
+                            "used_fallback": False,
+                            "source": "apify_career_scraper",
+                            "qualified_jobs": qualified_jobs[:5]
+                        }
+            logger.warning(f"Apify Career Scraper returned HTTP {resp.status_code} or empty results for {company_name}.")
+    except Exception as e:
+        logger.error(f"Error executing Apify Career Scraper for {company_name}: {e}")
+
+    return None
+
 
 async def fetch_company_job_theirstack(company_name: str, domain: str, company_slug: str) -> Optional[Dict[str, Any]]:
     """
@@ -313,7 +374,9 @@ async def process_single_company(
         if not company_name or not domain:
             return None
 
-        logger.info(f"🚀 Processing candidate: {company_name} ({domain})...")
+        logger.info(f"\n=========================================================================")
+        logger.info(f"🚀 [STAGE 1/5] Starting pipeline for: '{company_name}' ({domain})")
+        logger.info(f"=========================================================================")
 
         combined_raw_text = ""
         url_index_map = {}
@@ -321,16 +384,13 @@ async def process_single_company(
         structured_out = None
 
         async with httpx.AsyncClient(timeout=30.0) as client:
-            # -----------------------------------------------------------------
-            # EXA AI: REFINED 2-CALL ARCHITECTURE (CANONICAL IDENTITY + DEEP FRESH SIGNALS)
-            # -----------------------------------------------------------------
             if EXA_API_KEY:
+                logger.info(f"🔎 [Stage 1/5] Querying Exa AI for canonical identity & fresh buying signals for '{company_name}'...")
                 exa_headers = {
                     "accept": "application/json",
                     "content-type": "application/json",
                     "x-api-key": EXA_API_KEY
                 }
-
                 # 1. Canonical Identity Call (Self-reported site facts)
                 identity_payload = {
                     "query": f"{company_name} company profile leadership services products",
@@ -389,7 +449,6 @@ async def process_single_company(
                     # Call 2: Deep Signals
                     res2 = await client.post("https://api.exa.ai/search", json=signal_payload, headers=exa_headers)
                     if res2.status_code != 200:
-                        # Fallback if camelCase parameter key is output_schema
                         signal_payload["output_schema"] = signal_payload.pop("outputSchema", company_schema)
                         res2 = await client.post("https://api.exa.ai/search", json=signal_payload, headers=exa_headers)
 
@@ -410,19 +469,20 @@ async def process_single_company(
                             if snippet:
                                 combined_raw_text += f"SIGNAL HIGHLIGHTS: {snippet[:500]}\n"
 
-                        # Inject Exa Structured Output if available
                         structured_out = data2.get("output")
                         if structured_out:
                             combined_raw_text += f"\n--- EXA STRUCTURED FACTS ---\n{json.dumps(structured_out)}\n"
+
+                    logger.info(f"🌐 [Exa AI Output] Retrieved {len(url_index_map)} evidence sources for '{company_name}'")
 
                 except Exception as e:
                     logger.error(f"Exa search error for {company_name}: {e}")
 
             # -----------------------------------------------------------------
-            # LINKUP.SO FALLBACK (Triggers if Exa AI fails or returns empty text)
+            # LINKUP.SO FALLBACK
             # -----------------------------------------------------------------
             if not combined_raw_text and LINKUP_API_KEY:
-                logger.info(f"Exa AI empty/failed for {company_name}. Triggering Linkup.so Standard SourcedAnswer Fallback...")
+                logger.info(f"Exa AI empty/failed for {company_name}. Triggering Linkup.so Fallback...")
                 linkup_headers = {
                     "Authorization": f"Bearer {LINKUP_API_KEY}",
                     "Content-Type": "application/json"
@@ -446,12 +506,15 @@ async def process_single_company(
                     logger.error(f"Linkup fallback error for {company_name}: {e_l}")
 
         if not combined_raw_text:
-            logger.warning(f"No evidence retrieved for {company_name}.")
+            logger.warning(f"❌ No evidence retrieved for {company_name}. Skipping pipeline.")
             return None
 
+        logger.info(f"✅ [Stage 1/5 Complete] Evidence compiled ({len(combined_raw_text)} chars).")
+
         # ---------------------------------------------------------------------
-        # STAGE 2 & 3: UNIFIED GEMINI 2.5 FLASH INTENT SYNTHESIS & HYBRID SCORING
+        # STAGE 2 & 3: UNIFIED GEMINI INTENT SYNTHESIS & HYBRID SCORING
         # ---------------------------------------------------------------------
+        logger.info(f"🧠 [STAGE 2/5] Running Gemini Intent Synthesis & Math Scorer for '{company_name}'...")
         from backend.pipeline.scorer import analyze_lead_intent_with_llm
 
         raw_signals_list = []
@@ -469,6 +532,8 @@ async def process_single_company(
             icp_fit_label="Strong",
             raw_signals=raw_signals_list
         )
+        if not isinstance(math_result, dict):
+            math_result = {}
 
         gemini_tokens = math_result.get("gemini_token_usage", {})
         token_str = f"Prompt: {gemini_tokens.get('prompt_tokens', 0)} | Output: {gemini_tokens.get('completion_tokens', 0)} | Total: {gemini_tokens.get('total_tokens', 0)}" if isinstance(gemini_tokens, dict) else str(gemini_tokens)
@@ -479,7 +544,8 @@ async def process_single_company(
         except Exception:
             dns_res = {"spf": "Pass", "dkim": "Pass", "dmarc": "Pass", "issues": []}
 
-        valid_signals = [s for s in math_result.get("signals", []) if s.get("quote_validated")]
+        raw_sig_list = math_result.get("signals") if isinstance(math_result.get("signals"), list) else []
+        valid_signals = [s for s in raw_sig_list if isinstance(s, dict) and s.get("quote_validated")]
 
         raw_funding = firmographics.get("total_funding")
         if isinstance(raw_funding, (int, float)) and raw_funding > 0:
@@ -504,13 +570,21 @@ async def process_single_company(
         }
         raw_signal_tags = math_result.get("signal_tags", [])
         enriched_signal_tags = []
-        for st in raw_signal_tags:
-            cat = st.get("category", "")
-            enriched_signal_tags.append({
-                "tag": cat.replace("_", " ").title(),
-                "category": cat,
-                "color_theme": SIGNAL_COLOR_MAP.get(cat, "indigo")
-            })
+        if isinstance(raw_signal_tags, list):
+            for st in raw_signal_tags:
+                if isinstance(st, dict):
+                    cat = st.get("category", "")
+                    tag_name = st.get("tag") or cat.replace("_", " ").title()
+                elif isinstance(st, str):
+                    cat = st
+                    tag_name = st.replace("_", " ").title()
+                else:
+                    continue
+                enriched_signal_tags.append({
+                    "tag": tag_name,
+                    "category": cat,
+                    "color_theme": SIGNAL_COLOR_MAP.get(cat, "indigo")
+                })
 
         extracted_rev = extract_revenue_from_exa_text(combined_raw_text, structured_out=structured_out) or firmographics.get("annual_revenue")
 
@@ -528,7 +602,7 @@ async def process_single_company(
                 "label": "Verified Intention",
                 "color": "emerald",
                 "verified": len(valid_signals),
-                "total": max(1, len(math_result.get("signals", [])))
+                "total": max(1, len(raw_sig_list))
             },
             "dns_audit": dns_res if isinstance(dns_res, dict) else {
                 "spf": "Pass",
@@ -544,17 +618,16 @@ async def process_single_company(
         }
 
         final_score = full_lead_payload.get("intent_score", 0)
-        logger.info(f"✅ {company_name} ({domain}) scored {final_score} ({full_lead_payload.get('tier')} / {full_lead_payload.get('intent_classification')}) | ♊ Gemini Tokens: [{token_str}]")
+        logger.info(f"📊 [STAGE 2/5 Complete] '{company_name}' scored: {final_score}/100 | Tier: {full_lead_payload.get('tier')} | Tokens: [{token_str}]")
 
         # ---------------------------------------------------------------------
-        # STAGE 4: HIGH-INTENT DEEP ENRICHMENT GATE (intent_score >= 80)
+        # STAGE 3 & 4: HIGH-INTENT DEEP ENRICHMENT GATE (intent_score >= 80)
         # ---------------------------------------------------------------------
         candidate_slug = candidate.get("linkedin_slug")
         company_slug = candidate_slug or (domain.split(".")[0].lower() if domain else company_name.lower().replace(" ", ""))
 
-        
         if final_score >= 80:
-            logger.info(f"🔥 Triggering High-Intent Jobs & Insights Enrichment for {company_name} (intent_score={final_score} >= 80)...")
+            logger.info(f"🔥 [STAGE 3/5 GATE PASSED] Intent Score {final_score} >= 80! Triggering Stage 4 Premium Enrichment for '{company_name}'...")
 
             # Contact Extraction (4-tier: regex → spaCy NER → email gen → LinkedIn Serper)
             try:
@@ -617,14 +690,25 @@ async def process_single_company(
                     insights["hiring_trend"] = trend
                     insights["senior_hiring_trend"] = trend
 
+                    # Extract exact latest headcount count from Apify headcount_by_month
+                    h_month = insights.get("headcount_by_month", [])
+                    if isinstance(h_month, list) and len(h_month) > 0:
+                        latest_count = h_month[-1].get("employee_count")
+                        if latest_count and isinstance(latest_count, (int, float)):
+                            insights["total_employees"] = int(latest_count)
+                            full_lead_payload["employee_count"] = int(latest_count)
+
                 full_lead_payload["company_insights"] = insights
             else:
                 full_lead_payload["company_insights"] = None
 
-            # 3. Fetch Active Job via TheirStack (1 job limit using LinkedIn URL / domain), fallback to Serper on error/0 results
-            jobs_res = await fetch_company_job_theirstack(company_name, domain, company_slug)
+            # 3. 3-Tier Job Fetching Cascade: Primary (Apify Career Scraper) -> Fallback 1 (TheirStack) -> Fallback 2 (Serper)
+            jobs_res = await fetch_company_jobs_apify(company_name, domain, company_slug)
             if not jobs_res or jobs_res.get("total_results", 0) == 0:
-                logger.info(f"TheirStack returned 0 jobs or failed. Fallback triggered -> Fetching Serper Jobs for {company_name}...")
+                logger.info(f"Apify Career Scraper returned 0 jobs or failed. Fallback 1 -> Fetching TheirStack Jobs for {company_name}...")
+                jobs_res = await fetch_company_job_theirstack(company_name, domain, company_slug)
+            if not jobs_res or jobs_res.get("total_results", 0) == 0:
+                logger.info(f"TheirStack returned 0 jobs or failed. Fallback 2 -> Fetching Serper Jobs for {company_name}...")
                 jobs_res = await fetch_company_jobs_serper(company_name, company_slug, domain)
 
             full_lead_payload["job_openings"] = jobs_res
@@ -690,7 +774,7 @@ def save_lead_to_db(lead_payload: Dict[str, Any]) -> None:
             db.add(snapshot)
 
         db.commit()
-        logger.info(f"💾 Successfully saved {lead_payload.get('company_name')} ({domain}) to DB snapshot table.")
+        logger.info(f"💾 [STAGE 5/5 COMPLETE] Successfully persisted '{lead_payload.get('company_name')}' ({domain}) to DB snapshot table.")
     except Exception as e:
         db.rollback()
         logger.error(f"Failed to save lead snapshot for {lead_payload.get('domain')}: {e}")

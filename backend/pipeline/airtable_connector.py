@@ -72,8 +72,7 @@ async def fetch_airtable_candidates_batch(
     }
 
     params = {
-        "pageSize": limit,
-        "maxRecords": limit
+        "pageSize": limit
     }
     if offset_token:
         params["offset"] = offset_token
@@ -131,7 +130,10 @@ async def get_ui_test_batch(limit: int = 5) -> Tuple[List[Dict[str, Any]], Dict[
     state["last_run_timestamp"] = datetime.now(timezone.utc).isoformat()
 
     save_pipeline_state(state)
-    logger.info(f"UI Test Batch: Fetched {len(batch)} candidates in 1 API call. Next offset token: {next_offset}")
+    names = [c.get("company_name", "Unknown") for c in batch]
+    logger.info(f"\n=========================================================================")
+    logger.info(f"📋 AIRTABLE BATCH FETCHED ({len(batch)} companies): {', '.join(names)}")
+    logger.info(f"=========================================================================\n")
     return batch, state
 
 async def get_midnight_cron_batch(daily_quota: int = 30) -> Tuple[List[Dict[str, Any]], Dict[str, Any]]:

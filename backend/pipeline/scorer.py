@@ -524,6 +524,14 @@ OUTPUT JSON SCHEMA:
                 logger.info(f"Gemini Token Usage for {company_name}: {meta_dict}")
                 
                 raw_payload = json.loads(raw_text)
+                if isinstance(raw_payload, list):
+                    if len(raw_payload) > 0 and isinstance(raw_payload[0], dict):
+                        raw_payload = raw_payload[0]
+                    else:
+                        raw_payload = {}
+                elif not isinstance(raw_payload, dict):
+                    raw_payload = {}
+
                 raw_payload["company_name"] = company_name
                 raw_payload["gemini_token_usage"] = token_usage_dict
 
@@ -531,15 +539,18 @@ OUTPUT JSON SCHEMA:
                 raw_gemini_pure = copy.deepcopy(raw_payload)
 
                 # Deterministically attach color_theme to signal_tags
-                if raw_payload.get("signal_tags"):
+                if raw_payload.get("signal_tags") and isinstance(raw_payload["signal_tags"], list):
                     for st in raw_payload["signal_tags"]:
-                        cat = str(st.get("category", "")).lower()
-                        st["color_theme"] = COLOR_THEME_MAP.get(cat, "indigo")
+                        if isinstance(st, dict):
+                            cat = str(st.get("category", "")).lower()
+                            st["color_theme"] = COLOR_THEME_MAP.get(cat, "indigo")
 
                 # Python Index-to-URL mapper with Defensive Out-of-Bounds Logging & String/1-based Fallbacks
-                if raw_payload.get("signals"):
+                if raw_payload.get("signals") and isinstance(raw_payload["signals"], list):
                     valid_signals = []
                     for sig in raw_payload["signals"]:
+                        if not isinstance(sig, dict):
+                            continue
                         quote = sig.get("verbatim_quote", "")
 
                         # Only run index-to-URL mapping when raw_signals is provided (batch pipeline)

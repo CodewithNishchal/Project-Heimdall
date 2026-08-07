@@ -130,6 +130,8 @@ def list_all_leads():
                 payload["annual_revenue"] = lead.annual_revenue
             if lead.job_openings is not None:
                 payload["job_openings"] = lead.job_openings
+            if lead.employee_count is not None:
+                payload["employee_count"] = lead.employee_count
             if lead.company_insights is not None:
                 payload["company_insights"] = lead.company_insights
             if isinstance(payload.get("confidence"), dict):
@@ -208,6 +210,8 @@ def get_lead_profile_details(lead_id: str):
             payload["annual_revenue"] = lead.annual_revenue
         if lead.job_openings is not None:
             payload["job_openings"] = lead.job_openings
+        if lead.employee_count is not None:
+            payload["employee_count"] = lead.employee_count
         if lead.company_insights is not None:
             payload["company_insights"] = lead.company_insights
         if isinstance(payload.get("confidence"), dict):
